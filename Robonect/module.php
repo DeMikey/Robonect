@@ -636,10 +636,13 @@ class RobonectWifiModul extends IPSModule
 
     public function ReceiveData($JSONString) {
 
+        $topicList['/device/name']['Ident']                 = 'mowerName';
+        $topicList['/device/serial']['Ident']               = 'mowerSerial';
+
         $topicList['/mower/status']['Ident']                = 'mowerStatus';
         $topicList['/mower/mode']['Ident']                  = 'mowerMode';
 
-        $topicList['/door/open']['Ident']                  = 'doorStatus';
+        $topicList['/door/open']['Ident']                   = 'doorStatus';
 
         $topicList['/mower/mode']['Ident']                  = 'mowerMode';
         $topicList['/mower/status']['Ident']                = 'mowerStatus';
@@ -649,7 +652,7 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/stopped']['Ident']               = 'mowerStopped';
         $topicList['/mower/status/duration']['Ident']       = 'mowerStatusSinceDurationMin';
 
-        $topicList['/mower/battery/charge']['Ident']         = 'mowerBatterySoc';
+        $topicList['/mower/battery/charge']['Ident']        = 'mowerBatterySoc';
         $topicList['/health/climate/temperature']['Ident']  = 'mowerTemperature';
         $topicList['/health/climate/humidity']['Ident']     = 'mowerHumidity';
         $topicList['/health/voltage/batt']['Ident']         = 'mowerVoltageBattery';
@@ -658,9 +661,9 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/statistic/hours']['Ident']       = 'mowerHours';
         $topicList['/wlan/rssi']['Ident']                   = 'mowerWlanStatus';
         $topicList['/mqtt']['Ident']                        = 'mowerMqttStatus';
-        $topicList['/mower/blades/quality']['Ident']         = 'mowerBladesQuality';
-        $topicList['/mower/blades/hours']['Ident']           = 'mowerBladesOperatingHours';
-        $topicList['/mower/blades/days']['Ident']            = 'mowerBladesAge';
+        $topicList['/mower/blades/quality']['Ident']        = 'mowerBladesQuality';
+        $topicList['/mower/blades/hours']['Ident']          = 'mowerBladesOperatingHours';
+        $topicList['/mower/blades/days']['Ident']           = 'mowerBladesAge';
 
         $topicList['/Timer/next/unix']['Ident']             = 'mowerNextTimerstart';
 
