@@ -931,6 +931,7 @@ class RobonectWifiModul extends IPSModule
             IPS_SetVariableProfileIcon('ROBONECT_DoorStatus', '' );
             IPS_SetVariableProfileAssociation("ROBONECT_DoorStatus", true, "Ja", "", 0xFFFFFF);
             IPS_SetVariableProfileAssociation("ROBONECT_DoorStatus", false, "Nein", "", 0xFFFFFF);
+        }
 
         if (!IPS_VariableProfileExists('ROBONECT_ManualAction')) {
             IPS_CreateVariableProfile('ROBONECT_ManualAction', 1);
