@@ -639,6 +639,8 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/status']['Ident']                = 'mowerStatus';
         $topicList['/mower/mode']['Ident']                  = 'mowerMode';
 
+        $topicList['/door/open']['Ident']                  = 'doorStatus';
+
         $topicList['/mower/mode']['Ident']                  = 'mowerMode';
         $topicList['/mower/status']['Ident']                = 'mowerStatus';
         $topicList['/mower/status/plain']['Ident']          = 'mowerStatusPlain';
@@ -648,14 +650,14 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/status/duration']['Ident']       = 'mowerStatusSinceDurationMin';
 
         $topicList['/mower/battery/charge']['Ident']         = 'mowerBatterySoc';
+        $topicList['/health/climate/temperature']['Ident']  = 'mowerTemperature';
+        $topicList['/health/climate/humidity']['Ident']     = 'mowerHumidity';
         $topicList['/health/voltage/batt']['Ident']         = 'mowerVoltageBattery';
         $topicList['/health/voltage/int33']['Ident']        = 'mowerVoltageInternal';
         $topicList['/health/voltage/ext33']['Ident']        = 'mowerVoltageExternal';
         $topicList['/mower/statistic/hours']['Ident']       = 'mowerHours';
         $topicList['/wlan/rssi']['Ident']                   = 'mowerWlanStatus';
         $topicList['/mqtt']['Ident']                        = 'mowerMqttStatus';
-        $topicList['/health/climate/temperature']['Ident']  = 'mowerTemperature';
-        $topicList['/health/climate/humidity']['Ident']     = 'mowerHumidity';
         $topicList['/mower/blades/quality']['Ident']         = 'mowerBladesQuality';
         $topicList['/mower/blades/hours']['Ident']           = 'mowerBladesOperatingHours';
         $topicList['/mower/blades/days']['Ident']            = 'mowerBladesAge';
@@ -924,6 +926,12 @@ class RobonectWifiModul extends IPSModule
             IPS_SetVariableProfileAssociation("ROBONECT_TimerStatus", 2, "Standby", "", 0xFFFFFF);
         }
 
+        if ( !IPS_VariableProfileExists('ROBONECT_DoorStatus') ) {
+            IPS_CreateVariableProfile('ROBONECT_DoorStatus', 0 );
+            IPS_SetVariableProfileIcon('ROBONECT_DoorStatus', '' );
+            IPS_SetVariableProfileAssociation("ROBONECT_DoorStatus", true, "Ja", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_DoorStatus", false, "Nein", "", 0xFFFFFF);
+
         if (!IPS_VariableProfileExists('ROBONECT_ManualAction')) {
             IPS_CreateVariableProfile('ROBONECT_ManualAction', 1);
             IPS_SetVariableProfileIcon('ROBONECT_ManualAction', 'Ok');
@@ -973,7 +981,7 @@ class RobonectWifiModul extends IPSModule
     {
 
         //--- Basic Data ---------------------------------------------------------
-        $this->RegisterVariableString(  "mowerName", "Name", "", 0);
+        $this->RegisterVariableString( "mowerName", "Name", "", 0);
         $this->RegisterVariableString("mowerSerial", "Seriennummer", "", 1 );
 
         // Interactive --------------------------------------------------------------
@@ -984,14 +992,15 @@ class RobonectWifiModul extends IPSModule
         $this->EnableAction("manualAction");
 
         //--- Status -------------------------------------------------------------
-        $this->RegisterVariableInteger("mowerMode", "Modus", "ROBONECT_Modus", 30);
-        $this->RegisterVariableInteger("mowerStatus", "Status", "ROBONECT_Status", 31);
-        $this->RegisterVariableInteger("mowerStatusPlain", "Status (Klartext)", "ROBONECT_Status", 32);
-        $this->RegisterVariableInteger("mowerSubstatus", "Substatus", "", 33);
-        $this->RegisterVariableInteger("mowerSubstatusPlain", "Substatus (Klartext)", "", 34);
-        $this->RegisterVariableBoolean("mowerStopped", "man. angehalten", "ROBONECT_JaNein", 35);
-        $this->RegisterVariableInteger("mowerStatusSince", "Status seit", "~UnixTimestamp", 36);
-        $this->RegisterVariableString("statusSinceDescriptive", "Status seit", "", 37);
+        $this->RegisterVariableBoolean("doorStatus", "Status Garagentor", "ROBONECT_DoorStatus", 30);
+        $this->RegisterVariableInteger("mowerMode", "Modus", "ROBONECT_Modus", 31);
+        $this->RegisterVariableInteger("mowerStatus", "Status", "ROBONECT_Status", 32);
+        $this->RegisterVariableInteger("mowerStatusPlain", "Status (Klartext)", "ROBONECT_Status", 33);
+        $this->RegisterVariableInteger("mowerSubstatus", "Substatus", "", 34);
+        $this->RegisterVariableInteger("mowerSubstatusPlain", "Substatus (Klartext)", "", 35);
+        $this->RegisterVariableBoolean("mowerStopped", "man. angehalten", "ROBONECT_JaNein", 36);
+        $this->RegisterVariableInteger("mowerStatusSince", "Status seit", "~UnixTimestamp", 37);
+        $this->RegisterVariableString("statusSinceDescriptive", "Status seit", "", 38);
 
         //--- Conditions --------------------------------------------------------------
         $this->RegisterVariableInteger("mowerBatterySoc", "Akkustand", "~Battery.100", 50);
