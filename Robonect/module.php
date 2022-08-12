@@ -636,6 +636,7 @@ class RobonectWifiModul extends IPSModule
 
     public function ReceiveData($JSONString) {
 
+        // MQTT Tropics
         $topicList['/device/name']['Ident']                 = 'mowerName';
         $topicList['/device/serial']['Ident']               = 'mowerSerial';
 
