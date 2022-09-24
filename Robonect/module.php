@@ -17,6 +17,8 @@ class RobonectWifiModul extends IPSModule
            Status-Variables und Modul-Properties for permanent usage should be created here  */
         parent::Create();
 
+        // Connect MQTT Server
+        $this->ConnectParent('{C6D2AEB3-6E1F-4B2E-8E69-3A1A00246850}');
         // Properties Robonect Wifi Module
         $this->RegisterPropertyString("IPAddress", '0.0.0.0');
         $this->RegisterPropertyString("Username", '');
@@ -1068,4 +1070,76 @@ class RobonectWifiModul extends IPSModule
 
     }
 
+
+    #================================================================================================
+    public function ForwardData($JSONString) {
+    #================================================================================================
+         
+            // Empfangene Daten von der Device Instanz
+            $this->SendDebug("ForwardData", $JSONString, 0);
+            $data = json_decode($JSONString);
+            if($this->GetStatus() == 201){
+                $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. Mower is offline"), 0);
+                $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. Mower is offline")." - ".$data->Payload, KL_ERROR);
+            }elseif($this->GetStatus() == 202){
+                $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline"), 0);
+                $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline")." - ".$data->Payload, KL_ERROR);
+            }else{
+                $this->sendMQTT($data->Topic, $data->Payload, 0);
+            }
+        }
+    
+    #================================================================================================
+    protected function sendMQTT($Topic, $Payload)
+    #================================================================================================
+    {
+        //$retain = false; // Solange der IPS MQTT Server noch kein Retain kann
+
+        $FullTopic = explode('/', $this->ReadPropertyString('FullTopic'));
+        $PrefixIndex = array_search('%prefix%', $FullTopic);
+        $TopicIndex = array_search('%topic%', $FullTopic);
+
+        $SetCommandArr = $FullTopic;
+        $index = count($SetCommandArr);
+
+        $SetCommandArr[$PrefixIndex] = 'cmnd';
+        $SetCommandArr[$TopicIndex] = $this->ReadPropertyString('Topic');
+        $SetCommandArr[$index] = $command;
+
+        $Topic = implode('/', $SetCommandArr);
+
+        $resultServer = true;
+        $resultClient = true;
+        //MQTT Server
+        $Server['DataID'] = '{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}';
+        $Server['PacketType'] = 3;
+        $Server['QualityOfService'] = 0;
+        $Server['Retain'] = boolval($retain);
+        $Server['Topic'] = $Topic;
+        $Server['Payload'] = $Payload;
+        $ServerJSON = json_encode($Server, JSON_UNESCAPED_SLASHES);
+        $this->SendDebug(__FUNCTION__ . 'MQTT Server', $ServerJSON, 0);
+        $resultServer = @$this->SendDataToParent($ServerJSON);
+
+        //MQTT Client
+/*        $Buffer['PacketType'] = 3;
+        $Buffer['QualityOfService'] = 0;
+        $Buffer['Retain'] = boolval($retain);
+        $Buffer['Topic'] = $Topic;
+        $Buffer['Payload'] = $Payload;
+        $BufferJSON = json_encode($Buffer, JSON_UNESCAPED_SLASHES);
+
+        $Client['DataID'] = '{97475B04-67C3-A74D-C970-E9409B0EFA1D}';
+        $Client['Buffer'] = $BufferJSON;
+
+        $ClientJSON = json_encode($Client);
+        $this->SendDebug(__FUNCTION__ . 'MQTT Client', $ClientJSON, 0);
+        $resultClient = @$this->SendDataToParent($ClientJSON);
+
+        if ($resultServer === false && $resultClient === false) {
+            $last_error = error_get_last();
+            echo $last_error['message'];
+        }
+*/
+    }
 }
