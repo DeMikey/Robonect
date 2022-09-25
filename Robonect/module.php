@@ -138,25 +138,27 @@ class RobonectWifiModul extends IPSModule
     }
 
     public function Start() {
+        $this->sendMQTT('/control', 'start');
         // start the current modus of the lawnmower; tested
         // get data via HTTP Request
-        $data = $this->executeHTTPCommand( 'start' );
-        if ( $data == false ) {
-            return false;
-        } else {
-            return $data['successful'];
-        }
+//        $data = $this->executeHTTPCommand( 'start' );
+//        if ( $data == false ) {
+//            return false;
+//        } else {
+//            return $data['successful'];
+//        }
     }
 
     public function Stop() {
+        $this->sendMQTT('/control', 'stop');
         // stop the current modus of the lawnmower; tested
         // get data via HTTP Request
-        $data = $this->executeHTTPCommand( 'stop' );
-        if ( $data == false ) {
-            return false;
-        } else {
-            return $data['successful'];
-        }
+//        $data = $this->executeHTTPCommand( 'stop' );
+//        if ( $data == false ) {
+//            return false;
+//        } else {
+//            return $data['successful'];
+//        }
     }
 
     public function UpdateErrorList() {
@@ -233,18 +235,31 @@ class RobonectWifiModul extends IPSModule
         }
     }
 
+    public function SetService( string $Service ) {
+        // Set Mode of the Mower
+
+        // check parameter
+        if ( $Service !== "reboot" && $Service !== "sleep" && $Service !== "shutdown") return false;
+        $this->sendMQTT('/control/mode', $Service);
+    }
+
     public function SetMode( string $mode ) {
         // Set Mode of the Mower
 
         // check parameter
         if ( $mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto" ) return false;
-        $this->sendMQTT('/control/mode', 'eod');
+        $this->sendMQTT('/control/mode', $mode);
 //        $data = $this->executeHTTPCommand('mode&mode='.$mode );
 //        if ( $data == false ) {
 //            return false;
 //        } else {
 //            return $data['successful'];
 //        }
+    }
+
+    public function ReleaseDoor() {
+        // Bestätigen das Tor offen ist
+        $this->sendMQTT('/control/door',"release");
     }
 
     public function StartMowingNow( int $duration ) {
@@ -677,23 +692,6 @@ class RobonectWifiModul extends IPSModule
 		$this->SendDebug("Received", $JSONString, 0);
         $Data = json_decode( $JSONString);
         $this->SendDebug("Received", $Data, 0);
- //       switch ($Data->DataID) {
- //           case '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}': // MQTT Server
- //               $Buffer = $Data;
- //               break;
- //           default:
- //               $this->SendDebug("nvalid Parent", KL_ERROR, 0);
- //               $this->LogMessage('Invalid Parent', KL_ERROR);
- //               return;
- //       }
-
-        $this->SendDebug("Received", $Data, 0);
-        $Payload = json_decode($Data->Payload);
-        $Topic = json_decode($ata->Topic);
-        $this->SendDebug("Received", $Data->DataID, 0);
-        $this->SendDebug("Received", $Data->Topic, 0);
-        $this->SendDebug("Received", $Data->Payload, 0);
-
         // Prüfen ob alles OK ist
         if ($Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}') {
             $this->SendDebug("nvalid Parent", KL_ERROR, 0);
@@ -708,15 +706,7 @@ class RobonectWifiModul extends IPSModule
              return true;
         }
 
-        // String in Topic und Payload zerlegen
-    //    $nachrichtenlaenge = ord( $jsonData['Buffer'][1] );
-    //    $topiclaenge = ord( $jsonData['Buffer'][3] );
-    //    $payloadlaenge = $nachrichtenlaenge - $topiclaenge - 2; // 2 = Füllbyte + Topiclaenge
-    //    $startOfTopic = strpos( $jsonData['Buffer'], $mqttTopic );
-
         $topic = substr( $Data->Topic, strlen( $mqttTopic), (strlen($Data->Topic) - strlen($mqttTopic)));
-    //    $topic = substr( $jsonData['Buffer'], $startOfTopic+strlen( $mqttTopic ), $topiclaenge-strlen( $mqttTopic ) );
-   //     $payload = substr( $jsonData['Buffer'], $startOfTopic+$topiclaenge, $payloadlaenge );
 
         $this->log('Topic: '.$topic. ', Payload: '.$Data->Payload);
 
