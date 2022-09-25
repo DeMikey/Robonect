@@ -238,7 +238,7 @@ class RobonectWifiModul extends IPSModule
 
         // check parameter
         if ( $mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto" ) return false;
-        $this->sendMQTT("/control/mode", $mode);
+        $this->sendMQTT('/control/mode', 'eod');
 //        $data = $this->executeHTTPCommand('mode&mode='.$mode );
 //        if ( $data == false ) {
 //            return false;
