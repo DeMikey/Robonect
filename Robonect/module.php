@@ -259,7 +259,8 @@ class RobonectWifiModul extends IPSModule
 
     public function ReleaseDoor() {
         // Bestätigen das Tor offen ist
-        $this->sendMQTT('/control/door',"release");
+        $response = $this->sendMQTT('/control/door',"release");
+        return $response;
     }
 
     public function StartMowingNow( int $duration ) {
