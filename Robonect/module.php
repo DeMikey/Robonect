@@ -695,7 +695,7 @@ class RobonectWifiModul extends IPSModule
         $this->SendDebug("Received", $Data->Payload, 0);
 
         // Prüfen ob alles OK ist
-        if ( $Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}' ) ) {
+        if ($Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}') {
             $this->SendDebug("nvalid Parent", KL_ERROR, 0);
             $this->log('Invalid Parent' );
             return true;
