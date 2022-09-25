@@ -675,7 +675,18 @@ class RobonectWifiModul extends IPSModule
             return true;
         }
 		$this->SendDebug("Received", $JSONString, 0);
-        $Data = json_decode( $JSONString, true );
+        $Data = json_decode( $JSONString);
+        $this->SendDebug("Received", $Data, 0);
+        switch ($Data->DataID) {
+            case '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}': // MQTT Server
+                $Buffer = $Data;
+                break;
+            default:
+                $this->SendDebug("nvalid Parent", KL_ERROR, 0);
+                $this->LogMessage('Invalid Parent', KL_ERROR);
+                return;
+        }
+
         $this->SendDebug("Received", $Data, 0);
         $Payload = json_decode($Data->Payload);
         $Topic = json_decode($ata->Topic);
