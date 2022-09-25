@@ -238,13 +238,13 @@ class RobonectWifiModul extends IPSModule
 
         // check parameter
         if ( $mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto" ) return false;
-
-        $data = $this->executeHTTPCommand('mode&mode='.$mode );
-        if ( $data == false ) {
-            return false;
-        } else {
-            return $data['successful'];
-        }
+        $this->sendMQTT("/control/mode", $mode);
+//        $data = $this->executeHTTPCommand('mode&mode='.$mode );
+//        if ( $data == false ) {
+//            return false;
+//        } else {
+//            return $data['successful'];
+//        }
     }
 
     public function StartMowingNow( int $duration ) {
@@ -1085,41 +1085,28 @@ class RobonectWifiModul extends IPSModule
                 $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline"), 0);
                 $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline")." - ".$data->Payload, KL_ERROR);
             }else{
-                $this->sendMQTT($data->Topic, $data->Payload, 0);
+                $this->sendMQTT($data->Topic, $data->Payload);
             }
         }
     
     #================================================================================================
-    protected function sendMQTT($Topic, $Payload)
+    protected function sendMQTT($Topic, $Payload) {
     #================================================================================================
-    {
-        //$retain = false; // Solange der IPS MQTT Server noch kein Retain kann
+        $retain = false; // Solange der IPS MQTT Server noch kein Retain kann
 
-        $FullTopic = explode('/', $this->ReadPropertyString('FullTopic'));
-        $PrefixIndex = array_search('%prefix%', $FullTopic);
-        $TopicIndex = array_search('%topic%', $FullTopic);
+	    $Data['DataID'] = '{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}';
+	    $Data['PacketType'] = 3;
+	    $Data['QualityOfService'] = 0;
+	    $Data['Retain'] = boolval($retain);
+	    $Data['Topic'] = $this->ReadPropertyString("MQTTTopic").$Topic;
+	    $Data['Payload'] = $Payload;
 
-        $SetCommandArr = $FullTopic;
-        $index = count($SetCommandArr);
+	    $DataJSON = json_encode($Data, JSON_UNESCAPED_SLASHES);
+//		$this->SendDebug("Sended", $DataJSON, 0);
+//	    $this->SendDataToParent($DataJSON);
 
-        $SetCommandArr[$PrefixIndex] = 'cmnd';
-        $SetCommandArr[$TopicIndex] = $this->ReadPropertyString('Topic');
-        $SetCommandArr[$index] = $command;
-
-        $Topic = implode('/', $SetCommandArr);
-
-        $resultServer = true;
-        $resultClient = true;
-        //MQTT Server
-        $Server['DataID'] = '{043EA491-0325-4ADD-8FC2-A30C8EEB4D3F}';
-        $Server['PacketType'] = 3;
-        $Server['QualityOfService'] = 0;
-        $Server['Retain'] = boolval($retain);
-        $Server['Topic'] = $Topic;
-        $Server['Payload'] = $Payload;
-        $ServerJSON = json_encode($Server, JSON_UNESCAPED_SLASHES);
-        $this->SendDebug(__FUNCTION__ . 'MQTT Server', $ServerJSON, 0);
-        $resultServer = @$this->SendDataToParent($ServerJSON);
+        $this->SendDebug(__FUNCTION__ . 'MQTT Server', $DataJSON, 0);
+        $result = @$this->SendDataToParent($DataJSON);
 
         //MQTT Client
 /*        $Buffer['PacketType'] = 3;
@@ -1135,11 +1122,10 @@ class RobonectWifiModul extends IPSModule
         $ClientJSON = json_encode($Client);
         $this->SendDebug(__FUNCTION__ . 'MQTT Client', $ClientJSON, 0);
         $resultClient = @$this->SendDataToParent($ClientJSON);
-
-        if ($resultServer === false && $resultClient === false) {
+*/
+        if ($result === false) {
             $last_error = error_get_last();
             echo $last_error['message'];
         }
-*/
     }
 }
