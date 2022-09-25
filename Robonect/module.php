@@ -693,36 +693,41 @@ class RobonectWifiModul extends IPSModule
         $this->SendDebug("Received", $Data->DataID, 0);
         $this->SendDebug("Received", $Data->Topic, 0);
         $this->SendDebug("Received", $Data->Payload, 0);
-        if ( $Data === false or !isset( $Data['Buffer'] ) ) {
-            $this->log('No MQTT Data' );
+
+        // Prüfen ob alles OK ist
+        if ( $Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}' ) ) {
+            $this->SendDebug("nvalid Parent", KL_ERROR, 0);
+            $this->log('Invalid Parent' );
             return true;
         }
 
         $mqttTopic = $this->ReadPropertyString("MQTTTopic");
-        if ( ( $mqttTopic == "" ) or ( strlen( $jsonData['Buffer'] ) < 10 ) ) return true;
-
-        if ( strpos( $jsonData['Buffer'], $mqttTopic.'/' ) === false ) {
-            return true;
+        if ( ( $mqttTopic == "" ) or ( strpos( $Data->Topic, $mqttTopic.'/' ) === false ) ) {
+            $this->SendDebug("Bad Topic", $Data->Topic, 0);
+            $this->log('Bad Topic');
+             return true;
         }
+
         // String in Topic und Payload zerlegen
-        $nachrichtenlaenge = ord( $jsonData['Buffer'][1] );
-        $topiclaenge = ord( $jsonData['Buffer'][3] );
-        $payloadlaenge = $nachrichtenlaenge - $topiclaenge - 2; // 2 = Füllbyte + Topiclaenge
-        $startOfTopic = strpos( $jsonData['Buffer'], $mqttTopic );
+    //    $nachrichtenlaenge = ord( $jsonData['Buffer'][1] );
+    //    $topiclaenge = ord( $jsonData['Buffer'][3] );
+    //    $payloadlaenge = $nachrichtenlaenge - $topiclaenge - 2; // 2 = Füllbyte + Topiclaenge
+    //    $startOfTopic = strpos( $jsonData['Buffer'], $mqttTopic );
 
-        $topic = substr( $jsonData['Buffer'], $startOfTopic+strlen( $mqttTopic ), $topiclaenge-strlen( $mqttTopic ) );
-        $payload = substr( $jsonData['Buffer'], $startOfTopic+$topiclaenge, $payloadlaenge );
+        $topic = substr( $Data->Topic, 0, strlen( $mqttTopic ));
+    //    $topic = substr( $jsonData['Buffer'], $startOfTopic+strlen( $mqttTopic ), $topiclaenge-strlen( $mqttTopic ) );
+   //     $payload = substr( $jsonData['Buffer'], $startOfTopic+$topiclaenge, $payloadlaenge );
 
-        $this->log('Topic: '.$topic. ', Payload: '.$payload );
+        $this->log('Topic: '.$topic. ', Payload: '.$Data->Payload);
 
         if ( isset( $topicList[$topic] ) ) {
-            $this->log('Try to update data ' . $topicList[$topic]['Ident'] . ' with ' . $payload);
-            $this->updateIdent($topicList[$topic]['Ident'], $payload);
+            $this->log('Try to update data ' . $topicList[$topic]['Ident'] . ' with ' . $Data->Payload);
+            $this->updateIdent($topicList[$topic]['Ident'], $Data->Payload);
             if ($topicList[$topic]['Ident'] != 'mowerMqttStatus') {
                 $this->SetValue("mowerMqttStatus", 1); // online
             }
         } else {
-            $this->log('Unkown Topic: '.$topic. ', Payload: '.$payload );
+            $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
 
     }
