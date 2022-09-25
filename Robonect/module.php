@@ -674,7 +674,7 @@ class RobonectWifiModul extends IPSModule
             $this->log('No JSON' );
             return true;
         }
-
+		$this->SendDebug("Received", $JSONString, 0);
         $jsonData = json_decode( $JSONString, true );
         if ( $jsonData === false or !isset( $jsonData['Buffer'] ) ) {
             $this->log('No MQTT Data' );
