@@ -677,22 +677,22 @@ class RobonectWifiModul extends IPSModule
 		$this->SendDebug("Received", $JSONString, 0);
         $Data = json_decode( $JSONString);
         $this->SendDebug("Received", $Data, 0);
-        switch ($Data->DataID) {
-            case '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}': // MQTT Server
-                $Buffer = $Data;
-                break;
-            default:
-                $this->SendDebug("nvalid Parent", KL_ERROR, 0);
-                $this->LogMessage('Invalid Parent', KL_ERROR);
-                return;
-        }
+ //       switch ($Data->DataID) {
+ //           case '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}': // MQTT Server
+ //               $Buffer = $Data;
+ //               break;
+ //           default:
+ //               $this->SendDebug("nvalid Parent", KL_ERROR, 0);
+ //               $this->LogMessage('Invalid Parent', KL_ERROR);
+ //               return;
+ //       }
 
         $this->SendDebug("Received", $Data, 0);
         $Payload = json_decode($Data->Payload);
         $Topic = json_decode($ata->Topic);
-        $this->SendDebug("Received", $Data['DataId'], 0);
-        $this->SendDebug("Received", $Topic, 0);
-        $this->SendDebug("Received", $Payload, 0);
+        $this->SendDebug("Received", $Data->DataID, 0);
+        $this->SendDebug("Received", $Data->Topic, 0);
+        $this->SendDebug("Received", $Data->Payload, 0);
         if ( $Data === false or !isset( $Data['Buffer'] ) ) {
             $this->log('No MQTT Data' );
             return true;
