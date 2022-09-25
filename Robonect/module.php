@@ -1124,6 +1124,7 @@ class RobonectWifiModul extends IPSModule
         $resultClient = @$this->SendDataToParent($ClientJSON);
 */
         if ($result === false) {
+            echo "Fehler: ";
             $last_error = error_get_last();
             echo $last_error['message'];
         }
