@@ -138,7 +138,8 @@ class RobonectWifiModul extends IPSModule
     }
 
     public function Start() {
-        $this->sendMQTT('/control', 'start');
+        $Response = @$this->sendMQTT('/control', 'start');
+        return $Response;
         // start the current modus of the lawnmower; tested
         // get data via HTTP Request
 //        $data = $this->executeHTTPCommand( 'start' );
@@ -150,7 +151,8 @@ class RobonectWifiModul extends IPSModule
     }
 
     public function Stop() {
-        $this->sendMQTT('/control', 'stop');
+        $Response = @$this->sendMQTT('/control', 'stop');
+        return $Response;
         // stop the current modus of the lawnmower; tested
         // get data via HTTP Request
 //        $data = $this->executeHTTPCommand( 'stop' );
@@ -227,12 +229,14 @@ class RobonectWifiModul extends IPSModule
 
     public function DriveHome() {
         // Mower should drive to home position
-        $data = $this->executeHTTPCommand('mode&mode=home' );
-        if ( $data == false ) {
-            return false;
-        } else {
-            return $data['successful'];
-        }
+        $Response = @$this->sendMQTT('/control/mode', 'home');
+        return $Response;
+ //        $data = $this->executeHTTPCommand('mode&mode=home' );
+ //       if ( $data == false ) {
+ //           return false;
+ //       } else {
+ //           return $data['successful'];
+ //       }
     }
 
     public function SetService( string $Service ) {
@@ -240,7 +244,8 @@ class RobonectWifiModul extends IPSModule
 
         // check parameter
         if ( $Service !== "reboot" && $Service !== "sleep" && $Service !== "shutdown") return false;
-        $this->sendMQTT('/control/mode', $Service);
+        $Response = @$this->sendMQTT('/control/mode', $Service);
+        return $Response;
     }
 
     public function SetMode( string $mode ) {
@@ -248,7 +253,8 @@ class RobonectWifiModul extends IPSModule
 
         // check parameter
         if ( $mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto" ) return false;
-        $this->sendMQTT('/control/mode', $mode);
+        $Response = @$this->sendMQTT('/control/mode', $mode);
+        return $Response;
 //        $data = $this->executeHTTPCommand('mode&mode='.$mode );
 //        if ( $data == false ) {
 //            return false;
@@ -259,8 +265,8 @@ class RobonectWifiModul extends IPSModule
 
     public function ReleaseDoor() {
         // Bestätigen das Tor offen ist
-        $response = $this->sendMQTT('/control/door',"release");
-        return $response;
+        $Response = @$this->sendMQTT('/control/door',"release");
+        return $Response;
     }
 
     public function StartMowingNow( int $duration ) {
@@ -1137,9 +1143,9 @@ class RobonectWifiModul extends IPSModule
         $resultClient = @$this->SendDataToParent($ClientJSON);
 */
         if ($result === false) {
-            echo "Fehler: ";
             $last_error = error_get_last();
-            echo $last_error['message'];
+            return $last_error['message'];
         }
+        return "Success"
     }
 }
