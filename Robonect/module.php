@@ -714,7 +714,7 @@ class RobonectWifiModul extends IPSModule
     //    $payloadlaenge = $nachrichtenlaenge - $topiclaenge - 2; // 2 = Füllbyte + Topiclaenge
     //    $startOfTopic = strpos( $jsonData['Buffer'], $mqttTopic );
 
-        $topic = substr( $Data->Topic, 0, strlen( $mqttTopic ));
+        $topic = substr( $Data->Topic, strlen( $mqttTopic), (strlen($Data->Topic) - strlen($mqttTopic)));
     //    $topic = substr( $jsonData['Buffer'], $startOfTopic+strlen( $mqttTopic ), $topiclaenge-strlen( $mqttTopic ) );
    //     $payload = substr( $jsonData['Buffer'], $startOfTopic+$topiclaenge, $payloadlaenge );
 
