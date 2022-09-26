@@ -1146,6 +1146,6 @@ class RobonectWifiModul extends IPSModule
             $last_error = error_get_last();
             return $last_error['message'];
         }
-        return "Success"
+        return "Success";
     }
 }
