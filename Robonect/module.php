@@ -698,7 +698,7 @@ class RobonectWifiModul extends IPSModule
         }
 		$this->SendDebug("Received", $JSONString, 0);
         $Data = json_decode( $JSONString);
-        $this->SendDebug("Received", $Data, 0);
+//        $this->SendDebug("Received", $Data, 0);
         // Prüfen ob alles OK ist
         if ($Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}') {
             $this->SendDebug("nvalid Parent", KL_ERROR, 0);
@@ -883,6 +883,15 @@ class RobonectWifiModul extends IPSModule
                     $this->SetValue("mowerNextTimerstart", $unixTimestamp);
                 }
                 break;
+
+                case 'WeatherDataTemperature':
+                    $this->SetValue("WeatherTemperature", $payload );
+                    break;
+                case 'WeatherDataHumidity':
+                    $this->SetValue("WeatherHumidity", $payload );
+                    break;
+    
+
 
             case 'mowerUnixTimestamp':
                 $unixTimestamp = $payload;
@@ -1083,6 +1092,13 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableInteger( "mowerNextTimerstart", "nächster Timerstart", "~UnixTimestamp", 92 );
         $this->RegisterVariableInteger("timerTransmitAction", "Timer lesen/schreiben", "ROBONECT_TimerTransmitAction", 93 );
         $this->EnableAction("timerTransmitAction");
+
+        //--- Weather --------------------------------------------------------------
+        $this->RegisterVariableBoolean("WeatherBreak", "Wetterpause", "ROBONECT_JaNein", 36);
+        $this->RegisterVariableInteger("WeatherHumidity", "Luft Feuchtigkeit", "~Humidity", 58 );
+        $this->RegisterVariableBoolean("WeatherRain", "Es regnet", "ROBONECT_JaNein", 36);
+        $this->RegisterVariableFloat("WeatherTemperature", "Aussen Temperatur", "~Temperature", 57 );
+        $this->RegisterVariableString( "WeatherService", "Wetterdienst", "~HTMLBox", 71 );
 
         //--- Clock -------------------------------------------------------------
         $this->RegisterVariableInteger( "mowerUnixTimestamp", "Interner Unix Zeitstempel", "~UnixTimestamp", 110 );
