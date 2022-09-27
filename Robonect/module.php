@@ -690,6 +690,12 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/blades/hours']['Ident']          = 'mowerBladesOperatingHours';
         $topicList['/mower/blades/days']['Ident']           = 'mowerBladesAge';
 
+        $topicList['/mower/weather/data/break']['Ident']    = 'WeatherBreak';
+        $topicList['/mower/weather/data/humidity']['Ident'] = 'WeatherHumitdity';
+        $topicList['/mower/weather/data/rain']['Ident']     = 'WeatherRain';
+        $topicList['/mower/weather/data/temperature']['Ident'] = 'WeatherTemperature';
+        $topicList['/mower/weather/data/service']['Ident']     = 'WeatherService';
+
         $topicList['/Timer/next/unix']['Ident']             = 'mowerNextTimerstart';
 
         if ( $JSONString == '' ) {
@@ -884,13 +890,21 @@ class RobonectWifiModul extends IPSModule
                 }
                 break;
 
-                case 'WeatherDataTemperature':
+                case 'WeatherTemperature':
                     $this->SetValue("WeatherTemperature", $payload );
                     break;
-                case 'WeatherDataHumidity':
+                case 'WeatherHumidity':
                     $this->SetValue("WeatherHumidity", $payload );
                     break;
-    
+                case 'WeatherBreak':
+                    $this->SetValue("WeatherBreak", $payload );
+                    break;
+                case 'WeatherRain':
+                    $this->SetValue("WeatherRain", $payload );
+                    break;
+                case 'WeatherSearvoce':
+                    $this->SetValue("WeatherService", $payload );
+                    break;
 
 
             case 'mowerUnixTimestamp':
