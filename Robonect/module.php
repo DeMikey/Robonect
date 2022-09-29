@@ -696,7 +696,7 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/weather/data/temperature']['Ident'] = 'WeatherTemperature';
         $topicList['/mower/weather/data/service']['Ident']     = 'WeatherService';
 
-        $topicList['/Timer/next/unix']['Ident']             = 'mowerNextTimerstart';
+        $topicList['/mower/timer/next/unix']['Ident']             = 'mowerNextTimerstart';
 
         if ( $JSONString == '' ) {
             $this->log('No JSON' );
