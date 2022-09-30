@@ -28,7 +28,9 @@
       "IP invalid": "IP Adresse ungültig",
       "No device found on IP": "Kein Gerät antwortet an der IP Adresse",
       "No JSON returned from IP": "Kein JSON wird an der IP Adresse geliefert",
-      "No Robonect available at IP": "Kein Robonect an IP Adresse erreichbar"
+      "No Robonect available at IP": "Kein Robonect an IP Adresse erreichbar",
+
+      "Camera picture": "Kammerabild"
     }
   }
 }

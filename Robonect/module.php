@@ -562,36 +562,73 @@ class RobonectWifiModul extends IPSModule
             $this->SetStatus(201); // no valid IP configured
             return false;
         }
-
-        if ($command == '') return false;
-
-        // HTTP status request
-        $URL = 'http://' . $IPAddress . '/json?cmd=' . $command;
-        try {
-            $this->log('Http Request send');
-            $ch = curl_init();
-            curl_setopt_array($ch, [
-                CURLOPT_URL => $URL,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-                CURLOPT_USERPWD => $Username . ':' . $Password,
-                CURLOPT_TIMEOUT => 30
-            ]);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $json = curl_exec($ch);
-            curl_close($ch);
-            $this->log('Http Request finished');
-        } catch (Exception $e) {
-            $this->log('Http Request on error');
-            $this->SetStatus(203); // no valid IP configured
-            return false;
-        };
-        if (strlen($json) > 3) {
-          $this->SetStatus(102); // Robonect found
-        } else {
-          $this->SetStatus(202); // No Device at IP
+        $this->log('Http Request send');
+        switch ($command) {
+            case 'cam' :
+                $URL = 'http://' . $IPAddress . '/cam.jpg';
+                try {
+                    $ch = curl_init();
+                    curl_setopt_array($ch, [
+                        CURLOPT_URL => $URL,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+                        CURLOPT_USERPWD => $Username . ':' . $Password,
+                        CURLOPT_TIMEOUT => 30
+                    ]);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    if( ! $data = curl_exec($ch)) {
+                        $this->log ((curl_error($ch)));
+                        curl_close($ch);
+                        return false;
+                    }
+                    curl_close($ch);
+                    $this->log('Http Request finished');
+                } catch (Exception $e) {
+                    curl_close($ch);
+                    $this->log('Http Request on error');
+                    $this->SetStatus(500); // Server Error
+                    return false;
+                };
+                return $data;
+                break;
+            case '' : 
+                return false;
+                break;
+            default :
+                $URL = 'http://' . $IPAddress . '/json?cmd=' . $command;
+                try {
+                    $ch = curl_init();
+                    curl_setopt_array($ch, [
+                        CURLOPT_URL => $URL,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+                        CURLOPT_USERPWD => $Username . ':' . $Password,
+                        CURLOPT_TIMEOUT => 30
+                    ]);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//                    $json = curl_exec($ch);
+                    if( ! $json = curl_exec($ch)) {
+                        $this->log ((curl_error($ch)));
+                        curl_close($ch);
+                        return false;
+                    }
+                    curl_close($ch);
+                    $this->log('Http Request finished');
+                } catch (Exception $e) {
+                    curl_close($ch);
+                    $this->log('Http Request on error');
+                    $this->SetStatus(203); // no valid IP configured
+                    return false;
+                };
+                if (strlen($json) > 3) {
+                  $this->SetStatus(102); // Robonect found
+                } else {
+                  $this->SetStatus(202); // No Device at IP
+                }
+                return json_decode( $json, true );
+                break;
         }
-        return json_decode( $json, true );
+        return false;
     }
 
     public function RequestAction($Ident, $Value)
@@ -690,13 +727,13 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/blades/hours']['Ident']          = 'mowerBladesOperatingHours';
         $topicList['/mower/blades/days']['Ident']           = 'mowerBladesAge';
 
-        $topicList['/mower/weather/data/break']['Ident']    = 'WeatherBreak';
-        $topicList['/mower/weather/data/humidity']['Ident'] = 'WeatherHumitdity';
-        $topicList['/mower/weather/data/rain']['Ident']     = 'WeatherRain';
-        $topicList['/mower/weather/data/temperature']['Ident'] = 'WeatherTemperature';
-        $topicList['/mower/weather/data/service']['Ident']     = 'WeatherService';
+        $topicList['/weather/data/break']['Ident']          = 'WeatherBreak';
+        $topicList['/weather/data/humidity']['Ident']       = 'WeatherHumitdity';
+        $topicList['/weather/data/rain']['Ident']           = 'WeatherRain';
+        $topicList['/weather/data/temperature']['Ident']    = 'WeatherTemperature';
+        $topicList['/weather/data/service']['Ident']        = 'WeatherService';
 
-        $topicList['/mower/timer/next/unix']['Ident']             = 'mowerNextTimerstart';
+        $topicList['/mower/timer/next/unix']['Ident']       = 'mowerNextTimerstart';
 
         if ( $JSONString == '' ) {
             $this->log('No JSON' );
@@ -919,6 +956,24 @@ class RobonectWifiModul extends IPSModule
 
     }
 
+    #================================================================================================
+    public function UpdateImage () {
+    #================================================================================================
+        $media_file = 'Cam.' . $instance_id . '.png';
+
+        if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
+            $media_id = IPS_CreateMedia(1);
+            IPS_SetName($media_id, $this->Translate('Camera picture'));
+       }
+
+        // move to instance
+        IPS_SetParent($media_id, intval($instance_id));
+
+        // update media content
+        IPS_SetMediaFile($media_id, $media_file, false);
+        IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
+    }
+
     protected function log( string $text ) {
         if ( $this->ReadPropertyBoolean("DebugLog") ) {
             $this->SendDebug( "Robonect", $text, 0 );
@@ -1116,6 +1171,8 @@ class RobonectWifiModul extends IPSModule
 
         //--- Clock -------------------------------------------------------------
         $this->RegisterVariableInteger( "mowerUnixTimestamp", "Interner Unix Zeitstempel", "~UnixTimestamp", 110 );
+ 
+        //--- Media
 
     }
 
