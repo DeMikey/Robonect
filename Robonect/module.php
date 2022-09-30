@@ -728,7 +728,7 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/blades/days']['Ident']           = 'mowerBladesAge';
 
         $topicList['/weather/data/break']['Ident']          = 'WeatherBreak';
-        $topicList['/weather/data/humidity']['Ident']       = 'WeatherHumitdity';
+        $topicList['/weather/data/humidity']['Ident']       = 'WeatherHumidity';
         $topicList['/weather/data/rain']['Ident']           = 'WeatherRain';
         $topicList['/weather/data/temperature']['Ident']    = 'WeatherTemperature';
         $topicList['/weather/data/service']['Ident']        = 'WeatherService';
