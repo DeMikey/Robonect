@@ -1125,6 +1125,31 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableString( "mowerErrorList", "Fehlermeldungen", "~HTMLBox", 71 );
 
         //--- Timer --------------------------------------------------------------
+
+        if (!$$TimerCat = @IPS_GetCategoryIDByName('Timer')) {
+            IPS_GetCategoryIDByName (string $KategorieName, int $ÜbergeordneteID) 
+            $TimerCat = IPS_CreateCategory();   // Kategorie anlegen
+            IPS_SetName($TimerCat, "Timers");   // Kategorie auf Timer umbenennen
+            IPS_SetParent($TimerCat, intval($instance_id)); // Kategorie Timer einsortieren unter der Robonect Instanz
+        }
+        for ($i = 0; $i <= 13; $i++) {
+            if ( $i < 10) {
+                $Ident = "Timer0".$i;
+                $Name = "Timer 0".$i; 
+            } else {
+                $Ident = "Timer".$i;
+                $Name = "Timer ".$i; 
+            }
+            $TimerStatus = $this->RegisterVariableBoolean($Ident."Status", $Ident." Status", "ROBONECT_JaNein", 80);
+            IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+            $TimerStart = $this->RegisterVariableString( $Ident."Start", $Ident."Start", "", 81);
+            IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+            $TimerEnd = $this->RegisterVariableString( $Ident."End", $Ident."End", "", 82);
+            IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+
+        }
+
+/*
         $this->RegisterVariableInteger( "mowerTimerStatus", "Timer Status", "ROBONECT_TimerStatus", 90 );
 
         $TimerPlanActiveID = $this->RegisterVariableBoolean( "TimerPlanActive", "Timer-Plan aktiv", "ROBONECT_JaNein", 91 );
@@ -1157,17 +1182,17 @@ class RobonectWifiModul extends IPSModule
 
             IPS_SetEventActive($weekPlanID, true);
         }
-
+*/
         $this->RegisterVariableInteger( "mowerNextTimerstart", "nächster Timerstart", "~UnixTimestamp", 92 );
         $this->RegisterVariableInteger("timerTransmitAction", "Timer lesen/schreiben", "ROBONECT_TimerTransmitAction", 93 );
         $this->EnableAction("timerTransmitAction");
 
         //--- Weather --------------------------------------------------------------
-        $this->RegisterVariableBoolean("WeatherBreak", "Wetterpause", "ROBONECT_JaNein", 36);
-        $this->RegisterVariableInteger("WeatherHumidity", "Luft Feuchtigkeit", "~Humidity", 58 );
-        $this->RegisterVariableBoolean("WeatherRain", "Es regnet", "ROBONECT_JaNein", 36);
-        $this->RegisterVariableFloat("WeatherTemperature", "Aussen Temperatur", "~Temperature", 57 );
-        $this->RegisterVariableString( "WeatherService", "Wetterdienst", "~HTMLBox", 71 );
+        $this->RegisterVariableBoolean("WeatherBreak", "Wetterpause", "ROBONECT_JaNein", 80);
+        $this->RegisterVariableInteger("WeatherHumidity", "Luft Feuchtigkeit", "~Humidity", 81);
+        $this->RegisterVariableBoolean("WeatherRain", "Es regnet", "ROBONECT_JaNein", 82);
+        $this->RegisterVariableFloat("WeatherTemperature", "Aussen Temperatur", "~Temperature", 83);
+        $this->RegisterVariableString( "WeatherService", "Wetterdienst", "~HTMLBox", 84);
 
         //--- Clock -------------------------------------------------------------
         $this->RegisterVariableInteger( "mowerUnixTimestamp", "Interner Unix Zeitstempel", "~UnixTimestamp", 110 );
