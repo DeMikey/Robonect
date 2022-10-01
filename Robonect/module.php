@@ -1127,7 +1127,7 @@ class RobonectWifiModul extends IPSModule
         //--- Timer --------------------------------------------------------------
 
         if (!$$TimerCat = @IPS_GetCategoryIDByName('Timer')) {
-            IPS_GetCategoryIDByName (string $KategorieName, int $ÜbergeordneteID) 
+            I//PS_GetCategoryIDByName (string $KategorieName, int $ÜbergeordneteID) 
             $TimerCat = IPS_CreateCategory();   // Kategorie anlegen
             IPS_SetName($TimerCat, "Timers");   // Kategorie auf Timer umbenennen
             IPS_SetParent($TimerCat, intval($instance_id)); // Kategorie Timer einsortieren unter der Robonect Instanz
