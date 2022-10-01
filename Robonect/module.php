@@ -1132,6 +1132,7 @@ class RobonectWifiModul extends IPSModule
             IPS_SetName($TimerCat, "Timers");   // Kategorie auf Timer umbenennen
             IPS_SetParent($TimerCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
         }
+        $Position = 0;
         for ($i = 0; $i <= 13; $i++) {
             if ( $i < 10) {
                 $Ident = "Timer0".$i;
@@ -1140,14 +1141,15 @@ class RobonectWifiModul extends IPSModule
                 $Ident = "Timer".$i;
                 $Name = "Timer ".$i; 
             }
-            $TimerStatus = $this->RegisterVariableBoolean($Ident."Status", $Ident." Status", "ROBONECT_JaNein", 200 + $i);
+            $TimerStatus = $this->RegisterVariableBoolean($Ident."Status", $Ident." Status", "ROBONECT_JaNein", 200 + $Position);
             IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
-            $TimerStart = $this->RegisterVariableString( $Ident."Start", $Ident." Start", "", 200 + $i);
+            $TimerStart = $this->RegisterVariableString( $Ident."Start", $Ident." Start", "", 201 + $Position);
             IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
-            $TimerEnd = $this->RegisterVariableString( $Ident."End", $Ident." End", "", 200 + $i);
+            $TimerEnd = $this->RegisterVariableString( $Ident."End", $Ident." End", "", 202 + $Position);
             IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
-            $TimerWeekdays = $this->RegisterVariableString( $Ident."Weekdays", $Ident." Weekdays", "", 200 + $i);
+            $TimerWeekdays = $this->RegisterVariableString( $Ident."Weekdays", $Ident." Weekdays", "", 203 + $Position);
             IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+            $Position = $Position + 4;
         }
 
 /*
