@@ -998,6 +998,36 @@ class RobonectWifiModul extends IPSModule
             IPS_SetVariableProfileAssociation("ROBONECT_Status", 17, "schläft", "", 0xFFFFFF);
         }
 
+        if (!IPS_VariableProfileExists('ROBONECT_SubStatus')) {
+            IPS_CreateVariableProfile('ROBONECT_SubStatus', 1);
+            IPS_SetVariableProfileIcon('ROBONECT_SubStatus', '');
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 1, "fährt", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 2, "draussen", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 3, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 4, "Räder rutschen", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 5, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 6, "Kollision", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 7, "Angehoben", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 8, "Spiralschnitt", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 9, "folgt Leitdraht 1 zur Ladestation", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 10, "folgt rechtem Begrenzungsdraht", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 11, "dockt an", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 12, "Schnellladung", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 13, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 14, "Ladung abgeschlossen", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 15, "Ausfahrtswinkel", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 16, "folgt Leitdraht 1 zum Startpunkt", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 17, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 18, "Kein Schleifensignal!", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 19, "Mähmotor blockiert!", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 20, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 21, "folgt Leitdraht 2 zur Ladestation", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 22, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 23, "folgt Leitdraht 2 zum Startpunkt", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 24, "", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_SubStatus", 25, "folgt linkem Begrenzungsdraht", "", 0xFFFFFF);
+        }            
+
         if (!IPS_VariableProfileExists('ROBONECT_InteractiveMode')) {
             IPS_CreateVariableProfile('ROBONECT_InteractiveMode', 1);
             IPS_SetVariableProfileIcon('ROBONECT_InteractiveMode', 'Ok');
@@ -1078,7 +1108,136 @@ class RobonectWifiModul extends IPSModule
             IPS_SetVariableProfileIcon('ROBONECT_Spannung', '' );
             IPS_SetVariableProfileText('ROBONECT_Spannung', "", " V" );
         }
-
+        if (!IPS_VariableProfileExists('ROBONECT_WWeekdays')) {
+            IPS_CreateVariableProfile('ROBONECT_WWeekdays', 1);
+            IPS_SetVariableProfileIcon('ROBONECT_WWeekdays', 'Calendar');
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x01", "Mo", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x02", "Di", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x03", "Mo, Di", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x04", "Mi", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x05", "Mo, Mi", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x06", "Di, Mi", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x07", "Mo, Di, Mi", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x08", "Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x09", "Mo, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x0A", "Di, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x0B", "Mo, Di, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x0C", "Mi, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x0D", "Mo, Mi, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x0E", "Di, Mi, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x0F", "Mo, Di, Mi, Do", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x10", "Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x11", "Mo, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x12", "Di, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x13", "Mo, Di, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x14", "Mi, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x16", "Di, Mi, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x17", "Mo, Di, Mi, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x18", "Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x19", "Mo, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x1A", "Di, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x1B", "Mo, Di, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x1C", "Mi, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x1D", "Mo, Mi, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x1E", "Di, Mi, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x1F", "Mo, Di, Mi, Do, Fr", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x20", "Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x21", "Mo, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x22", "Di, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x23", "Mo, Di, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x24", "Mi, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x25", "Mo, Mi, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x26", "Di, Mi, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x27", "Mo, Di, Mi, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x28", "Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x29", "Mo, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x2A", "Di, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x2B", "Mo, Di, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x2C", "Mi, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x2D", "Mo, Mi, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x2E", "Di, Mi, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x2F", "Mo, Di, Mi, Do, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x30", "Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x31", "Mo, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x32", "Di, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x33", "Mo, Di, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x34", "Mi, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x35", "Mo, Mi, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x36", "Di, Mi, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x37", "Mo, Di, Mi, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x38", "Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x39", "Mo, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x3A", "Di, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x3B", "Mo, Di, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x3C", "Mi, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x3D", "Mo, Mi, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x3E", "Di, Mi, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x3F", "Mo, Di, Mi, Do, Fr, Sa", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x40", "So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x41", "Mo, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x42", "Di, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x43", "Mo, Di, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x44", "Mi, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x45", "Mo, Mi, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x46", "Di, Mi, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x47", "Mo Di, Mi, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x48", "Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x49", "Mo, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x4A", "Di, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x4B", "Mo, Di, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x4C", "Mi, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x4D", "Mo, Mi, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x4E", "Di, Mi, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x4F", "Mo, Di, Mi, Do, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x50", "Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x51", "Mo, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x52", "Di, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x53", "Mo, Di, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x54", "Mi, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x55", "Mo, Mi, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x56", "Di, Mi, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x57", "Mo Di, Mi, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x58", "Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x59", "Mo, Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x5A", "Di, Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x5B", "Mo, Di, Do, FR, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x5C", "Mi, Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x5D", "Mo, Mi, Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x5E", "Di, Mi, Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x5F", "Mo, Di, Mi, Do, Fr, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x60", "Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x61", "Mo, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x62", "Di, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x63", "Mo, Di, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x64", "Mi, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x65", "Mo, Mi, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x66", "Di, Mi, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x67", "Mo Di, Mi, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x68", "Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x69", "Mo, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x6A", "Di, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x6B", "Mo, Di, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x6C", "Mi, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x6D", "Mo, Mi, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x6E", "Di, Mi, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x6F", "Mo, Di, Mi, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x70", "Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x71", "Mo, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x72", "Di, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x73", "Mo, Di, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x74", "Mi, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x75", "Mo, Mi, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x76", "Di, Mi, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x77", "Mo Di, Mi, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x78", "Do, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x79", "Mo, Do, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x7A", "Di, Do, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x7B", "Mo, Di, Do, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x7C", "Mi, Do, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x7D", "Mo, Mi, Do, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x7E", "Di, Mi, Do, Fr, Sa, So", "", 0xFFFFFF);
+            IPS_SetVariableProfileAssociation("ROBONECT_WWeekdays", ,"0x7F", "Mo, Di, Mi, Do, Fr, Sa, So", "", 0xFFFFFF);
+        }
     }
 
     protected function registerVariables()
@@ -1101,7 +1260,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableInteger("mowerStatus", "Status", "ROBONECT_Status", 32);
         $this->RegisterVariableInteger("mowerStatusPlain", "Status (Klartext)", "ROBONECT_Status", 33);
         $this->RegisterVariableInteger("mowerSubstatus", "Substatus", "", 34);
-        $this->RegisterVariableInteger("mowerSubstatusPlain", "Substatus (Klartext)", "", 35);
+        $this->RegisterVariableString("mowerSubstatusPlain", "Substatus (Klartext)", "", 35);
         $this->RegisterVariableBoolean("mowerStopped", "man. angehalten", "ROBONECT_JaNein", 36);
         $this->RegisterVariableInteger("mowerStatusSince", "Status seit", "~UnixTimestamp", 37);
         $this->RegisterVariableString("statusSinceDescriptive", "Status seit", "", 38);
@@ -1145,16 +1304,16 @@ class RobonectWifiModul extends IPSModule
                 $TimerStatus = $this->RegisterVariableBoolean($Ident."Status", $Ident." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
-            if (!IPS_GetVariableIDByName($Ident."Start", $TimerCat)){
+            if (!IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
                 $TimerStart = $this->RegisterVariableString( $Ident."Start", $Ident." Start", "", 201 + $Position);
                 IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
-            if (!IPS_GetVariableIDByName($Ident."End", $TimerCat)) {
-                $TimerEnd = $this->RegisterVariableString( $Ident."End", $Ident." End", "", 202 + $Position);
+            if (!IPS_GetObjectIDByIdent($Ident."End", $TimerCat)) {
+                $TimerEnd = $this->RegisterVariableString( $Ident."End", $Ident.' '.$this->Translate('End'), "", 202 + $Position);
                 IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
-            if (!IPS_GetVariableIDByName($Ident."Weekdays", $TimerCat)) {
-                $TimerWeekdays = $this->RegisterVariableString( $Ident."Weekdays", $Ident." Weekdays", "", 203 + $Position);
+            if (!IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
+                $TimerWeekdays = $this->RegisterVariableString( $Ident."Weekdays", $Ident.' '.$this->Translate('Weekdays'), "", 203 + $Position);
                 IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             $Position = $Position + 4;

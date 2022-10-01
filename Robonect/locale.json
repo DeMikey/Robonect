@@ -30,6 +30,9 @@
       "No JSON returned from IP": "Kein JSON wird an der IP Adresse geliefert",
       "No Robonect available at IP": "Kein Robonect an IP Adresse erreichbar",
 
+      "end": "Ende",
+      "Weekdays": "Wochentage",
+
       "Camera picture": "Kammerabild"
     }
   }
