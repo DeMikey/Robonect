@@ -1321,8 +1321,8 @@ class RobonectWifiModul extends IPSModule
                 $Ident = "Timer".$i;
                 $Name = "Timer ".$i; 
             }
-            if (!@IPS_GetObjectIDByIdent($Ident."Status", $TimerCat)) {
-                $TimerStatus = $this->RegisterVariableBoolean($Ident."Status", $Ident." Status", "ROBONECT_JaNein", 200 + $Position);
+            if (!@IPS_GetObjectIDByIdent($Ident."enable", $TimerCat)) {
+                $TimerStatus = $this->RegisterVariableBoolean($Ident."enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
