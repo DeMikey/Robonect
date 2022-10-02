@@ -735,10 +735,10 @@ class RobonectWifiModul extends IPSModule
 
         $topicList['/mower/timer/next/unix']['Ident']       = 'mowerNextTimerstart';
 
-        $topicList['/mower/timer/ch0/enable']['Ident']      = 'Timer01Status';
-        $topicList['/mower/timer/ch0/start']['Ident']       = 'Timer01Start';
-        $topicList['/mower/timer/ch0/end']['Ident']         = 'Timer01End';
-        $topicList['/mower/timer/ch0/weekdays']['Ident']    = 'Timer01Weekdays';
+ //       $topicList['/mower/timer/ch0/enable']['Ident']      = 'Timer01Status';
+ //       $topicList['/mower/timer/ch0/start']['Ident']       = 'Timer01Start';
+ //       $topicList['/mower/timer/ch0/end']['Ident']         = 'Timer01End';
+ //       $topicList['/mower/timer/ch0/weekdays']['Ident']    = 'Timer01Weekdays';
         if ( $JSONString == '' ) {
             $this->log('No JSON' );
             return true;
@@ -770,11 +770,15 @@ class RobonectWifiModul extends IPSModule
             if ($topicList[$topic]['Ident'] != 'mowerMqttStatus') {
                 $this->SetValue("mowerMqttStatus", 1); // online
             }
-            // Timer Topic
-//            if (str_contians($topic, 'timer')) { php 8
-            if (strpos($topic, 'timer') !== false) {
-
-            }
+        // Timer Topic
+//        elseif (str_contians($topic, 'timer')) { php 8
+        } elseif (strpos($topic, 'timer') !== false) {
+            // /mower/timer/ch0/enable
+            // Topc kürzen auf Timer Kanal und spliten auf Kanal und Wert
+            list ($TimerChannel, $TimerValue) = explode('/', substr($topic, strlen('/mower/timer/', (strlen($topic) - strlen('/mower/timer/')))));
+            // Kanal in integer umwandel
+            $TimerChannel = intval(str_replace('ch', '' $TimerChannel)) + 1;
+            $this->SetValue("Timer".$TimerChannel.$TimerValue, $Data->Payload);
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
