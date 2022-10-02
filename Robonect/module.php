@@ -771,7 +771,8 @@ class RobonectWifiModul extends IPSModule
                 $this->SetValue("mowerMqttStatus", 1); // online
             }
             // Timer Topic
-            if (str_contians($topic, 'timer')) {
+//            if (str_contians($topic, 'timer')) { php 8
+            if (strpos($topic, 'timer') !== false) {
 
             }
         } else {

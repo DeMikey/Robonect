@@ -38,6 +38,7 @@
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "DefaultValues" },
     { "type": "NumberSpinner", "name": "MowingTime", "caption":  "MowingTime", "minimum":  10, "maximum": 780, "suffix":  "minutes" },
+    { "type": "CheckBox", "name": "CameraInstalled", "caption":  "Camera installed" },
 
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "Debugging" },
