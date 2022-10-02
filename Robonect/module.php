@@ -773,20 +773,28 @@ class RobonectWifiModul extends IPSModule
         // Timer Topic
 //        elseif (str_contians($topic, 'timer')) { php 8
         } elseif (strpos($topic, 'timer') !== false) {
+            // Existiert die Timer Kategorie
+            if (!$TimerCat = @IPS_GetCategoryIDByName('Timers', $this->InstanceID)) {
+                $this->log("Missing Timers Category!");
+                return;
+            }
             // /mower/timer/ch0/enable
             // Topc kürzen auf Timer Kanal und spliten auf Kanal und Wert
  //            list ($TimerChannel, $TimerValue) = explode('/', substr($topic, strlen('/mower/timer/', (strlen($topic) - strlen('/mower/timer/')))));
             list ($TimerChannel, $TimerValue) = explode('/', str_replace('/mower/timer/', '', $topic));
             // Kanal in integer umwandel
-            $this->log('Timer Channel: '.$TimerChannel);
-            $this->log('Timer Wert: '.$TimerValue);
             $TimerChannel = intval(str_replace('ch', '', $TimerChannel)) + 1;
             $this->log('Integer Timer Kanal '.$TimerChannel);
             if ($TimerChannel < 10) {
-                $this->SetValue("Timer0".$TimerChannel.$TimerValue, $Data->Payload);
+                $TimeVariableName = "Timer0".$TimerChannel.$TimerValue;
             } else {
-                $this->SetValue("Timer".$TimerChannel.$TimerValue, $Data->Payload);
+                $TimeVariableName = "Timer".$TimerChannel.$TimerValue;
             }
+            if (!$TimerVariableID = @IPS_GetObjectIDByIdent($TimeVariableName, $TimerCat)) {
+                $this->log("Timer Variable not found!");
+                return;
+            }
+            SetValue($TimerVariableID, $Data->Payload);
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
@@ -1326,15 +1334,15 @@ class RobonectWifiModul extends IPSModule
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
-                $TimerStart = $this->RegisterVariableString( $Ident."Start", $Ident." Start", "", 201 + $Position);
+                $TimerStart = $this->RegisterVariableString( $Ident."start", $Name." Start", "", 201 + $Position);
                 IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."End", $TimerCat)) {
-                $TimerEnd = $this->RegisterVariableString( $Ident."End", $Ident.' '.$this->Translate('End'), "", 202 + $Position);
+                $TimerEnd = $this->RegisterVariableString( $Ident."end", $Name.' '.$this->Translate('End'), "", 202 + $Position);
                 IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
-                $TimerWeekdays = $this->RegisterVariableInteger( $Ident."Weekdays", $Ident.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
+                $TimerWeekdays = $this->RegisterVariableInteger( $Ident."weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
                 IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             $Position = $Position + 4;
