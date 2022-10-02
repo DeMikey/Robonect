@@ -775,15 +775,18 @@ class RobonectWifiModul extends IPSModule
         } elseif (strpos($topic, 'timer') !== false) {
             // /mower/timer/ch0/enable
             // Topc kürzen auf Timer Kanal und spliten auf Kanal und Wert
-            $this->log('Topic: '.(str_replace('/mower/timer/', '', $topic)));
-//            list ($TimerChannel, $TimerValue) = explode('/', substr($topic, strlen('/mower/timer/', (strlen($topic) - strlen('/mower/timer/')))));
+ //            list ($TimerChannel, $TimerValue) = explode('/', substr($topic, strlen('/mower/timer/', (strlen($topic) - strlen('/mower/timer/')))));
             list ($TimerChannel, $TimerValue) = explode('/', str_replace('/mower/timer/', '', $topic));
             // Kanal in integer umwandel
             $this->log('Timer Channel: '.$TimerChannel);
             $this->log('Timer Wert: '.$TimerValue);
             $TimerChannel = intval(str_replace('ch', '', $TimerChannel)) + 1;
             $this->log('Integer Timer Kanal '.$TimerChannel);
-            $this->SetValue("Timer".$TimerChannel.$TimerValue, $Data->Payload);
+            if ($TimerChannel < 10) {
+                $this->SetValue("Timer0".$TimerChannel.$TimerValue, $Data->Payload);
+            } else {
+                $this->SetValue("Timer0".$TimerChannel.$TimerValue, $Data->Payload);
+            }
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
