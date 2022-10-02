@@ -735,6 +735,10 @@ class RobonectWifiModul extends IPSModule
 
         $topicList['/mower/timer/next/unix']['Ident']       = 'mowerNextTimerstart';
 
+        $topicList['/mower/timer/ch0/enable']['Ident']      = 'Timer01Status';
+        $topicList['/mower/timer/ch0/start']['Ident']       = 'Timer01Start';
+        $topicList['/mower/timer/ch0/end']['Ident']         = 'Timer01End';
+        $topicList['/mower/timer/ch0/weekdays']['Ident']    = 'Timer01Weekdays';
         if ( $JSONString == '' ) {
             $this->log('No JSON' );
             return true;
@@ -765,6 +769,10 @@ class RobonectWifiModul extends IPSModule
             $this->updateIdent($topicList[$topic]['Ident'], $Data->Payload);
             if ($topicList[$topic]['Ident'] != 'mowerMqttStatus') {
                 $this->SetValue("mowerMqttStatus", 1); // online
+            }
+            // Timer Topic
+            if (str_contians($topic, 'timer')) {
+
             }
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
@@ -1313,7 +1321,7 @@ class RobonectWifiModul extends IPSModule
                 IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
-                $TimerWeekdays = $this->RegisterVariableString( $Ident."Weekdays", $Ident.' '.$this->Translate('Weekdays'), "", 203 + $Position);
+                $TimerWeekdays = $this->RegisterVariableString( $Ident."Weekdays", $Ident.' '.$this->Translate('Weekdays'), "ROBONECT_WWeekdays", 203 + $Position);
                 IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             $Position = $Position + 4;
