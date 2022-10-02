@@ -785,7 +785,7 @@ class RobonectWifiModul extends IPSModule
             if ($TimerChannel < 10) {
                 $this->SetValue("Timer0".$TimerChannel.$TimerValue, $Data->Payload);
             } else {
-                $this->SetValue("Timer0".$TimerChannel.$TimerValue, $Data->Payload);
+                $this->SetValue("Timer".$TimerChannel.$TimerValue, $Data->Payload);
             }
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
