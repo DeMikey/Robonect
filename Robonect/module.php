@@ -32,6 +32,7 @@ class RobonectWifiModul extends IPSModule
 
         // Timer
         $this->RegisterTimer("ROBONECT_UpdateTimer", 0, 'ROBONECT_Update($_IPS[\'TARGET\']);');
+        $this->RegisterTimer("ROBONECT_CamUpdateTimer", 0, 'ROBONECT_CamUpdate($_IPS[\'TARGET\']);');
     }
 
     public function ApplyChanges()
@@ -50,17 +51,25 @@ class RobonectWifiModul extends IPSModule
             $this->SetTimerInterval("ROBONECT_UpdateTimer", 0 );
         }
 
-        // Set Timer
-        if ( $this->ReadPropertyBoolean( "HTTPUpdateTimer" ) and $this->ReadPropertyInteger("UpdateTimer") >= 10 ) {
-            $this->SetTimerInterval("ROBONECT_UpdateTimer", $this->ReadPropertyInteger("UpdateTimer")*1000);
-        } else {
-            $this->SetTimerInterval("ROBONECT_UpdateTimer", 0 );
+        // Set CamTimer
+        if ($this->ReadPropertyBoolean( "CameraInstalled" )) {
+            $this->SetTimerInterval("ROBONECT_CamUpdateTimer", 15000);
         }
     }
 
+    // Kamere update wird alle 30 Sekunden aufgerufen wenn der Mäher mäht
+    public function CamUpdate() {
+        $semaphore = 'Robonect'.$this->InstanceID.'_Update';
+        if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
+            $this->log('CamUpdate - No semaphore entered' );
+            return false; 
+        }
+        $this->log('CamUpdate - Semaphore entered' );
+        $this->log('CamUpdate - Semaphore leaved' );
+        IPS_SemaphoreLeave( $semaphore );
+    }
 
-    public function Update()
-    {
+    public function Update() {
         $semaphore = 'Robonect'.$this->InstanceID.'_Update';
         $this->log('Update - Try to enter Semaphore' );
         if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { return false; };
@@ -131,6 +140,10 @@ class RobonectWifiModul extends IPSModule
             $this->SetTimerInterval("ROBONECT_UpdateTimer", $this->ReadPropertyInteger("UpdateTimer")*1000);
         } else {
             $this->SetTimerInterval("ROBONECT_UpdateTimer", 0 );
+        }
+
+        if ( $this->ReadPropertyBoolean( "CameraInstalled" )) {
+            $this->SetTimerInterval("ROBONECT_CameraUpdateTimer", 0, $this->UpdateImage());
         }
 
         IPS_SemaphoreLeave( $semaphore );
@@ -735,10 +748,6 @@ class RobonectWifiModul extends IPSModule
 
         $topicList['/mower/timer/next/unix']['Ident']       = 'mowerNextTimerstart';
 
- //       $topicList['/mower/timer/ch0/enable']['Ident']      = 'Timer01Status';
- //       $topicList['/mower/timer/ch0/start']['Ident']       = 'Timer01Start';
- //       $topicList['/mower/timer/ch0/end']['Ident']         = 'Timer01End';
- //       $topicList['/mower/timer/ch0/weekdays']['Ident']    = 'Timer01Weekdays';
         if ( $JSONString == '' ) {
             $this->log('No JSON' );
             return true;
@@ -817,6 +826,9 @@ class RobonectWifiModul extends IPSModule
                 } else {
                     $this->SetValue("mowerModeInteractive", 0); // sonst = manuell
                 }
+                break;
+            case 'doorStatus':
+                $this->SetValue("doorStatus", $payload);
                 break;
             case 'mowerStatus':
                 $this->SetValue("mowerStatus", $payload);
@@ -966,7 +978,7 @@ class RobonectWifiModul extends IPSModule
                 case 'WeatherRain':
                     $this->SetValue("WeatherRain", $payload );
                     break;
-                case 'WeatherSearvoce':
+                case 'WeatherService':
                     $this->SetValue("WeatherService", $payload );
                     break;
 
