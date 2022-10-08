@@ -27,6 +27,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyString("MQTTTopic", '');
         $this->RegisterPropertyInteger( "UpdateTimer", 10 );
         $this->RegisterPropertyInteger( "MowingTime", 180 );
+        $this->RegisterPropertyBoolean( "CameraInstalled", false );
 
         $this->RegisterPropertyBoolean( "DebugLog", false );
 
