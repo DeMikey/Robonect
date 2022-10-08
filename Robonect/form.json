@@ -38,7 +38,11 @@
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "DefaultValues" },
     { "type": "NumberSpinner", "name": "MowingTime", "caption":  "MowingTime", "minimum":  10, "maximum": 780, "suffix":  "minutes" },
+
     { "type": "CheckBox", "name": "CameraInstalled", "caption":  "Camera installed" },
+    { "type": "CheckBox", "name": "MediaElements", "caption":  "Create media elements" },
+    { "type": "CheckBox", "name": "CreateHtmlBoxs", "caption":  "Create Html elements" },
+    { "type": "CheckBox", "name": "CreateWebfrontend", "caption":  "Create Webfrontend" },
 
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "Debugging" },

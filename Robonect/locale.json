@@ -19,6 +19,9 @@
       "minutes": "Minuten",
 
       "Camera installed": "Kamera installiert",
+      "Create media elements": "Erstelle Media Elemente",
+      "Create Html elements": "Erstelle Html Elemente",
+      "Create Webfrontend": "Erstelle Webfrontend",
 
       "Debugging": "Debugging Tools",
       "DebugLog": "Debug Logging aktivieren",
