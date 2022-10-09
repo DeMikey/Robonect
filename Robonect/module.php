@@ -1020,8 +1020,7 @@ class RobonectWifiModul extends IPSModule
         };
     }
 
-    protected function registerProfiles()
-    {
+    protected function registerProfiles() {
         // Generate Variable Profiles
         if (!IPS_VariableProfileExists('ROBONECT_Status')) {
             IPS_CreateVariableProfile('ROBONECT_Status', 1);
@@ -1331,6 +1330,7 @@ class RobonectWifiModul extends IPSModule
             IPS_SetName($TimerCat, "Timers");   // Kategorie auf Timer umbenennen
             IPS_SetParent($TimerCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
         }
+        $this->log("Timers Category Id: ".$TimerCat);
         $Position = 0;
         for ($i = 0; $i <= 13; $i++) {
             if ( $i < 10) {
@@ -1341,6 +1341,7 @@ class RobonectWifiModul extends IPSModule
                 $Name = "Timer ".$i; 
             }
             if (!@IPS_GetObjectIDByIdent($Ident."enable", $TimerCat)) {
+                $this->log("Findet den Timer nicht");
                 $TimerStatus = $this->RegisterVariableBoolean($Ident."enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
