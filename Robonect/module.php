@@ -28,6 +28,9 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger( "UpdateTimer", 10 );
         $this->RegisterPropertyInteger( "MowingTime", 180 );
         $this->RegisterPropertyBoolean( "CameraInstalled", false );
+        $this->RegisterPropertyBoolean( "MediaElements", false );
+        $this->RegisterPropertyBoolean( "CreateHtmlBoxs", false );
+        $this->RegisterPropertyBoolean( "CreateWebfrontend", false );
 
         $this->RegisterPropertyBoolean( "DebugLog", false );
 
@@ -54,7 +57,7 @@ class RobonectWifiModul extends IPSModule
 
         // Set CamTimer
         if ($this->ReadPropertyBoolean( "CameraInstalled" )) {
-            $this->SetTimerInterval("ROBONECT_CamUpdateTimer", 15000);
+            $this->SetTimerInterval("ROBONECT_CamUpdateTimer", 30000);
         }
     }
 
@@ -151,8 +154,10 @@ class RobonectWifiModul extends IPSModule
         $this->log('Update - Semaphore leaved' );
     }
 
+    #================================================================================================
     public function Start() {
-        $Response = @$this->sendMQTT('/control', 'start');
+    #================================================================================================
+    $Response = @$this->sendMQTT('/control', 'start');
         return $Response;
         // start the current modus of the lawnmower; tested
         // get data via HTTP Request
@@ -164,8 +169,10 @@ class RobonectWifiModul extends IPSModule
 //        }
     }
 
+    #================================================================================================
     public function Stop() {
-        $Response = @$this->sendMQTT('/control', 'stop');
+    #================================================================================================
+    $Response = @$this->sendMQTT('/control', 'stop');
         return $Response;
         // stop the current modus of the lawnmower; tested
         // get data via HTTP Request
@@ -241,7 +248,9 @@ class RobonectWifiModul extends IPSModule
         }
     }
 
+    #================================================================================================
     public function DriveHome() {
+    #================================================================================================
         // Mower should drive to home position
         $Response = @$this->sendMQTT('/control/mode', 'home');
         return $Response;
@@ -262,9 +271,9 @@ class RobonectWifiModul extends IPSModule
         return $Response;
     }
 
+    #================================================================================================
     public function SetMode( string $mode ) {
-        // Set Mode of the Mower
-
+    #================================================================================================
         // check parameter
         if ( $mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto" ) return false;
         $Response = @$this->sendMQTT('/control/mode', $mode);
@@ -277,7 +286,9 @@ class RobonectWifiModul extends IPSModule
 //        }
     }
 
+    #================================================================================================
     public function ReleaseDoor() {
+    #================================================================================================
         // Bestätigen das Tor offen ist
         $Response = @$this->sendMQTT('/control/door',"release");
         return $Response;
@@ -562,8 +573,9 @@ class RobonectWifiModul extends IPSModule
         return $success;
     }
 
-    protected function executeHTTPCommand( $command )
-    {
+    #================================================================================================
+    protected function executeHTTPCommand( $command ) {
+    #================================================================================================
         $IPAddress = trim($this->ReadPropertyString("IPAddress"));
         $Username = trim($this->ReadPropertyString("Username"));
         $Password = trim($this->ReadPropertyString("Password"));
@@ -1279,8 +1291,7 @@ class RobonectWifiModul extends IPSModule
         }
     }
 
-    protected function registerVariables()
-    {
+    protected function registerVariables() {
 
         //--- Basic Data ---------------------------------------------------------
         $this->RegisterVariableString( "mowerName", "Name", "", 0);
@@ -1330,7 +1341,6 @@ class RobonectWifiModul extends IPSModule
             IPS_SetName($TimerCat, "Timers");   // Kategorie auf Timer umbenennen
             IPS_SetParent($TimerCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
         }
-        $this->log("Timers Category Id: ".$TimerCat);
         $Position = 0;
         for ($i = 0; $i <= 13; $i++) {
             if ( $i < 10) {
@@ -1340,21 +1350,20 @@ class RobonectWifiModul extends IPSModule
                 $Ident = "Timer".$i;
                 $Name = "Timer ".$i; 
             }
-            if (!@IPS_GetObjectIDByIdent($Ident."enable", $TimerCat)) {
-                $this->log("Findet den Timer nicht");
-                $TimerStatus = $this->RegisterVariableBoolean($Ident."enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
+            if (!@IPS_GetObjectIDByIdent($Ident."Enable", $TimerCat)) {
+                $TimerStatus = $this->RegisterVariableBoolean($Ident."Enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
-                $TimerStart = $this->RegisterVariableString( $Ident."start", $Name." Start", "", 201 + $Position);
+                $TimerStart = $this->RegisterVariableString( $Ident."Start", $Name." Start", "", 201 + $Position);
                 IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."End", $TimerCat)) {
-                $TimerEnd = $this->RegisterVariableString( $Ident."end", $Name.' '.$this->Translate('End'), "", 202 + $Position);
+                $TimerEnd = $this->RegisterVariableString( $Ident."End", $Name.' '.$this->Translate('End'), "", 202 + $Position);
                 IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
-                $TimerWeekdays = $this->RegisterVariableInteger( $Ident."weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
+                $TimerWeekdays = $this->RegisterVariableInteger( $Ident."Weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
                 IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             $Position = $Position + 4;
@@ -1407,8 +1416,40 @@ class RobonectWifiModul extends IPSModule
 
         //--- Clock -------------------------------------------------------------
         $this->RegisterVariableInteger( "mowerUnixTimestamp", "Interner Unix Zeitstempel", "~UnixTimestamp", 110 );
+
+        //--- Camera ------------------------------------------------------------
+        if ($this->ReadPropertyBoolean( "CameraInstalled" )) {
+            $media_file = 'Cam.' . $this->InstanceID . '.png';
+            if ($this->ReadPropertyBoolean("MediaElements")) {
+                if (!$MediaCat = @IPS_GetCategoryIDByName('Media', $this->InstanceID)) {
+                    $MediaCat = IPS_CreateCategory();   // Kategorie anlegen
+                    IPS_SetName($MediaCat, "Media");   // Kategorie auf Timer umbenennen
+                    IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
+                }
+            } else {
+                $MediaCat = $this->InstanceID;
+            }
+            if (!$media_id = @IPS_GetMediaIDByFile($media_file, $MediaCat)) {
+                $media_id = IPS_CreateMedia(1);
+                IPS_SetName($media_id, $this->Translate('Camera picture'));
+            }
+            // move to instance
+            IPS_SetParent($media_id, $MediaCat);
+
+        }
  
         //--- Media
+        if ($this->ReadPropertyBoolean("MediaElements")) {
+            if ($this->ReadPropertyBoolean("MediaElements")) {
+                if (!$MediaCat = @IPS_GetCategoryIDByName('Media', $this->InstanceID)) {
+                    $MediaCat = IPS_CreateCategory();   // Kategorie anlegen
+                    IPS_SetName($MediaCat, "Media");   // Kategorie auf Timer umbenennen
+                    IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
+                }
+            } else {
+                $MediaCat = $this->InstanceID;
+            }
+        }
 
     }
 
