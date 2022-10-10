@@ -1011,7 +1011,7 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     public function UpdateImage () {
     #================================================================================================
-        $media_file = 'Cam.' . $instance_id . '.png';
+        $media_file = 'Cam.' . $this->InstanceID . '.png';
 
         if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
             $media_id = IPS_CreateMedia(1);
@@ -1022,6 +1022,18 @@ class RobonectWifiModul extends IPSModule
         IPS_SetParent($media_id, intval($instance_id));
 
         // update media content
+        $filename = IPS_GetKernelDir().'media/'. $media_file;
+        $fileContent = $this->executeHTTPCommand('cam');
+        if ($fileContent===false) {
+            $this->log('File "'.CAM_IMAGE_URL.'" could NOT be found on the Server !!!');
+            return;
+        }
+        $result = file_put_contents($filename, $fileContent);
+        if ($result===false) {
+            $this->log( 'Error writing File Content to '.$filename);
+            return;
+        }
+    
         IPS_SetMediaFile($media_id, $media_file, false);
         IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
     }
