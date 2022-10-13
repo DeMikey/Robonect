@@ -579,7 +579,7 @@ class RobonectWifiModul extends IPSModule
         $IPAddress = trim($this->ReadPropertyString("IPAddress"));
         $Username = trim($this->ReadPropertyString("Username"));
         $Password = trim($this->ReadPropertyString("Password"));
-
+        $this->log('executeHTTPCommand - Start');
         // check if IP is ocnfigured and valid
         if ($IPAddress == "0.0.0.0") {
             $this->SetStatus(200); // no configuration done
@@ -1013,10 +1013,10 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
         $semaphore = 'Robonect'.$this->InstanceID.'_Update';
         if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
-            $this->log('CamUpdate - No semaphore entered' );
+            $this->log('UpdateImage - No semaphore entered' );
             return false; 
         }
-        $this->log('CamUpdate - Semaphore entered' );
+        $this->log('UpdateImage - Semaphore entered' );
         $media_file =  'media/' . 'Cam.' . $this->InstanceID . '.jpg';
 
         if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
@@ -1027,18 +1027,18 @@ class RobonectWifiModul extends IPSModule
         $filename = IPS_GetKernelDir() . $media_file;
         $fileContent = $this->executeHTTPCommand('cam');
         if (!$fileContent) {
-            $this->log('Keine Gültige Antwort vom Server !!!');
+            $this->log('UpdateImage - Keine Gültige Antwort vom Server !!!');
             return false;
         }
         $result = file_put_contents($filename, $fileContent);
         if (!$result) {
-            $this->log( 'Fehler beim schreiben des Bildes '.$filename);
+            $this->log( 'UpdateImage - Fehler beim schreiben des Bildes '.$filename);
             return false;
         }
     
         IPS_SetMediaFile($media_id, $media_file, true);
         //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
-        $this->log('CamUpdate - Semaphore leaved' );
+        $this->log('UpdateImage - Semaphore leaved' );
         IPS_SemaphoreLeave( $semaphore );
     }
 
