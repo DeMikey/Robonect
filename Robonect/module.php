@@ -1011,31 +1011,27 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     public function UpdateImage () {
     #================================================================================================
-        $media_file = 'Cam.' . $this->InstanceID . '.png';
+        $media_file =  'media/' . 'Cam.' . $this->InstanceID . '.jpg';
 
         if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
-            $media_id = IPS_CreateMedia(1);
-            IPS_SetName($media_id, $this->Translate('Camera picture'));
+            return false;
        }
 
-        // move to instance
-        IPS_SetParent($media_id, intval($instance_id));
-
         // update media content
-        $filename = IPS_GetKernelDir().'media/'. $media_file;
+        $filename = IPS_GetKernelDir() . $media_file;
         $fileContent = $this->executeHTTPCommand('cam');
-        if ($fileContent===false) {
+        if (!$fileContent) {
             $this->log('File "'.CAM_IMAGE_URL.'" could NOT be found on the Server !!!');
-            return;
+            return false;
         }
         $result = file_put_contents($filename, $fileContent);
-        if ($result===false) {
+        if (!$result) {
             $this->log( 'Error writing File Content to '.$filename);
-            return;
+            return false;
         }
     
-        IPS_SetMediaFile($media_id, $media_file, false);
-        IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
+        IPS_SetMediaFile($media_id, $media_file, true);
+        //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
     }
 
     protected function log( string $text ) {
@@ -1431,23 +1427,34 @@ class RobonectWifiModul extends IPSModule
 
         //--- Camera ------------------------------------------------------------
         if ($this->ReadPropertyBoolean( "CameraInstalled" )) {
-            $media_file = 'Cam.' . $this->InstanceID . '.png';
+            $media_file =  'media/' . 'Cam.' . $this->InstanceID . '.jpg';
             if ($this->ReadPropertyBoolean("MediaElements")) {
+                // Erstellen Media gesetzt 
                 if (!$MediaCat = @IPS_GetCategoryIDByName('Media', $this->InstanceID)) {
+                    // Kategorie existiert noch nicht
                     $MediaCat = IPS_CreateCategory();   // Kategorie anlegen
-                    IPS_SetName($MediaCat, "Media");   // Kategorie auf Timer umbenennen
-                    IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
+                    IPS_SetName($MediaCat, "Media");   // Kategorie auf Media umbenennen
+                    IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Media einsortieren unter der Robonect Instanz
                 }
             } else {
                 $MediaCat = $this->InstanceID;
             }
-            if (!$media_id = @IPS_GetMediaIDByFile($media_file, $MediaCat)) {
+            if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
+                $path = IPS_GetKernelDir();
+                if(is_dir($path) == false) mkdir($path);
+                $filename = $path . $media_file;
+                $im = imagecreatetruecolor(120, 20);
+                $text_color = imagecolorallocate($im, 233, 14, 91);
+                imagestring($im, 1, 5, 5,  'A new empty cam picture', $text_color);
+                imagejpeg($im, $filename);
+                // Memory freigeben
+                imagedestroy($im);
                 $media_id = IPS_CreateMedia(1);
+                IPS_SetMediaFile($media_id, $filename, true);
                 IPS_SetName($media_id, $this->Translate('Camera picture'));
             }
             // move to instance
             IPS_SetParent($media_id, $MediaCat);
-
         }
  
         //--- Media
