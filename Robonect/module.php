@@ -147,7 +147,7 @@ class RobonectWifiModul extends IPSModule
         }
 
         if ( $this->ReadPropertyBoolean( "CameraInstalled" )) {
-            $this->SetTimerInterval("ROBONECT_CameraUpdateTimer", 0, $this->UpdateImage());
+            $this->SetTimerInterval("ROBONECT_CameraUpdateTimer", 06000, $this->UpdateImage());
         }
 
         IPS_SemaphoreLeave( $semaphore );
@@ -1011,6 +1011,12 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     public function UpdateImage () {
     #================================================================================================
+        $semaphore = 'Robonect'.$this->InstanceID.'_Update';
+        if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
+            $this->log('CamUpdate - No semaphore entered' );
+            return false; 
+        }
+        $this->log('CamUpdate - Semaphore entered' );
         $media_file =  'media/' . 'Cam.' . $this->InstanceID . '.jpg';
 
         if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
@@ -1021,17 +1027,19 @@ class RobonectWifiModul extends IPSModule
         $filename = IPS_GetKernelDir() . $media_file;
         $fileContent = $this->executeHTTPCommand('cam');
         if (!$fileContent) {
-            $this->log('File "'.CAM_IMAGE_URL.'" could NOT be found on the Server !!!');
+            $this->log('Keine Gültige Antwort vom Server !!!');
             return false;
         }
         $result = file_put_contents($filename, $fileContent);
         if (!$result) {
-            $this->log( 'Error writing File Content to '.$filename);
+            $this->log( 'Fehler beim schreiben des Bildes '.$filename);
             return false;
         }
     
         IPS_SetMediaFile($media_id, $media_file, true);
         //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
+        $this->log('CamUpdate - Semaphore leaved' );
+        IPS_SemaphoreLeave( $semaphore );
     }
 
     protected function log( string $text ) {
