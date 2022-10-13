@@ -36,7 +36,7 @@ class RobonectWifiModul extends IPSModule
 
         // Timer
         $this->RegisterTimer("ROBONECT_UpdateTimer", 0, 'ROBONECT_Update($_IPS[\'TARGET\']);');
-        $this->RegisterTimer("ROBONECT_CamUpdateTimer", 0, 'ROBONECT_CamUpdate($_IPS[\'TARGET\']);');
+        $this->RegisterTimer("ROBONECT_UpdateImageTimer", 0, 'ROBONECT_UpdateImage($_IPS[\'TARGET\']);');
     }
 
     public function ApplyChanges()
@@ -57,20 +57,8 @@ class RobonectWifiModul extends IPSModule
 
         // Set CamTimer
         if ($this->ReadPropertyBoolean( "CameraInstalled" )) {
-            $this->SetTimerInterval("ROBONECT_CamUpdateTimer", 30000);
+            $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 30000);
         }
-    }
-
-    // Kamere update wird alle 30 Sekunden aufgerufen wenn der Mäher mäht
-    public function CamUpdate() {
-        $semaphore = 'Robonect'.$this->InstanceID.'_Update';
-        if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
-            $this->log('CamUpdate - No semaphore entered' );
-            return false; 
-        }
-        $this->log('CamUpdate - Semaphore entered' );
-        $this->log('CamUpdate - Semaphore leaved' );
-        IPS_SemaphoreLeave( $semaphore );
     }
 
     public function Update() {
@@ -147,7 +135,7 @@ class RobonectWifiModul extends IPSModule
         }
 
         if ( $this->ReadPropertyBoolean( "CameraInstalled" )) {
-            $this->SetTimerInterval("ROBONECT_CameraUpdateTimer", 06000, $this->UpdateImage());
+            $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 60000, $this->UpdateImage());
         }
 
         IPS_SemaphoreLeave( $semaphore );
