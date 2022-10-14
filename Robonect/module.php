@@ -1031,16 +1031,14 @@ class RobonectWifiModul extends IPSModule
         // Bild Overlay erstellen
         $source = imagecreatefromjpeg($filename);
         if($this->ReadPropertyBoolean("StatusImage") or $this->ReadPropertyBoolean("DateIamge")) {
-            $status = $this->GetValue ("mowerStatusPlain");
-            $color = explode(",", "255,255,255");
-            $col = imagecolorallocate($source, $color[0], $color[1], $color[2]);
+            $TextStatus = $this->GetValue ("mowerStatusPlain");
+            $col = $this->ReadPropertyInteger("TextColorImage");
             if ($this->ReadPropertyBoolean("StatusImage") and $this->ReadPropertyBoolean("DateIamge")) {
-                $test = $this->ReadPropertyInteger("TextColorImage");
-                imagestring($source, 4, 5, 460, date("d.m.Y H:i:s")." | Status: ".utf8_decode($status), $test);
+                imagestring($source, 4, 5, 460, date("d.m.Y H:i:s")." | Status: ".utf8_decode($TextStatus), $col);
             } elseif($this->ReadPropertyBoolean("DateIamge")) {
                 imagestring($source, 4, 5, 460, date("d.m.Y H:i:s"), $col);
             } elseif($this->ReadPropertyBoolean("StatusImage")) {
-                imagestring($source, 4, 5, 460, utf8_decode($status), $col);
+                imagestring($source, 4, 5, 460, utf8_decode($TextStatus), $col);
             }
             imageline($source, 0, 455, 640, 455, $col);
         }
@@ -1050,7 +1048,8 @@ class RobonectWifiModul extends IPSModule
         //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
         $this->log('UpdateImage - Semaphore leaved' );
         // Mäher ist in Ladestation
-        if (($playload == 0) || ($playload == 1) || ($playload == 4) || ($playload == 16) || ($playload == 17)) {
+        $Status = $this->GetValue ("mowerStatusPlain");
+        if (($Status == 0) || ($Status == 1) || ($Status == 4) || ($Status == 16) || ($Status == 17)) {
             $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 0);
         }
         IPS_SemaphoreLeave( $semaphore );
