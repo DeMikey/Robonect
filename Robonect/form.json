@@ -39,7 +39,15 @@
     { "type": "Label", "label": "DefaultValues" },
     { "type": "NumberSpinner", "name": "MowingTime", "caption":  "MowingTime", "minimum":  10, "maximum": 780, "suffix":  "minutes" },
 
+    { "type": "Label", "caption": "   " },
+    { "type": "Label", "label": "Camera settings" },
     { "type": "CheckBox", "name": "CameraInstalled", "caption":  "Camera installed" },
+    { "type": "CheckBox", "name": "StatusImage", "caption":  "Status display in the picture" },
+    { "type": "CheckBox", "name": "DateIamge", "caption":  "Date display in the picture" },
+    { "type": "SelectColor", "name": "TextColorImage", "caption": "Text Color", "allowTransparent": "false" },
+
+    { "type": "Label", "caption": "   " },
+    { "type": "Label", "label": "Extendet Values" },
     { "type": "CheckBox", "name": "MediaElements", "caption":  "Create media elements" },
     { "type": "CheckBox", "name": "CreateHtmlBoxs", "caption":  "Create Html elements" },
     { "type": "CheckBox", "name": "CreateWebfrontend", "caption":  "Create Webfrontend" },

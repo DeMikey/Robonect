@@ -28,6 +28,9 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger( "UpdateTimer", 10 );
         $this->RegisterPropertyInteger( "MowingTime", 180 );
         $this->RegisterPropertyBoolean( "CameraInstalled", false );
+        $this->RegisterPropertyBoolean( "StatusImage", false );
+        $this->RegisterPropertyBoolean( "DateIamge", false );
+        $this->RegisterPropertyInteger("TextColorImage", 350);
         $this->RegisterPropertyBoolean( "MediaElements", false );
         $this->RegisterPropertyBoolean( "CreateHtmlBoxs", false );
         $this->RegisterPropertyBoolean( "CreateWebfrontend", false );
@@ -620,7 +623,7 @@ class RobonectWifiModul extends IPSModule
                         CURLOPT_TIMEOUT => 30
                     ]);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//                    $json = curl_exec($ch);
+                    //  $json = curl_exec($ch);
                     if( ! $json = curl_exec($ch)) {
                         $this->log ((curl_error($ch)));
                         curl_close($ch);
@@ -755,7 +758,6 @@ class RobonectWifiModul extends IPSModule
         }
 		$this->SendDebug("Received", $JSONString, 0);
         $Data = json_decode( $JSONString);
-//        $this->SendDebug("Received", $Data, 0);
         // Prüfen ob alles OK ist
         if ($Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}') {
             $this->SendDebug("nvalid Parent", KL_ERROR, 0);
@@ -781,7 +783,7 @@ class RobonectWifiModul extends IPSModule
                 $this->SetValue("mowerMqttStatus", 1); // online
             }
         // Timer Topic
-//        elseif (str_contians($topic, 'timer')) { php 8
+        //        elseif (str_contians($topic, 'timer')) { php 8
         } elseif (strpos($topic, 'timer') !== false) {
             // Existiert die Timer Kategorie
             if (!$TimerCat = @IPS_GetCategoryIDByName('Timers', $this->InstanceID)) {
@@ -832,6 +834,9 @@ class RobonectWifiModul extends IPSModule
                 $this->SetValue("doorStatus", $payload);
                 break;
             case 'mowerStatus':
+                if (($playload == 2) || ($playload == 3) || ($playload == 5) || ($playload == 7) || ($playload == 8)) {
+                    $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 60000);
+                }
                 $this->SetValue("mowerStatus", $payload);
                 break;
             case 'mowerStatusPlain':
@@ -1023,10 +1028,31 @@ class RobonectWifiModul extends IPSModule
             $this->log( 'UpdateImage - Fehler beim schreiben des Bildes '.$filename);
             return false;
         }
-    
+        // Bild Overlay erstellen
+        $source = imagecreatefromjpeg($filename);
+        if($this->ReadPropertyBoolean("StatusImage") or $this->ReadPropertyBoolean("DateIamge")) {
+            $status = GetValue ("mowerStatusPlain");
+            $color = explode(",", );
+            $col = imagecolorallocate($source, $color[0], $color[1], $color[2]);
+            if ($this->ReadPropertyBoolean("StatusImage") and $this->ReadPropertyBoolean("DateIamge")) {
+                $test = $this-ReadPropertyInteger("TextColorImage");
+                imagestring($source, 4, 5, 460, date("d.m.Y H:i:s")." | Status: ".utf8_decode($status), $test);
+            } elseif($this->ReadPropertyBoolean("DateIamge")) {
+                imagestring($source, 4, 5, 460, date("d.m.Y H:i:s"), $col);
+            } elseif($this->ReadPropertyBoolean("StatusImage")) {
+                imagestring($source, 4, 5, 460, utf8_decode($status), $col);
+            }
+            imageline($source, 0, 455, 640, 455, $col);
+        }
+        imagejpeg($source, $filename, 100);
+        ImageDestroy($source);
         IPS_SetMediaFile($media_id, $media_file, true);
         //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
         $this->log('UpdateImage - Semaphore leaved' );
+        // Mäher ist in Ladestation
+        if (($playload == 0) || ($playload == 1) || ($playload == 4) || ($playload == 16) || ($playload == 17)) {
+            $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 0);
+        }
         IPS_SemaphoreLeave( $semaphore );
     }
 
@@ -1373,7 +1399,7 @@ class RobonectWifiModul extends IPSModule
             $Position = $Position + 4;
         }
 
-/*
+        /*
         $this->RegisterVariableInteger( "mowerTimerStatus", "Timer Status", "ROBONECT_TimerStatus", 90 );
 
         $TimerPlanActiveID = $this->RegisterVariableBoolean( "TimerPlanActive", "Timer-Plan aktiv", "ROBONECT_JaNein", 91 );
@@ -1406,7 +1432,7 @@ class RobonectWifiModul extends IPSModule
 
             IPS_SetEventActive($weekPlanID, true);
         }
-*/
+        */
         $this->RegisterVariableInteger( "mowerNextTimerstart", "nächster Timerstart", "~UnixTimestamp", 92 );
         $this->RegisterVariableInteger("timerTransmitAction", "Timer lesen/schreiben", "ROBONECT_TimerTransmitAction", 93 );
         $this->EnableAction("timerTransmitAction");

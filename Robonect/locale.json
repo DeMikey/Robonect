@@ -18,7 +18,13 @@
       "MowingTime": "Mähzeit bei Sofortstart",
       "minutes": "Minuten",
 
+      "Camera settings": "Kamera Einstellungen",
       "Camera installed": "Kamera installiert",
+      "Status display in the picture": "Status Anzeige im Bild",
+      "Date display in the picture": "Datum Anzeige im Bild",
+      "Text Color": "Schrift Farbe",
+
+      "Extendet Values": "Erweiterte Einstellungen",
       "Create media elements": "Erstelle Media Elemente",
       "Create Html elements": "Erstelle Html Elemente",
       "Create Webfrontend": "Erstelle Webfrontend",
