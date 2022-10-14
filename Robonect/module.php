@@ -1035,7 +1035,7 @@ class RobonectWifiModul extends IPSModule
             $color = explode(",", "255,255,255");
             $col = imagecolorallocate($source, $color[0], $color[1], $color[2]);
             if ($this->ReadPropertyBoolean("StatusImage") and $this->ReadPropertyBoolean("DateIamge")) {
-                $test = $this-ReadPropertyInteger("TextColorImage");
+                $test = $this->ReadPropertyInteger("TextColorImage");
                 imagestring($source, 4, 5, 460, date("d.m.Y H:i:s")." | Status: ".utf8_decode($status), $test);
             } elseif($this->ReadPropertyBoolean("DateIamge")) {
                 imagestring($source, 4, 5, 460, date("d.m.Y H:i:s"), $col);
