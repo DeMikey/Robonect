@@ -1031,7 +1031,7 @@ class RobonectWifiModul extends IPSModule
         // Bild Overlay erstellen
         $source = imagecreatefromjpeg($filename);
         if($this->ReadPropertyBoolean("StatusImage") or $this->ReadPropertyBoolean("DateIamge")) {
-            $status = GetValue ("mowerStatusPlain");
+            $status = $this->GetValue ("mowerStatusPlain");
             $color = explode(",", "255,255,255");
             $col = imagecolorallocate($source, $color[0], $color[1], $color[2]);
             if ($this->ReadPropertyBoolean("StatusImage") and $this->ReadPropertyBoolean("DateIamge")) {
