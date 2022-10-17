@@ -1391,17 +1391,20 @@ class RobonectWifiModul extends IPSModule
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
                 $TimerStart = $this->RegisterVariableString( $Ident."start", $Name." Start", "", 201 + $Position);
-                IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+                IPS_SetParent($TimerStart, $TimerCat); // Timer Start unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."End", $TimerCat)) {
                 $TimerEnd = $this->RegisterVariableString( $Ident."end", $Name.' '.$this->Translate('End'), "", 202 + $Position);
-                IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+                IPS_SetParent($TimerEnd, $TimerCat); // Timer End unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
                 $TimerWeekdays = $this->RegisterVariableInteger( $Ident."weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
-                IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
+                IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
             $Position = $Position + 4;
+        }
+        if (!@IPS_GetObjectIDByIdent("TimerBuffer", $TimerCat)) {
+            IPS_SetParent($this->RegisterVariableString("TimerBuffer", "Buffer", 203 + $Position), $TimerCat); // Buffer unter die Kategory Timer verschieben.
         }
 
         /*
