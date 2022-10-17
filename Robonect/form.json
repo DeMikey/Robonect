@@ -79,7 +79,7 @@
 			{ "type": "SelectColor", "name": "TimerTimer11", "caption": "Timer 11 color", "allowTransparent": "false", "value": "#F7CC2E"},
 			{ "type": "SelectColor", "name": "TimerTimer12", "caption": "Timer 12 color", "allowTransparent": "false", "value": "#A5DF00"},
 			{ "type": "SelectColor", "name": "TimerTimer13", "caption": "Timer 13 color", "allowTransparent": "false", "value": "#04B404"},
-			{ "type": "SelectColor", "name": "TimerTimer14", "caption": "Timer 14 color", "allowTransparent": "false", "value": "#01DF74"}
+			{ "type": "SelectColor", "name": "TimerTimer14", "caption": "Timer 14 color", "allowTransparent": "false", "value": 122740}
       ]
     },
 

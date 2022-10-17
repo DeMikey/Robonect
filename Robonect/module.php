@@ -1404,7 +1404,7 @@ class RobonectWifiModul extends IPSModule
             $Position = $Position + 4;
         }
         if (!@IPS_GetObjectIDByIdent("TimerBuffer", $TimerCat)) {
-            IPS_SetParent($this->RegisterVariableString("TimerBuffer", "Buffer", 203 + $Position), $TimerCat); // Buffer unter die Kategory Timer verschieben.
+            IPS_SetParent($this->RegisterVariableString("TimerBuffer", "Buffer", "", 203 + $Position), $TimerCat); // Buffer unter die Kategory Timer verschieben.
         }
 
         /*
