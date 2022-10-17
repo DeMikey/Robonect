@@ -1,5 +1,11 @@
 <?php
 
+// set base dir
+define('__ROOT__', dirname(dirname(__FILE__)));
+
+// load library
+require_once __ROOT__ . '/libs/media.php';
+
 // Klassendefinition
 class RobonectWifiModul extends IPSModule
 {
@@ -1048,7 +1054,7 @@ class RobonectWifiModul extends IPSModule
         //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
         $this->log('UpdateImage - Semaphore leaved' );
         // Mäher ist in Ladestation
-        $Status = $this->GetValue ("mowerStatusPlain");
+        $Status = $this->GetValue ("mowerStatus");
         if (($Status == 0) || ($Status == 1) || ($Status == 4) || ($Status == 16) || ($Status == 17)) {
             $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 0);
         }
@@ -1371,7 +1377,7 @@ class RobonectWifiModul extends IPSModule
             IPS_SetParent($TimerCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
         }
         $Position = 0;
-        for ($i = 0; $i <= 13; $i++) {
+        for ($i = 1; $i <= 14; $i++) {
             if ( $i < 10) {
                 $Ident = "Timer0".$i;
                 $Name = "Timer 0".$i; 
@@ -1380,19 +1386,19 @@ class RobonectWifiModul extends IPSModule
                 $Name = "Timer ".$i; 
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Enable", $TimerCat)) {
-                $TimerStatus = $this->RegisterVariableBoolean($Ident."Enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
+                $TimerStatus = $this->RegisterVariableBoolean($Ident."enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
-                $TimerStart = $this->RegisterVariableString( $Ident."Start", $Name." Start", "", 201 + $Position);
+                $TimerStart = $this->RegisterVariableString( $Ident."start", $Name." Start", "", 201 + $Position);
                 IPS_SetParent($TimerStart, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."End", $TimerCat)) {
-                $TimerEnd = $this->RegisterVariableString( $Ident."End", $Name.' '.$this->Translate('End'), "", 202 + $Position);
+                $TimerEnd = $this->RegisterVariableString( $Ident."end", $Name.' '.$this->Translate('End'), "", 202 + $Position);
                 IPS_SetParent($TimerEnd, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
-                $TimerWeekdays = $this->RegisterVariableInteger( $Ident."Weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
+                $TimerWeekdays = $this->RegisterVariableInteger( $Ident."weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
                 IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
             $Position = $Position + 4;
