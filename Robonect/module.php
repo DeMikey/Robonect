@@ -801,6 +801,7 @@ class RobonectWifiModul extends IPSModule
             list ($TimerChannel, $TimerValue) = explode('/', str_replace('/mower/timer/', '', $topic));
             // Kanal in integer umwandel
             $TimerChannel = intval(str_replace('ch', '', $TimerChannel));
+            $TimerChannel++;
             if ($TimerChannel < 10) {
                 $TimeVariableName = "Timer0".$TimerChannel.$TimerValue;
             } else {
@@ -1385,19 +1386,19 @@ class RobonectWifiModul extends IPSModule
                 $Ident = "Timer".$i;
                 $Name = "Timer ".$i; 
             }
-            if (!@IPS_GetObjectIDByIdent($Ident."Enable", $TimerCat)) {
+            if (!@IPS_GetObjectIDByIdent($Ident."enable", $TimerCat)) {
                 $TimerStatus = $this->RegisterVariableBoolean($Ident."enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
             }
-            if (!@IPS_GetObjectIDByIdent($Ident."Start", $TimerCat)){
+            if (!@IPS_GetObjectIDByIdent($Ident."start", $TimerCat)){
                 $TimerStart = $this->RegisterVariableString( $Ident."start", $Name." Start", "", 201 + $Position);
                 IPS_SetParent($TimerStart, $TimerCat); // Timer Start unter die Kategory Timer verschieben.
             }
-            if (!@IPS_GetObjectIDByIdent($Ident."End", $TimerCat)) {
+            if (!@IPS_GetObjectIDByIdent($Ident."end", $TimerCat)) {
                 $TimerEnd = $this->RegisterVariableString( $Ident."end", $Name.' '.$this->Translate('End'), "", 202 + $Position);
                 IPS_SetParent($TimerEnd, $TimerCat); // Timer End unter die Kategory Timer verschieben.
             }
-            if (!@IPS_GetObjectIDByIdent($Ident."Weekdays", $TimerCat)) {
+            if (!@IPS_GetObjectIDByIdent($Ident."weekdays", $TimerCat)) {
                 $TimerWeekdays = $this->RegisterVariableInteger( $Ident."weekdays", $Name.' '.$this->Translate('Weekdays'), "ROBONECT_Weekdays", 203 + $Position);
                 IPS_SetParent($TimerWeekdays, $TimerCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
