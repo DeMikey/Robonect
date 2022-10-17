@@ -797,6 +797,9 @@ class RobonectWifiModul extends IPSModule
                 return;
             }
             // /mower/timer/ch0/enable
+            if (!$Buffer = @IPS_GetObjectIDByIdent("TimerBuffer", $TimerCat)) {
+                $this->log("Timer Buffer Variable not found!");
+            }
             // Topc kürzen auf Timer Kanal und spliten auf Kanal und Wert
             list ($TimerChannel, $TimerValue) = explode('/', str_replace('/mower/timer/', '', $topic));
             // Kanal in integer umwandel
@@ -812,6 +815,29 @@ class RobonectWifiModul extends IPSModule
                 return;
             }
             SetValue($TimerVariableID, $Data->Payload);
+            // Buffer holen
+            if (!$BufferID = @IPS_GetObjectIDByIdent("TimerBuffer", $TimerCat)) {
+                $this->log("Timer Buffer Variable not found!");
+            } else {
+                $Buffer  = json_decode(GetValueString($BufferID), true);
+                if ($TimerValue == "weekdays") {
+                    $Weekdays = array_reverse(str_split(base_convert(intval($Data->Payload), 10, 2)));
+                    $Count = 0;
+                    foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
+                        if ($Weekdays[$Count]) {
+                            $Buffer["Timmer".$TimerChannel]["weekdays"][$Day] = $Weekdays[$Count];
+                        } else {
+                            $Buffer["Timmer".$TimerChannel]["weekdays"][$Day] = 0;
+                        }
+                        $Count++;
+                    }                   
+                } else {
+                   $Buffer["Timmer".$TimerChannel][$TimerValue] = $Data->Payload;
+                }
+                // Buffer zurückschreiben
+                SetValue($BufferID, $Buffer);
+            }
+
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
