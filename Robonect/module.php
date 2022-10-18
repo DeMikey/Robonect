@@ -108,7 +108,7 @@ class RobonectWifiModul extends IPSModule
                 array_push($this->BufferTimer , $Timer);
                // $this->BufferTimer [] =+ $Timer;
             }
-            $this->log("Interner Buffer: ".$this->BufferTimer);
+            //$this->log("Interner Buffer: ".$this->BufferTimer);
         }
 
     }
