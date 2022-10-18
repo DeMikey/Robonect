@@ -904,7 +904,7 @@ class RobonectWifiModul extends IPSModule
                 // Buffer zurückschreiben
                 SetValue($BufferID, json_encode($Buffer));
             }
-
+            $this->log("Interner Buffer: ". json_encode($this->BufferTimer));
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
@@ -1521,8 +1521,6 @@ class RobonectWifiModul extends IPSModule
             $TimerBuffer = $this->RegisterVariableString("TimerBuffer", "Buffer", "", 203 + $Position);
             $this->SetValue("TimerBuffer", json_encode($Timers));
             IPS_SetParent($TimerBuffer, $TimerCat); // Buffer unter die Kategory Timer verschieben.
-            $this->log("Interner Buffer: ". json_encode($this->BufferTimer));
- 
         }
 
         /*
