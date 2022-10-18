@@ -106,7 +106,7 @@ class RobonectWifiModul extends IPSModule
                     $Count++;
                 }
                 //array_push($this->BufferTimer , $Timer);
-               $this->BufferTimer [] = $Timer;
+               $this->BufferTimer= $Timer;
             }
         }
 
