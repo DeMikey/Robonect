@@ -86,13 +86,13 @@ class RobonectWifiModul extends IPSModule
                 $Timer = array (
                     "Timer".$i => array (
                         "id" => $i-1,
-                        "enabled" => GetValueBoolean(IPS_GetObjectIDByIdent("Timer".$i."enable")),
-                        "start" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."start")),
-                        "end" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."end")),
+                        "enabled" => GetValueBoolean(IPS_GetObjectIDByIdent("Timer".$i."enable", $TimerCatID)),
+                        "start" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."start", $TimerCatID)),
+                        "end" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."end",$TimerCatID)),
                         "weekdays" => array ()
                     )
                 );
-                $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays")), 10, 2)));
+                $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)), 10, 2)));
                 $Count = 0;
                 foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
                     if ($Weekdays[$Count]) {
