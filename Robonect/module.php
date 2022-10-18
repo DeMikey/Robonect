@@ -93,7 +93,7 @@ class RobonectWifiModul extends IPSModule
                     )
                 );
                 $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)), 10, 2)));
-                if (!$Weekdays) {
+                if (!$Weekdays[0]) {
                     $Weekdays = array (0,0,0,0,0,0,0);
                 }
                 $Count = 0;
