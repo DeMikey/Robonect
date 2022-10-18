@@ -1103,7 +1103,7 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    protected function UpdateImage () {
+    public function UpdateImage () {
     #================================================================================================
         $semaphore = 'Robonect'.$this->InstanceID.'_Update';
         if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
