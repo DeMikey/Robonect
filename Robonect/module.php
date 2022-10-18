@@ -99,7 +99,7 @@ class RobonectWifiModul extends IPSModule
                 }
                 $Count = 0;
                 foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
-                    if (!$Weekdays[$Count]) {
+                    if ($Weekdays[$Count] == null) {
                         $Timer["Timmer".$i]["weekdays"][$Day] = $Weekdays[$Count];
                     } else {
                         $Timer["Timmer".$i]["weekdays"][$Day] = 0;
