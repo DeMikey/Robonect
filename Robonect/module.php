@@ -92,7 +92,6 @@ class RobonectWifiModul extends IPSModule
                         "weekdays" => array ()
                     )
                 );
-                $this->log("Weekdays: ".GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)));
                 $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)), 10, 2)));
                 $this->log(var_dump($Weekdays));
                 if (!$Weekdays[0]) {
