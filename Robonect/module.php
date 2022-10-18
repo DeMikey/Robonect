@@ -11,7 +11,7 @@ require_once __ROOT__ . '/libs/HTMLBox.php';
 class RobonectWifiModul extends IPSModule
 {
 
-    private $BufferTimer = array();
+    protected $BufferTimer = array();
     /**
      * Die folgenden Funktionen stehen automatisch zur Verfügung, wenn das Modul über die "Module Control" eingefügt wurden.
      * Die Funktionen werden, mit dem selbst eingerichteten Prefix, in PHP und JSON-RPC wiefolgt zur Verfügung gestellt:
