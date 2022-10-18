@@ -5,10 +5,13 @@ define('__ROOT__', dirname(dirname(__FILE__)));
 
 // load library
 require_once __ROOT__ . '/libs/media.php';
+require_once __ROOT__ . '/libs/HTMLBox.php';
 
 // Klassendefinition
 class RobonectWifiModul extends IPSModule
 {
+
+    private $BufferTimer = array();
     /**
      * Die folgenden Funktionen stehen automatisch zur Verfügung, wenn das Modul über die "Module Control" eingefügt wurden.
      * Die Funktionen werden, mit dem selbst eingerichteten Prefix, in PHP und JSON-RPC wiefolgt zur Verfügung gestellt:
@@ -46,6 +49,64 @@ class RobonectWifiModul extends IPSModule
         // Timer
         $this->RegisterTimer("ROBONECT_UpdateTimer", 0, 'ROBONECT_Update($_IPS[\'TARGET\']);');
         $this->RegisterTimer("ROBONECT_UpdateImageTimer", 0, 'ROBONECT_UpdateImage($_IPS[\'TARGET\']);');
+
+        $this->RegisterPropertyInteger("TimerFontSize");
+        $this->RegisterPropertyInteger("TimerBackground");
+        $this->RegisterPropertyInteger("TimerWidth");
+        $this->RegisterPropertyBoolean("TimerHeader");
+        $this->RegisterPropertyInteger("TimerHeaderSize");
+        $this->RegisterPropertyBoolean("TimerFooder");
+        $this->RegisterPropertyInteger("TimerFooderSize");
+        $this->RegisterPropertyInteger("TimerFooderSpace");
+        $this->RegisterPropertyBoolean("TimerGrid");
+        $this->RegisterPropertyInteger("TimerGridColor");
+        $this->RegisterPropertyBoolean("TimerSelect");
+        $this->RegisterPropertyInteger("TimerSelectColor");
+        $this->RegisterPropertyBoolean("TimerTimerText");
+        $this->RegisterPropertyInteger("TimerTimerWidth");
+        $this->RegisterPropertyInteger("TimerTimerHigh");
+        $this->RegisterPropertyInteger("TimerTimer1");
+        $this->RegisterPropertyInteger("TimerTimer2");
+        $this->RegisterPropertyInteger("TimerTimer3");
+        $this->RegisterPropertyInteger("TimerTimer4");
+        $this->RegisterPropertyInteger("TimerTimer5");
+        $this->RegisterPropertyInteger("TimerTimer6");
+        $this->RegisterPropertyInteger("TimerTimer7");
+        $this->RegisterPropertyInteger("TimerTimer8");
+        $this->RegisterPropertyInteger("TimerTimer9");
+        $this->RegisterPropertyInteger("TimerTimer10");
+        $this->RegisterPropertyInteger("TimerTimer11");
+        $this->RegisterPropertyInteger("TimerTimer12");
+        $this->RegisterPropertyInteger("TimerTimer13");
+        $this->RegisterPropertyInteger("TimerTimer14");
+
+        // Create TimerBuffer
+        if ($TimerCatID = @IPS_GetCategoryIDByName('Timers', $this->InstanceID)) {
+            for ($i = 1; $i <= 14; $i++) {
+                $Timer = array (
+                    "Timer".$i => array (
+                        "id" => $i-1,
+                        "enabled" => GetValueBoolean(IPS_GetObjectIDByIdent("Timer".$i."enable")),
+                        "start" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."start")),
+                        "end" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."end")),
+                        "weekdays" => array ()
+                    )
+                );
+                $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays")), 10, 2)));
+                $Count = 0;
+                foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
+                    if ($Weekdays[$Count]) {
+                        $Timer["Timmer".$i]["weekdays"][$Day] = $Weekdays[$Count];
+                    } else {
+                        $Timer["Timmer".$i]["weekdays"][$Day] = 0;
+                    }
+                    $Count++;
+                }
+                $this->BufferTimer [] += $Timer;
+            }
+            $this->log("Interner Buffer: ".$this->BufferTimer);
+        }
+
     }
 
     public function ApplyChanges()
@@ -805,12 +866,15 @@ class RobonectWifiModul extends IPSModule
             // Kanal in integer umwandel
             $TimerChannel = intval(str_replace('ch', '', $TimerChannel));
             $TimerChannel++;
+            /*
             if ($TimerChannel < 10) {
                 $TimeVariableName = "Timer0".$TimerChannel.$TimerValue;
             } else {
                 $TimeVariableName = "Timer".$TimerChannel.$TimerValue;
             }
-            if (!$TimerVariableID = @IPS_GetObjectIDByIdent($TimeVariableName, $TimerCat)) {
+            */
+            $TimerVariableName = "Timer".$TimerChannel.$TimerValue;
+            if (!$TimerVariableID = @IPS_GetObjectIDByIdent($TimerVariableName, $TimerCat)) {
                 $this->log("Timer Variable not found!");
                 return;
             }
@@ -867,7 +931,7 @@ class RobonectWifiModul extends IPSModule
                 $this->SetValue("doorStatus", $payload);
                 break;
             case 'mowerStatus':
-                if (($playload == 2) || ($playload == 3) || ($playload == 5) || ($playload == 7) || ($playload == 8)) {
+                if (($payload == 2) || ($payload == 3) || ($payload == 5) || ($payload == 7) || ($payload == 8)) {
                     $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 60000);
                 }
                 $this->SetValue("mowerStatus", $payload);
@@ -1035,7 +1099,7 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    public function UpdateImage () {
+    private function UpdateImage () {
     #================================================================================================
         $semaphore = 'Robonect'.$this->InstanceID.'_Update';
         if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
@@ -1406,12 +1470,11 @@ class RobonectWifiModul extends IPSModule
         $Position = 0;
         for ($i = 1; $i <= 14; $i++) {
             if ( $i < 10) {
-                $Ident = "Timer0".$i;
                 $Name = "Timer 0".$i; 
             } else {
-                $Ident = "Timer".$i;
                 $Name = "Timer ".$i; 
             }
+            $Ident = "Timer".$i;
             if (!@IPS_GetObjectIDByIdent($Ident."enable", $TimerCat)) {
                 $TimerStatus = $this->RegisterVariableBoolean($Ident."enable", $Name." Status", "ROBONECT_JaNein", 200 + $Position);
                 IPS_SetParent($TimerStatus, $TimerCat); // Timer Status unter die Kategory Timer verschieben.
@@ -1435,21 +1498,21 @@ class RobonectWifiModul extends IPSModule
             for ($i = 1; $i <= 14; $i++) {
                 $Timer = array (
                     "Timer".$i => array (
-                    "id" => 0,
-                    "enabled" => 0,
-                    "start" => "00:00",
-                    "end" => "00:00",
-                    "weekdays" => array (
-                        "mo" => 0,
-                        "di" => 0,
-                        "mi" => 0,
-                        "do" => 0,
-                        "fr" => 0,
-                        "sa" => 0,
-                        "so" => 0
+                        "id" => 0,
+                        "enabled" => 0,
+                        "start" => "00:00",
+                        "end" => "00:00",
+                        "weekdays" => array (
+                            "mo" => 0,
+                            "di" => 0,
+                            "mi" => 0,
+                            "do" => 0,
+                            "fr" => 0,
+                            "sa" => 0,
+                            "so" => 0
+                        )
                     )
-                    )
-                    );
+                );
                 array_push($Timers, $Timer);
             };
             $TimerBuffer = $this->RegisterVariableString("TimerBuffer", "Buffer", "", 203 + $Position);
