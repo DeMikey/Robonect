@@ -893,14 +893,14 @@ class RobonectWifiModul extends IPSModule
                     $Count = 0;
                     foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
                         if ($Weekdays[$Count]) {
-                            $Buffer["Timmer".$TimerChannel]["weekdays"][$Day] = $Weekdays[$Count];
+                            $Buffer["Timer".$TimerChannel]["weekdays"][$Day] = $Weekdays[$Count];
                         } else {
-                            $Buffer["Timmer".$TimerChannel]["weekdays"][$Day] = 0;
+                            $Buffer["Timer".$TimerChannel]["weekdays"][$Day] = 0;
                         }
                         $Count++;
                     }                   
                 } else {
-                   $Buffer["Timmer".$TimerChannel][$TimerValue] = $Data->Payload;
+                   $Buffer["Timer".$TimerChannel][$TimerValue] = $Data->Payload;
                 }
                 // Buffer zurückschreiben
                 SetValue($BufferID, json_encode($Buffer));
