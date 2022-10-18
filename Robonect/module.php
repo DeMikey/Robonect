@@ -903,7 +903,7 @@ class RobonectWifiModul extends IPSModule
                    $Buffer["Timmer".$TimerChannel][$TimerValue] = $Data->Payload;
                 }
                 // Buffer zurückschreiben
-                SetValue($BufferID, $Buffer);
+                SetValue($BufferID, json_encode($Buffer));
             }
 
         } else {
@@ -947,7 +947,7 @@ class RobonectWifiModul extends IPSModule
                 $this->SetValue("mowerSubstatus", $payload);
                 break;
             case 'mowerSubstatusPlain':
-                $this->SetValue("mowerSubstatuPlain", $payload);
+                $this->SetValue("mowerSubstatusPlain", $payload);
                 break;
             case 'mowerStopped':
                 $this->SetValue("mowerStopped", $payload);
