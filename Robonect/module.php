@@ -1911,9 +1911,9 @@ class RobonectWifiModul extends IPSModule
         // Timerarrays abarbeiten
         $count = 1;
         foreach($Buffer as $key => $value){
-            $activ = $buffer[$key]['enabled'];
-            $start = explode(":", $buffer[$key]['start']);
-            $end = explode(":", $buffer[$key]['end']);
+            $activ = $Buffer[$key]['enabled'];
+            $start = explode(":", $Buffer[$key]['start']);
+            $end = explode(":", $Buffer[$key]['end']);
     
             // Startminuten umwandeln
             if($start[1] == 0) $sm = 0;
