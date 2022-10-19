@@ -1689,7 +1689,7 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    public function SetTimerBox($number = false){
+    public function SetTimerBox(int $number = false){
     #================================================================================================
         
         
