@@ -1616,6 +1616,18 @@ class RobonectWifiModul extends IPSModule
             }
         }
 
+        //----HTMLBox
+        if ($this->ReadPropertyBoolean("HtmlBoxsElemets")) {
+            if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+                $HTMLboxCat = IPS_CreateCategory();   // Kategorie anlegen
+                    IPS_SetName($HTMLboxCat, "HTMLBox");   // Kategorie auf Timer umbenennen
+                    IPS_SetParent($HTMLboxCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
+            }
+            if (!@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
+                IPS_SetParent($this->RegisterVariableInteger("Timerlist", $this->Translate('Timerlist'), "", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+            }
+        }
+
     }
 
 

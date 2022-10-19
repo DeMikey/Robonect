@@ -5,11 +5,12 @@
 function SetTimerBox($number = false){
 #================================================================================================
     
-    /*
-    Global $parents, $conf_timer;
+    
+///    Global $parents, $conf_timer;
     // Daten aus dem Speicher holen
-    IPS_SemaphoreEnter("openBuffer", 3000);
-    $buffer = robo_GetSetBuffer("read");
+    IPS_SemaphoreEnter("TimerBuffer", 3000);
+   
+/*    $buffer = robo_GetSetBuffer("read");
 
     if(array_key_exists("timer", $buffer) === false){
         IPS_SemaphoreLeave("openBuffer");
@@ -60,6 +61,46 @@ function SetTimerBox($number = false){
         }
     }
     */
+    if ($TimerCatID = @IPS_GetCategoryIDByName('Timers',59802)) {
+        $Buffer = array();
+        for ($i = 1; $i <= 14; $i++) {
+            $Timer = array (
+                "id" => $i-1,
+                "enabled" => GetValueBoolean(IPS_GetObjectIDByIdent("Timer".$i."enable", $TimerCatID)),
+                "start" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."start", $TimerCatID)),
+                "end" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."end",$TimerCatID))
+            );
+
+            $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)), 10, 2)));
+            //if (!$Weekdays) {
+            //    $Weekdays = array (0,0,0,0,0,0,0);
+            //}
+            $Count = 0;
+            foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
+                if ((count($Weekdays) > $Count) && ($Weekdays[$Count])) {
+                    $Timer["weekdays"][$Day] = $Weekdays[$Count];
+                } else {
+                    $Timer["weekdays"][$Day] = 0;
+                }
+                $Count++;
+            }
+            $Buffer["Timer".$i] =  $Timer;
+        }
+    } else {
+        $this-log("Timer Buffer konnte nicht erstellt werden.");
+        return false;
+    }
+
+    //Hole TimerListID
+    if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+        $this->log ("Keine HTMLBox Kategory vorhanden");
+        return false;
+    }
+    if (!$timerListID = @@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
+        $this->log("Kein TimerList Objekt vorhanden");
+        return false;
+    }
+
 
 
     // Hintergrundfarbe Hauptfenster, Header und Fooder umwandeln (hex -> rgb)
@@ -164,9 +205,9 @@ function SetTimerBox($number = false){
 
     // Grid-Overlay
     if($this->ReadPropertyBoolean("TimerFooder")) {
-        $height = count($buffer['timer']) * $TimerHigh + count($buffer['timer']) * $space + $space * 2 + 1;
+        $height = count($Buffer) * $TimerHigh + count($Buffer) * $space + $space * 2 + 1;
     } else {
-        $height = count($buffer['timer']) * $TimerHigh + count($buffer['timer']) * $space + $space + 1;
+        $height = count($Buffer) * $TimerHigh + count($Buffer) * $space + $space + 1;
     }
     if($this->ReadPropertyBoolean("TimerGrid")){
         $htmlBox .= "<div><div id='bhline'>";
@@ -182,10 +223,10 @@ function SetTimerBox($number = false){
 
     // Timerarrays abarbeiten
     $count = 1;
-    foreach($buffer['timer'] as $key => $value){
-        $activ = $buffer['timer'][$key]['enabled'];
-        $start = explode(":", $buffer['timer'][$key]['start']);
-        $end = explode(":", $buffer['timer'][$key]['end']);
+    foreach($Buffer as $key => $value){
+        $activ = $buffer[$key]['enabled'];
+        $start = explode(":", $buffer[$key]['start']);
+        $end = explode(":", $buffer[$key]['end']);
 
         // Startminuten umwandeln
         if($start[1] == 0) $sm = 0;
@@ -217,16 +258,16 @@ function SetTimerBox($number = false){
 
         // zusammenfügen der einzelnen Timerzeilen
         $htmlBox .= "<div id='timer'>";
-        if($activ === 0) $htmlBox .= "<div id='tbase' style='background-color:".$conf_timer[$key].";opacity:".$toca.";'></div>";
-        else $htmlBox .= "<div id='tbase' style='background-color:".$conf_timer[$key].";'></div>";
+        if($activ === 0) $htmlBox .= "<div id='tbase' style='background-color:".$this->ReadPropertyInteger("Timer".$key).";opacity:".$toca.";'></div>";
+        else $htmlBox .= "<div id='tbase' style='background-color:".$this->ReadPropertyInteger("Timer".$key).";'></div>";
         $htmlBox .= "<div id='ttext'>".str_replace(array("t", "r"), array("T", "r "), $key)."</div>";
         $htmlBox .= "</div>";
 
         // ausgewählten Timer markieren
-        if($number == $buffer['timer'][$key]['id']){
-            $days = $buffer['timer'][$key]['weekdays'];
+        if($number == $Buffer[$key]['id']){
+            $days = $Buffer[$key]['weekdays'];
             $timer = str_replace(array("t", "r"), array("T", "r "), $key);
-            $timerstat = $buffer['timer'][$key]['enabled'];
+            $timerstat = $Buffer[$key]['enabled'];
 
             if ($this->ReadPropertyBoolean("TimerSelect")) {
                 $htmlBox .= "<div id='base' style='border: 1px solid rgba(".$sr.",".$sg.",".$sb.",".$seloca.");'>";
@@ -237,12 +278,12 @@ function SetTimerBox($number = false){
         else $htmlBox .= "<div id='base'>";
 
         $htmlBox .= "<div id='bb1' style='width:".$b1px."px;'><div id='b1' width:".$b1px."px;'></div></div>";
-        $htmlBox .= "<div id='bmow' style='width:".$mowpx."px;'><div id='mow' style='background-color:".$conf_timer[$key].";";
+        $htmlBox .= "<div id='bmow' style='width:".$mowpx."px;'><div id='mow' style='background-color:".$this->ReadPropertyInteger("Timer".$key).";";
 
         if($this->ReadPropertyBoolean("TimerTimerText")){
             if($mowpx < 80) $htmlBox .= "width:".$mowpx."px;'></div></div>";
-            elseif($mowpx < 100) $htmlBox .= "width:".$mowpx."px;'>".$buffer['timer'][$key]['start']." - ".$buffer['timer'][$key]['end']."</div></div>";
-            else $htmlBox .= "width:".$mowpx."px;'>".$buffer['timer'][$key]['start']." - ".$buffer['timer'][$key]['end']." Uhr</div></div>";
+            elseif($mowpx < 100) $htmlBox .= "width:".$mowpx."px;'>".$Buffer[$key]['start']." - ".$Buffer[$key]['end']."</div></div>";
+            else $htmlBox .= "width:".$mowpx."px;'>".$Buffer[$key]['start']." - ".$Buffer[$key]['end']." Uhr</div></div>";
         }
         else $htmlBox .= "width:".$mowpx."px;'></div></div>";
 
@@ -279,7 +320,7 @@ function SetTimerBox($number = false){
     }
     $htmlBox .= "</div>";
 
-    robo_SetVariable("roboBoxTimer", "roboBoxID", $htmlBox);
-    IPS_SemaphoreLeave("openBuffer");
+    SetValueString($timerListID, $htmlBox);
+    IPS_SemaphoreLeave("TimerBuffer");
     return $htmlBox;
 }
