@@ -1623,7 +1623,7 @@ class RobonectWifiModul extends IPSModule
             if (!@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
                 IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
-            $this->SetTimerBox(false);
+            $this->SetTimerBox(null);
         }
 
     }
@@ -1689,7 +1689,7 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    public function SetTimerBox(int $number = false){
+    public function SetTimerBox(int $number = null){
     #================================================================================================
         
         
