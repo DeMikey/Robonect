@@ -46,7 +46,10 @@
       "Weekdays": "Wochentage",
 
       "Camera picture": "Kamerabild",
-
+      "Batterie voltage chart": "Batterie Spannungs Chart",
+      "Fill color": "Füll Farbe",
+      "Line color": "Linien Farbe",
+      "Voltaage": "Spannung",
 
       "Timerlist": "Timerliste"
     }

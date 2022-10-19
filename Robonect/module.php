@@ -46,6 +46,11 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterTimer("ROBONECT_UpdateTimer", 0, 'ROBONECT_Update($_IPS[\'TARGET\']);');
         $this->RegisterTimer("ROBONECT_UpdateImageTimer", 0, 'ROBONECT_UpdateImage($_IPS[\'TARGET\']);');
 
+        // Madia
+        $this->RegisterPropertyInteger("ChartBatteryVoltageFill", 33023);
+        $this->RegisterPropertyInteger("ChartBatteryVoltageLine", 160);
+
+        // HTML Box
         $this->RegisterPropertyInteger("TimerFontSize", 11);
         $this->RegisterPropertyInteger("TimerBackground", 16777215);
         $this->RegisterPropertyInteger("TimerWidth", 660);
@@ -1522,15 +1527,37 @@ class RobonectWifiModul extends IPSModule
  
         //--- Media
         if ($this->ReadPropertyBoolean("MediaElements")) {
-            if ($this->ReadPropertyBoolean("MediaElements")) {
-                if (!$MediaCat = @IPS_GetCategoryIDByName('Media', $this->InstanceID)) {
-                    $MediaCat = IPS_CreateCategory();   // Kategorie anlegen
-                    IPS_SetName($MediaCat, "Media");   // Kategorie auf Timer umbenennen
-                    IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
-                }
-            } else {
-                $MediaCat = $this->InstanceID;
+            if (!$MediaCat = @IPS_GetCategoryIDByName('Media', $this->InstanceID)) {
+                $MediaCat = IPS_CreateCategory();   // Kategorie anlegen
+                IPS_SetName($MediaCat, "Media");   // Kategorie auf Timer umbenennen
+                IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
+            // Batterie Spannung Chart
+            $BatteryVoltageChartFile ='media/' . 'ChartBattStatus.' . $this->InstanceID . '.chart';
+if (!$media_id = @IPS_GetMediaIDByFile($BatteryVoltageChartFile)) {
+    // Get Archiv ID
+    $ArchivID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
+    // Archivierung auf mowerVoltageBattery aktiviren
+    $VoltageBatteryID = $this->GetIDForIdent("mowerVoltageBattery");
+    AC_SetAggregationType($ArchivID, $VoltageBatteryID, 0);
+    AC_SetGraphStatus($ArchivID, $VoltageBatteryID, false);
+    AC_SetLoggingStatus($ArchivID, $VoltageBatteryID, true);
+    IPS_ApplyChanges($ArchivID);
+
+    $Json = '{"datasets": [{"variableID": '.$VoltageBatteryID.',"fillColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageFill")),-6).'","strokeColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageLine")),-6).'","title": "'.$this->Translate("Voltaage").'","timeOffset": 0}],"profile": "ROBONECT_Spannung","type": "line"}';
+
+    $BatterieChartID = IPS_CreateMedia(4);
+    IPS_SetParent($mediBatterieChartIDaID, $MediaCat);
+    IPS_SetIdent($BatterieChartID, "BatterieVoltage");
+    IPS_SetPosition($BatterieChartID, 2);
+    IPS_SetMediaCached($BatterieChartID, false);
+    IPS_SetName($BatterieChartID, $this->Translate("Batterie voltage chart"));
+    IPS_SetMediaFile($BatterieChartID, $BatteryVoltageChartFile, false);
+    IPS_SetMediaContent($BatterieChartID, base64_encode($Json));
+    IPS_SendMediaEvent($BatterieChartID);
+}
+
+
         }
 
         //----HTMLBox
@@ -1652,11 +1679,11 @@ class RobonectWifiModul extends IPSModule
     
     
         // Hintergrundfarbe Hauptfenster, Header und Fooder umwandeln (hex -> rgb)
-        list($br, $bg, $bb) = sscanf("#".dechex ($this->ReadPropertyInteger("TimerBackground")), "#%02x%02x%02x");
+        list($br, $bg, $bb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("TimerBackground")),-6), "#%02x%02x%02x");
         // Linienfarbe Grid umwandeln (hex -> rgb)
-        list($gr, $gg, $gb) = sscanf("#".dechex ($this->ReadPropertyInteger("TimerGridColor")), "#%02x%02x%02x");
+        list($gr, $gg, $gb) = sscanf("#".substr("000000".dechex ($this->ReadPropertyInteger("TimerGridColor")),-6), "#%02x%02x%02x");
         // Linienfarbe Timerauswahl umwandeln (hex -> rgb)
-        list($sr, $sg, $sb) = sscanf("#".dechex ($this->ReadPropertyInteger("TimerSelectColor")), "#%02x%02x%02x");
+        list($sr, $sg, $sb) = sscanf("#".substr("000000".dechex ($this->ReadPropertyInteger("TimerSelectColor")),-6), "#%02x%02x%02x");
         $width = $this->ReadPropertyInteger("TimerWidth");
         $fontSize = $this->ReadPropertyInteger("TimerFontSize");
         $bgoca = 0.1;

@@ -49,6 +49,10 @@
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "Extendet Values" },
     { "type": "CheckBox", "name": "MediaElements", "caption":  "Create media elements" },
+    { "type": "ExpansionPanel", "caption": "Battery voltage chart settings", "items": [
+      { "type": "SelectColor", "name": "ChartBatteryVoltageFill", "caption": "Fill color", "allowTransparent": "false", "value": 16777215},
+      { "type": "SelectColor", "name": "ChartBatteryVoltageLine", "caption": "Line color", "allowTransparent": "false", "value": 16777215}
+    ]},
     { "type": "CheckBox", "name": "HtmlBoxElements", "caption":  "Create Html elements" },
     { "type": "ExpansionPanel", "caption": "Timer settings", "items": [
       { "type": "NumberSpinner", "name": "TimerFontSize", "caption":  "Font size", "minimum":  8, "maximum": 18, "value": 11},
