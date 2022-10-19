@@ -41,8 +41,8 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyBoolean( "DateIamge", false );
         $this->RegisterPropertyInteger("TextColorImage", 350);
         $this->RegisterPropertyBoolean( "MediaElements", false );
-        $this->RegisterPropertyBoolean( "CreateHtmlBoxs", false );
-        $this->RegisterPropertyBoolean( "CreateWebfrontend", false );
+        $this->RegisterPropertyBoolean( "HtmlBoxElements", false );
+        $this->RegisterPropertyBoolean( "Webfrontend", false );
 
         $this->RegisterPropertyBoolean( "DebugLog", false );
 

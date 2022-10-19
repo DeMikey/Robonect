@@ -83,7 +83,7 @@
       ]
     },
 
-    { "type": "CheckBox", "name": "CreateWebfrontend", "caption":  "Create Webfrontend" },
+    { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
 
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "Debugging" },
