@@ -1,7 +1,7 @@
 <?php
 
 // load library
-require_once __DIR__ . '/../libs/media.php';
+//require_once __DIR__ . '/../libs/media.php';
 
 
 // Klassendefinition
