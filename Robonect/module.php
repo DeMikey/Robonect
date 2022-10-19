@@ -1806,8 +1806,8 @@ class RobonectWifiModul extends IPSModule
     
             // zusammenfügen der einzelnen Timerzeilen
             $htmlBox .= "<div id='timer'>";
-            if($activ === 0) $htmlBox .= "<div id='tbase' style='background-color:#".dechex($this->ReadPropertyInteger("Timer".$key)).";opacity:".$toca.";'></div>";
-            else $htmlBox .= "<div id='tbase' style='background-color:#".dechex($this->ReadPropertyInteger("Timer".$key)).";'></div>";
+            if($activ === 0) $htmlBox .= "<div id='tbase' style='background-color:#".substr("000000".dechex($this->ReadPropertyInteger("Timer".$key)),-6).";opacity:".$toca.";'></div>";
+            else $htmlBox .= "<div id='tbase' style='background-color:#".substr("000000".dechex($this->ReadPropertyInteger("Timer".$key)),-6).";'></div>";
             $htmlBox .= "<div id='ttext'>".str_replace(array("t", "r"), array("T", "r "), $key)."</div>";
             $htmlBox .= "</div>";
     
