@@ -1982,12 +1982,15 @@ class RobonectWifiModul extends IPSModule
             $htmlBox .= "<div id='bgf'>";
             $htmlBox .= "<div id='spacer'></div>";
             $htmlBox .= "<div id='bfoo'>";
-    
-            if($number !== false) {
+
+            if($number !== null) {
                 $xday = count($days) * 60;
                 $xtimer = 80;
                 $xend = ($width + $xpos / 2) - ($xday + $xtimer);
-    
+                $days = $Buffer[$key]['weekdays'];
+                $timer = str_replace(array("t", "r"), array("T", "r "), $key);
+                $timerstat = $Buffer[$key]['enabled'];
+        
                 if($timerstat === 1) $htmlBox .= "<div id='foo' style='width:".$xtimer.";'>".$timer.": <span style='color: green;'>aktiv</span></div>";
                 else $htmlBox .= "<div id='foo' style='width:".$xtimer.";'>".$timer.": <span style='color: red;'>deaktiviert</span></div>";
     
