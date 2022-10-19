@@ -1617,7 +1617,7 @@ class RobonectWifiModul extends IPSModule
         }
 
         //----HTMLBox
-        if ($this->ReadPropertyBoolean("HtmlBoxsElemets")) {
+        if ($this->ReadPropertyBoolean("HtmlBoxElements")) {
             if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
                 $HTMLboxCat = IPS_CreateCategory();   // Kategorie anlegen
                     IPS_SetName($HTMLboxCat, "HTMLBox");   // Kategorie auf Timer umbenennen
