@@ -62,7 +62,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("TimerTimerWidth", 60);
         $this->RegisterPropertyInteger("TimerTimerHigh", 25);
         $this->RegisterPropertyInteger("TimerTimer1", 5821431);
-        $this->RegisterPropertyInteger("TimerTimer2", 0095455);
+        $this->RegisterPropertyInteger("TimerTimer2", 95455);
         $this->RegisterPropertyInteger("TimerTimer3", 534922);
         $this->RegisterPropertyInteger("TimerTimer4", 6227124);
         $this->RegisterPropertyInteger("TimerTimer5", 13381370);
