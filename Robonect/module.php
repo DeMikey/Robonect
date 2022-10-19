@@ -1624,7 +1624,7 @@ class RobonectWifiModul extends IPSModule
                     IPS_SetParent($HTMLboxCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
             if (!@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableInteger("Timerlist", $this->Translate('Timerlist'), "", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
         }
 
