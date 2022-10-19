@@ -1962,7 +1962,7 @@ class RobonectWifiModul extends IPSModule
             else $htmlBox .= "<div id='base'>";
     
             $htmlBox .= "<div id='bb1' style='width:".$b1px."px;'><div id='b1' width:".$b1px."px;'></div></div>";
-            $htmlBox .= "<div id='bmow' style='width:".$mowpx."px;'><div id='mow' style='background-color:".dechex($this->ReadPropertyInteger("Timer".$key)).";";
+            $htmlBox .= "<div id='bmow' style='width:".$mowpx."px;'><div id='mow' style='background-color:#".dechex($this->ReadPropertyInteger("Timer".$key)).";";
     
             if($this->ReadPropertyBoolean("TimerTimerText")){
                 if($mowpx < 80) $htmlBox .= "width:".$mowpx."px;'></div></div>";
