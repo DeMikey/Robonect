@@ -1621,7 +1621,7 @@ class RobonectWifiModul extends IPSModule
                     IPS_SetParent($HTMLboxCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
             if (!@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "~HTMLBox", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
             $this->SetTimerBox(null);
         }
@@ -1788,11 +1788,11 @@ class RobonectWifiModul extends IPSModule
     
     
         // Hintergrundfarbe Hauptfenster, Header und Fooder umwandeln (hex -> rgb)
-        list($br, $bg, $bb) = sscanf(dechex ($this->ReadPropertyInteger("TimerBackground")), "#%02x%02x%02x");
+        list($br, $bg, $bb) = sscanf("#".dechex ($this->ReadPropertyInteger("TimerBackground")), "#%02x%02x%02x");
         // Linienfarbe Grid umwandeln (hex -> rgb)
-        list($gr, $gg, $gb) = sscanf(dechex ($this->ReadPropertyInteger("TimerGridColor")), "#%02x%02x%02x");
+        list($gr, $gg, $gb) = sscanf("#".dechex ($this->ReadPropertyInteger("TimerGridColor")), "#%02x%02x%02x");
         // Linienfarbe Timerauswahl umwandeln (hex -> rgb)
-        list($sr, $sg, $sb) = sscanf(dechex ($this->ReadPropertyInteger("TimerSelectColor")), "#%02x%02x%02x");
+        list($sr, $sg, $sb) = sscanf("#".dechex ($this->ReadPropertyInteger("TimerSelectColor")), "#%02x%02x%02x");
         $width = $this->ReadPropertyInteger("TimerWidth");
         $fontSize = $this->ReadPropertyInteger("TimerFontSize");
         $bgoca = 0.1;
@@ -1942,8 +1942,8 @@ class RobonectWifiModul extends IPSModule
     
             // zusammenfügen der einzelnen Timerzeilen
             $htmlBox .= "<div id='timer'>";
-            if($activ === 0) $htmlBox .= "<div id='tbase' style='background-color:".dechex($this->ReadPropertyInteger("Timer".$key)).";opacity:".$toca.";'></div>";
-            else $htmlBox .= "<div id='tbase' style='background-color:".dechex($this->ReadPropertyInteger("Timer".$key)).";'></div>";
+            if($activ === 0) $htmlBox .= "<div id='tbase' style='background-color:#".dechex($this->ReadPropertyInteger("Timer".$key)).";opacity:".$toca.";'></div>";
+            else $htmlBox .= "<div id='tbase' style='background-color:#".dechex($this->ReadPropertyInteger("Timer".$key)).";'></div>";
             $htmlBox .= "<div id='ttext'>".str_replace(array("t", "r"), array("T", "r "), $key)."</div>";
             $htmlBox .= "</div>";
     
