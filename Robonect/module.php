@@ -1752,16 +1752,13 @@ class RobonectWifiModul extends IPSModule
             $Buffer = array();
             for ($i = 1; $i <= 14; $i++) {
                 $Timer = array (
-                    "id" => $i-1,
+                    "id" => $i,
                     "enabled" => GetValueBoolean(IPS_GetObjectIDByIdent("Timer".$i."enable", $TimerCatID)),
                     "start" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."start", $TimerCatID)),
                     "end" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."end",$TimerCatID))
                 );
     
                 $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)), 10, 2)));
-                //if (!$Weekdays) {
-                //    $Weekdays = array (0,0,0,0,0,0,0);
-                //}
                 $Count = 0;
                 foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
                     if ((count($Weekdays) > $Count) && ($Weekdays[$Count])) {
