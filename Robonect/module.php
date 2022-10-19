@@ -8,7 +8,6 @@
 class RobonectWifiModul extends IPSModule
 {
 
-    private $BufferTimer = array();
     /**
      * Die folgenden Funktionen stehen automatisch zur Verfügung, wenn das Modul über die "Module Control" eingefügt wurden.
      * Die Funktionen werden, mit dem selbst eingerichteten Prefix, in PHP und JSON-RPC wiefolgt zur Verfügung gestellt:
@@ -63,7 +62,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("TimerTimerWidth", 60);
         $this->RegisterPropertyInteger("TimerTimerHigh", 25);
         $this->RegisterPropertyInteger("TimerTimer1", 5821431);
-        $this->RegisterPropertyInteger("TimerTimer2", 95455);
+        $this->RegisterPropertyInteger("TimerTimer2", 0095455);
         $this->RegisterPropertyInteger("TimerTimer3", 534922);
         $this->RegisterPropertyInteger("TimerTimer4", 6227124);
         $this->RegisterPropertyInteger("TimerTimer5", 13381370);
@@ -76,36 +75,6 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("TimerTimer12", 10870528);
         $this->RegisterPropertyInteger("TimerTimer13", 308228);
         $this->RegisterPropertyInteger("TimerTimer14", 122740);
-
-        // Create TimerBuffer
-        if ($TimerCatID = @IPS_GetCategoryIDByName('Timers', $this->InstanceID)) {
-            for ($i = 1; $i <= 14; $i++) {
-                $Timer = array (
-                    "Timer".$i => array (
-                        "id" => $i-1,
-                        "enabled" => GetValueBoolean(IPS_GetObjectIDByIdent("Timer".$i."enable", $TimerCatID)),
-                        "start" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."start", $TimerCatID)),
-                        "end" => GetValueString(IPS_GetObjectIDByIdent("Timer".$i."end",$TimerCatID)),
-                        "weekdays" => array ()
-                    )
-                );
-                $Weekdays = array_reverse(str_split(base_convert(GetValueInteger(IPS_GetObjectIDByIdent("Timer".$i."weekdays", $TimerCatID)), 10, 2)));
-                if (!$Weekdays[0]) {
-                    $Weekdays = array (0,0,0,0,0,0,0);
-                }
-                $Count = 0;
-                foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
-                    if ((count($Weekdays) > $Count) && ($Weekdays[$Count])) {
-                        $Timer["Timer".$i]["weekdays"][$Day] = $Weekdays[$Count];
-                    } else {
-                        $Timer["Timer".$i]["weekdays"][$Day] = 0;
-                    }
-                    $Count++;
-                }
-                //array_push($this->BufferTimer , $Timer);
-               $this->BufferTimer= $Timer;
-            }
-        }
 
     }
 
@@ -879,29 +848,7 @@ class RobonectWifiModul extends IPSModule
                 return;
             }
             SetValue($TimerVariableID, $Data->Payload);
-            // Buffer holen
-            if (!$BufferID = @IPS_GetObjectIDByIdent("TimerBuffer", $TimerCat)) {
-                $this->log("Timer Buffer Variable not found!");
-            } else {
-                $Buffer  = json_decode(GetValueString($BufferID), true);
-                if ($TimerValue == "weekdays") {
-                    $Weekdays = array_reverse(str_split(base_convert(intval($Data->Payload), 10, 2)));
-                    $Count = 0;
-                    foreach (["mo","di","mi","do","fr","sa","so"] as $Day) {
-                        if ($Weekdays[$Count]) {
-                            $Buffer["Timer".$TimerChannel]["weekdays"][$Day] = $Weekdays[$Count];
-                        } else {
-                            $Buffer["Timer".$TimerChannel]["weekdays"][$Day] = 0;
-                        }
-                        $Count++;
-                    }                   
-                } else {
-                   $Buffer["Timer".$TimerChannel][$TimerValue] = $Data->Payload;
-                }
-                // Buffer zurückschreiben
-                SetValue($BufferID, json_encode($Buffer));
-            }
-
+            $this->SetTimerBox(null);
         } else {
             $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
         }
@@ -1493,33 +1440,6 @@ class RobonectWifiModul extends IPSModule
             }
             $Position = $Position + 4;
         }
-        if (!@IPS_GetObjectIDByIdent("TimerBuffer", $TimerCat)) {
-            $Timers = array ();
-            for ($i = 1; $i <= 14; $i++) {
-                $Timer = array (
-                    "Timer".$i => array (
-                        "id" => 0,
-                        "enabled" => 0,
-                        "start" => "00:00",
-                        "end" => "00:00",
-                        "weekdays" => array (
-                            "mo" => 0,
-                            "di" => 0,
-                            "mi" => 0,
-                            "do" => 0,
-                            "fr" => 0,
-                            "sa" => 0,
-                            "so" => 0
-                        )
-                    )
-                );
-                array_push($Timers, $Timer);
-            };
-            $TimerBuffer = $this->RegisterVariableString("TimerBuffer", "Buffer", "", 203 + $Position);
-            $this->SetValue("TimerBuffer", json_encode($Timers));
-            IPS_SetParent($TimerBuffer, $TimerCat); // Buffer unter die Kategory Timer verschieben.
-        }
-
         /*
         $this->RegisterVariableInteger( "mowerTimerStatus", "Timer Status", "ROBONECT_TimerStatus", 90 );
 
@@ -1691,63 +1611,7 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     public function SetTimerBox(int $number = null){
     #================================================================================================
-        
-        
-    ///    Global $parents, $conf_timer;
-        // Daten aus dem Speicher holen
         IPS_SemaphoreEnter("TimerBuffer", 3000);
-       
-    /*    $buffer = robo_GetSetBuffer("read");
-    
-        if(array_key_exists("timer", $buffer) === false){
-            IPS_SemaphoreLeave("openBuffer");
-            robo_SetVariable("roboBoxTimer", "roboBoxID", "noch eine Daten vorhanden, bitte Timer einlesen");
-            return;
-        }
-        elseif(is_array($buffer['timer']) === false){
-            IPS_SemaphoreLeave("openBuffer");
-            robo_SetVariable("roboBoxTimer", "roboBoxID", "noch eine Daten vorhanden, bitte Timer einlesen");
-            return;
-        }
-        elseif(empty($buffer['timer']) === true){
-            IPS_SemaphoreLeave("openBuffer");
-            robo_SetVariable("roboBoxTimer", "roboBoxID", "noch eine Daten vorhanden, bitte Timer einlesen");
-            return;
-        }
-    
-        "timer": {
-            "timer1": {
-                "id":"1",
-                "enabled":0,
-                "start":"11:00",
-                "end":"12:00",
-                "weekdays":{
-                    "mo":1,
-                    "tu":1,
-                    "we":1,
-                    "th":1,
-                    "fr":1,
-                    "sa":1,
-                    "su":1
-                }
-            },
-            "timer2": {
-                "id":"2",
-                "enabled":1,
-                "start":"15:00",
-                "end":"22:00",
-                "weekdays":{
-                    "mo":1,
-                    "tu":1,
-                    "we":1,
-                    "th":1,
-                    "fr":1,
-                    "sa":1,
-                    "su":1
-                }
-            }
-        }
-        */
         if ($TimerCatID = @IPS_GetCategoryIDByName('Timers',59802)) {
             $Buffer = array();
             for ($i = 1; $i <= 14; $i++) {
@@ -1962,7 +1826,7 @@ class RobonectWifiModul extends IPSModule
             else $htmlBox .= "<div id='base'>";
     
             $htmlBox .= "<div id='bb1' style='width:".$b1px."px;'><div id='b1' width:".$b1px."px;'></div></div>";
-            $htmlBox .= "<div id='bmow' style='width:".$mowpx."px;'><div id='mow' style='background-color:#".dechex($this->ReadPropertyInteger("Timer".$key)).";";
+            $htmlBox .= "<div id='bmow' style='width:".$mowpx."px;'><div id='mow' style='background-color:#".substr("000000".dechex($this->ReadPropertyInteger("Timer".$key)),-6).";";
     
             if($this->ReadPropertyBoolean("TimerTimerText")){
                 if($mowpx < 80) $htmlBox .= "width:".$mowpx."px;'></div></div>";
