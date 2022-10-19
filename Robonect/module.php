@@ -4,8 +4,8 @@
 define('__ROOT__', dirname(dirname(__FILE__)));
 
 // load library
-require_once __ROOT__ . '/libs/media.php';
-require_once __ROOT__ . '../libs/HTMLBox.php';
+require_once __ROOT__ . '/../libs/media.php';
+require_once __ROOT__ . '/../libs/HTMLBox.php';
 
 // Klassendefinition
 class RobonectWifiModul extends IPSModule
