@@ -1533,16 +1533,18 @@ class RobonectWifiModul extends IPSModule
                 IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
             // Batterie Spannung Chart
-            $BatteryVoltageChartFile ='media/' . 'ChartBattStatus.' . $this->InstanceID . '.chart';
+            $BatteryVoltageChartFile ='media/' . 'ChartBattVolt.' . $this->InstanceID . '.chart';
 if (!$media_id = @IPS_GetMediaIDByFile($BatteryVoltageChartFile)) {
     // Get Archiv ID
     $ArchivID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
     // Archivierung auf mowerVoltageBattery aktiviren
     $VoltageBatteryID = $this->GetIDForIdent("mowerVoltageBattery");
+if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
     AC_SetLoggingStatus($ArchivID, $VoltageBatteryID, true);
     AC_SetAggregationType($ArchivID, $VoltageBatteryID, 0);
     AC_SetGraphStatus($ArchivID, $VoltageBatteryID, false);
     IPS_ApplyChanges($ArchivID);
+}
 
     $Json = '{"datasets": [{"variableID": '.$VoltageBatteryID.',"fillColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageFill")),-6).'","strokeColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageLine")),-6).'","title": "'.$this->Translate("Voltaage").'","timeOffset": 0}],"profile": "ROBONECT_Spannung","type": "line"}';
 
