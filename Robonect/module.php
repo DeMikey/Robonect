@@ -1488,7 +1488,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableInteger("WeatherHumidity", "Luft Feuchtigkeit", "~Humidity", 81);
         $this->RegisterVariableBoolean("WeatherRain", "Es regnet", "ROBONECT_JaNein", 82);
         $this->RegisterVariableFloat("WeatherTemperature", "Aussen Temperatur", "~Temperature", 83);
-        $this->RegisterVariableString( "WeatherService", "Wetterdienst", "~HTMLBox", 84);
+        $this->RegisterVariableString("WeatherService", "Wetterdienst", "", 84);
 
         //--- Clock -------------------------------------------------------------
         $this->RegisterVariableInteger( "mowerUnixTimestamp", "Interner Unix Zeitstempel", "~UnixTimestamp", 110 );
