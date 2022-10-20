@@ -1539,16 +1539,16 @@ if (!$media_id = @IPS_GetMediaIDByFile($BatteryVoltageChartFile)) {
     $ArchivID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
     // Archivierung auf mowerVoltageBattery aktiviren
     $VoltageBatteryID = $this->GetIDForIdent("mowerVoltageBattery");
+    AC_SetLoggingStatus($ArchivID, $VoltageBatteryID, true);
     AC_SetAggregationType($ArchivID, $VoltageBatteryID, 0);
     AC_SetGraphStatus($ArchivID, $VoltageBatteryID, false);
-    AC_SetLoggingStatus($ArchivID, $VoltageBatteryID, true);
     IPS_ApplyChanges($ArchivID);
 
     $Json = '{"datasets": [{"variableID": '.$VoltageBatteryID.',"fillColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageFill")),-6).'","strokeColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageLine")),-6).'","title": "'.$this->Translate("Voltaage").'","timeOffset": 0}],"profile": "ROBONECT_Spannung","type": "line"}';
 
     $BatterieChartID = IPS_CreateMedia(4);
-    IPS_SetParent($mediBatterieChartIDaID, $MediaCat);
-    IPS_SetIdent($BatterieChartID, "BatterieVoltage");
+    IPS_SetParent($BatterieChartID, $MediaCat);
+    IPS_SetIdent($BatterieChartID, "ChartBatterieVoltage");
     IPS_SetPosition($BatterieChartID, 2);
     IPS_SetMediaCached($BatterieChartID, false);
     IPS_SetName($BatterieChartID, $this->Translate("Batterie voltage chart"));
