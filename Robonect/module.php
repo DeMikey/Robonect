@@ -50,7 +50,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("ChartBatteryVoltageFill", 33023);
         $this->RegisterPropertyInteger("ChartBatteryVoltageLine", 160);
 
-        // HTML Box
+        // HTML Box Timer
         $this->RegisterPropertyInteger("TimerFontSize", 11);
         $this->RegisterPropertyInteger("TimerBackground", 16777215);
         $this->RegisterPropertyInteger("TimerWidth", 660);
@@ -80,6 +80,14 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("TimerTimer12", 10870528);
         $this->RegisterPropertyInteger("TimerTimer13", 308228);
         $this->RegisterPropertyInteger("TimerTimer14", 122740);
+        // HTML Box Error
+        $this->RegisterPropertyInteger("ErrorFontSize", 11);
+        $this->RegisterPropertyBoolean("ErrorBackground", false);
+        $this->RegisterPropertyInteger("ErrorBackgroundColor", 16777215);
+        $this->RegisterPropertyInteger("ErrorRowHigh", 25);
+        $this->RegisterPropertyInteger("ErrorDateWidth", 100);
+        $this->RegisterPropertyInteger("ErrorHourWidth", 100);
+        $this->RegisterPropertyInteger("ErrorWMessageidth", 100);
 
     }
 
@@ -1534,32 +1542,7 @@ class RobonectWifiModul extends IPSModule
             }
             // Batterie Spannung Chart
             $BatteryVoltageChartFile ='media/' . 'ChartBattVolt.' . $this->InstanceID . '.chart';
-if (!$media_id = @IPS_GetMediaIDByFile($BatteryVoltageChartFile)) {
-    // Get Archiv ID
-    $ArchivID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
-    // Archivierung auf mowerVoltageBattery aktiviren
-    $VoltageBatteryID = $this->GetIDForIdent("mowerVoltageBattery");
-if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
-    AC_SetLoggingStatus($ArchivID, $VoltageBatteryID, true);
-    AC_SetAggregationType($ArchivID, $VoltageBatteryID, 0);
-    AC_SetGraphStatus($ArchivID, $VoltageBatteryID, false);
-    IPS_ApplyChanges($ArchivID);
-}
-
-    $Json = '{"datasets": [{"variableID": '.$VoltageBatteryID.',"fillColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageFill")),-6).'","strokeColor": "#'.substr("000000".dechex($this->ReadPropertyInteger("ChartBatteryVoltageLine")),-6).'","title": "'.$this->Translate("Voltaage").'","timeOffset": 0}],"profile": "ROBONECT_Spannung","type": "line"}';
-
-    $BatterieChartID = IPS_CreateMedia(4);
-    IPS_SetParent($BatterieChartID, $MediaCat);
-    IPS_SetIdent($BatterieChartID, "ChartBatterieVoltage");
-    IPS_SetPosition($BatterieChartID, 2);
-    IPS_SetMediaCached($BatterieChartID, false);
-    IPS_SetName($BatterieChartID, $this->Translate("Batterie voltage chart"));
-    IPS_SetMediaFile($BatterieChartID, $BatteryVoltageChartFile, false);
-    IPS_SetMediaContent($BatterieChartID, base64_encode($Json));
-    IPS_SendMediaEvent($BatterieChartID);
-}
-
-
+            $this->NewMediaChart($MediaCat, "ChartBatterieVoltage", "Batterie voltage chart", $BatteryVoltageChartFile, $this->GetIDForIdent("mowerVoltageBattery"), $this->ReadPropertyInteger("ChartBatteryVoltageFill"), $this->ReadPropertyInteger("ChartBatteryVoltageLine"), "Voltaage");
         }
 
         //----HTMLBox
@@ -1570,9 +1553,12 @@ if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
                     IPS_SetParent($HTMLboxCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
             if (!@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "~HTMLBox", 200 + $Position), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "~HTMLBox", 201), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
-            $this->SetTimerBox(null);
+            if (!@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
+                IPS_SetParent($this->RegisterVariableString("Errorlist", $this->Translate('Errorlist'), "~HTMLBox", 202), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+            }
+            $this->robo_GetErrorList();
         }
 
     }
@@ -1609,14 +1595,13 @@ if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
 	    $Data['Payload'] = $Payload;
 
 	    $DataJSON = json_encode($Data, JSON_UNESCAPED_SLASHES);
-//		$this->SendDebug("Sended", $DataJSON, 0);
-//	    $this->SendDataToParent($DataJSON);
 
         $this->SendDebug(__FUNCTION__ . 'MQTT Server', $DataJSON, 0);
         $result = @$this->SendDataToParent($DataJSON);
 
         //MQTT Client
-/*        $Buffer['PacketType'] = 3;
+        /* 
+       $Buffer['PacketType'] = 3;
         $Buffer['QualityOfService'] = 0;
         $Buffer['Retain'] = boolval($retain);
         $Buffer['Topic'] = $Topic;
@@ -1629,7 +1614,7 @@ if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
         $ClientJSON = json_encode($Client);
         $this->SendDebug(__FUNCTION__ . 'MQTT Client', $ClientJSON, 0);
         $resultClient = @$this->SendDataToParent($ClientJSON);
-*/
+        */
         if ($result === false) {
             $last_error = error_get_last();
             return $last_error['message'];
@@ -1637,6 +1622,36 @@ if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
         return "Success";
     }
 
+
+    #================================================================================================
+    protected function NewMediaChart (int $ParentID, string $ChartIdent, string $ChartName, string $ChartFile, string $ArchivVarID, int $ChartFill, int $ChartLine, string $Title) {
+    #================================================================================================
+        if (!$ChartID = @IPS_GetMediaIDByFile($BatteryVoltageChartFile)) {
+            // Get Archiv ID
+            $ArchivID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
+            // Archivierung auf mowerVoltageBattery aktiviren
+            if (!AC_GetLoggingStatus($ArchivID, $ArchivVarID)) {
+                AC_SetLoggingStatus($ArchivID, $ArchivVarID, true);
+                AC_SetAggregationType($ArchivID, $ArchivVarID, 0);
+                AC_SetGraphStatus($ArchivID, $ArchivVarID, false);
+                IPS_ApplyChanges($ArchivID);
+            }
+    
+            $Json = '{"datasets": [{"variableID": '.$ArchivVarID.',"fillColor": "#'.substr("000000".dechex($ChartFill), -6).'","strokeColor": "#'.substr("000000".dechex($ChartLine), -6).'","title": "'.$this->Translate($Title).'","timeOffset": 0}],"profile": "ROBONECT_Spannung","type": "line"}';
+    
+            $ChartID = IPS_CreateMedia(4);
+            IPS_SetParent($ChartID, $ParentID);
+            IPS_SetIdent($ChartID, $$ChartIdent);
+            IPS_SetPosition($ChartID, 2);
+            IPS_SetMediaCached($ChartID, false);
+            IPS_SetName($ChartID, $this->Translate($ChartName));
+            IPS_SetMediaFile($ChartID, $ChartFile, false);
+            IPS_SetMediaContent($ChartID, base64_encode($Json));
+            IPS_SendMediaEvent($ChartID);
+        }
+        return $ChartID;
+    }
+    
     #================================================================================================
     public function SetTimerBox(int $number = null){
     #================================================================================================
@@ -1904,4 +1919,69 @@ if (!AC_GetLoggingStatus($ArchivID, $VoltageBatteryID)) {
         IPS_SemaphoreLeave("TimerBuffer");
         return $htmlBox;
     }
+
+
+    #================================================================================================
+    protected function robo_GetErrorList() {
+    #================================================================================================
+        $data = $this->executeHTTPCommand("error");
+        $this->log("Fehlermeldungen: ".$data);
+
+if ($data['successful']) {
+ //       if($content['successful'] == true){
+    // Hintergrundfarbe umwandeln (hex -> rgb)
+    if ($this->ReadPropertyBoolean("ErrorBackground")) {
+        list($er, $eg, $eb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("ErrorBackgroundColor")), -6), "#%02x%02x%02x");
+    }
+    $oca_tbg = 0.1;
+    $timestamp = true;
+
+    $htmlBox = "<style type='text/css'>";
+    if (!$this->ReadPropertyBoolean("ErrorBackground")) {
+        $bgt = "none";
+    } else {
+        $bgt = "rgba(".$er.",".$eg.",".$eb.",".$oca_tbg.")";
+    }
+    $htmlBox .= "#etable {position:relative;float:left;background:".$bgt.";font-size:".$this->ReadPropertyInteger("ErrorFontSize")."px;padding:10px;}";
+            $htmlBox .= "#espacer {width:".($this->ReadPropertyInteger("ErrorDateWidth") + $this->ReadPropertyInteger("ErrorHourWidth") + $this->ReadPropertyInteger("ErrorWMessageidth"))."px;height:5px;margin:auto;clear:both;}";
+            $htmlBox .= "#edate {float:left;width:".$this->ReadPropertyInteger("ErrorDateWidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
+            $htmlBox .= "#etime {float:left;width:".$this->ReadPropertyInteger("ErrorHourWidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
+            $htmlBox .= "#etext {float:left;width:".$this->ReadPropertyInteger("ErrorWMessageidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
+            $htmlBox .= "</style>";
+
+            if(array_key_exists("errors", $data) and array_key_exists("0", $data['errors']) === true)
+            {
+                $htmlBox ="<div id='etable'>";
+                $htmlBox .= "<div id='espacer'></div>";
+
+                foreach($data['errors'] as $key => $value)
+                {
+                    $htmlBox .= "<div>";
+                    $htmlBox .= "<div id='edate'>".$value['date']."</div>";
+                    $htmlBox .= "<div id='etime'>".$value['time']."</div>";
+                    $htmlBox .= "<div id='etime'>Error Code: ".$value['error_code']."</div>";
+                    $htmlBox .= "<div id='etext'> ".$value['error_message']."</div>";
+                    $htmlBox .= "</div>";
+                    $htmlBox .= "<div id='espacer'></div>";
+                }
+
+                if($timestamp == true) $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+                $htmlBox .= "</div>";
+            }
+            else{
+                $htmlBox .= "<div id='etable'>";
+                $htmlBox .= "<div style='font-size:".($conf_error['fsize'] + 2)."px;'>Fehlerspeicher ist leer</div>";
+                if($timestamp == true){
+                    $htmlBox .= "<div id='espacer'></div>";
+                    $htmlBox .= "<div id='espacer'></div>";
+                    $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+                }
+                $htmlBox .= "</div>";
+            }
+            return $htmlBox;
+ //       }
+    }
+    return false;
+}
+
 }

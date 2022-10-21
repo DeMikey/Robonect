@@ -86,7 +86,16 @@
 			{ "type": "SelectColor", "name": "TimerTimer14", "caption": "Timer 14 color", "allowTransparent": "false", "value": 122740}
       ]
     },
-
+    { "type": "ExpansionPanel", "caption": "Error settings", "items": [
+      { "type": "NumberSpinner", "name": "ErrorFontSize", "caption":  "Font size", "minimum":  8, "maximum": 18, "value": 13},
+      { "type": "CheckBox", "name": "ErrorBackground", "caption": "Table background"},
+      { "type": "SelectColor", "name": "ErrorBackgroundColor", "caption": "Background color", "allowTransparent": "false", "value": 16777215},
+      { "type": "NumberSpinner", "name": "ErrorRowHigh", "caption": "Row high", "minimum": 20, "maximum": 30, "value": 25},
+      { "type": "NumberSpinner", "name": "ErrorDateWidth", "caption":  "Date colum width", "minimum": 50, "maximum": 300, "value": 100},
+      { "type": "NumberSpinner", "name": "ErrorHourWidth", "caption":  "Hour colum width", "minimum": 50, "maximum": 300, "value": 100},
+      { "type": "NumberSpinner", "name": "ErrorWMessageidth", "caption":  "Message colum width", "minimum": 50, "maximum": 300, "value": 100}
+    ]
+  },
     { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
 
     { "type": "Label", "caption": "   " },

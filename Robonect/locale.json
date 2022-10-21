@@ -51,7 +51,8 @@
       "Line color": "Linien Farbe",
       "Voltaage": "Spannung",
 
-      "Timerlist": "Timerliste"
+      "Timerlist": "Timerliste",
+      "Errorlist": "Fehlerliste"
     }
   }
 }
