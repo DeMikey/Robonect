@@ -691,6 +691,7 @@ class RobonectWifiModul extends IPSModule
                 } else {
                   $this->SetStatus(202); // No Device at IP
                 }
+                $this->log("Response: ".$json);
                 return json_decode( $json, true );
                 break;
         }
