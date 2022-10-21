@@ -762,7 +762,6 @@ class RobonectWifiModul extends IPSModule
     }
 
     public function ReceiveData($JSONString) {
-        $this->log("Interner Buffer: ". json_encode($this->BufferTimer));
         // MQTT Tropics
         $topicList['/device/name']['Ident']                 = 'mowerName';
         $topicList['/device/serial']['Ident']               = 'mowerSerial';
@@ -1926,6 +1925,7 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
         $data = $this->executeHTTPCommand("error");
         $this->log("Fehlermeldungen: ".$data);
+        return false;
 
 if ($data['successful']) {
  //       if($content['successful'] == true){
