@@ -1640,7 +1640,7 @@ class RobonectWifiModul extends IPSModule
     
             $ChartID = IPS_CreateMedia(4);
             IPS_SetParent($ChartID, $ParentID);
-            IPS_SetIdent($ChartID, $$ChartIdent);
+            IPS_SetIdent($ChartID, $ChartIdent);
             IPS_SetPosition($ChartID, 2);
             IPS_SetMediaCached($ChartID, false);
             IPS_SetName($ChartID, $this->Translate($ChartName));
