@@ -1920,69 +1920,61 @@ class RobonectWifiModul extends IPSModule
         return $htmlBox;
     }
 
-
     #================================================================================================
     protected function robo_GetErrorList() {
     #================================================================================================
-        $data = $this->executeHTTPCommand("error");
-        $this->log("Fehlermeldungen: ".$data);
-        return false;
+        if (!$data = @$this->executeHTTPCommand("error")) {
+            $this->log("Fehlermeldungen: ".$data);
+            return false;
+        }
+        // {"errors": [{"error_code": 0, "error_message": "Fehler 0", "date": "2020-09-22", "time": "16:57:11", "unix": 1600793831}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2022-07-02", "time": "16:31:07", "unix": 1656779467}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2022-06-22", "time": "16:53:54", "unix": 1655916834}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2022-06-03", "time": "16:30:26", "unix": 1654273826}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2022-05-27", "time": "16:30:29", "unix": 1653669029}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2022-05-18", "time": "14:45:51", "unix": 1652885151}, {"error_code": 11, "error_message": "Batterie schwach", "date": "2022-05-13", "time": "17:13:26", "unix": 1652462006}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-05-13", "time": "17:11:48", "unix": 1652461908}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-05-13", "time": "16:45:25", "unix": 1652460325}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-05-09", "time": "07:18:28", "unix": 1652080708}, {"error_code": 30, "error_message": "Batterieproblem", "date": "2022-04-29", "time": "19:39:40", "unix": 1651261180}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2022-04-29", "time": "14:10:11", "unix": 1651241411}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-04-15", "time": "20:39:05", "unix": 1650055145}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-04-15", "time": "20:04:43", "unix": 1650053083}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2022-04-13", "time": "14:11:05", "unix": 1649859065}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2022-03-17", "time": "18:48:18", "unix": 1647542898}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-10-29", "time": "14:13:03", "unix": 1635516783}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-10-26", "time": "16:32:10", "unix": 1635265930}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-10-08", "time": "17:01:28", "unix": 1633712488}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-09-17", "time": "15:52:10", "unix": 1631893930}, {"error_code": 30, "error_message": "Batterieproblem", "date": "2021-08-18", "time": "20:34:04", "unix": 1629318844}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-06-30", "time": "13:32:20", "unix": 1625059940}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-06-18", "time": "19:19:07", "unix": 1624043947}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-06-16", "time": "16:24:56", "unix": 1623860696}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-05-20", "time": "21:00:00", "unix": 1621544400}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-05-20", "time": "20:57:37", "unix": 1621544257}, {"error_code": 18, "error_message": "Sto�sensor vorne ist defekt", "date": "2021-05-20", "time": "14:01:59", "unix": 1621519319}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-05-13", "time": "13:32:07", "unix": 1620912727}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-05-13", "time": "13:29:49", "unix": 1620912589}, {"error_code": 16, "error_message": "Nummer3 steckt in Ladestation fest", "date": "2021-05-04", "time": "13:00:25", "unix": 1620133225}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-04-28", "time": "16:37:30", "unix": 1619627850}, {"error_code": 12, "error_message": "Batterie leer", "date": "2021-04-26", "time": "10:46:01", "unix": 1619433961}, {"error_code": 12, "error_message": "Batterie leer", "date": "2020-11-15", "time": "16:22:49", "unix": 1605457369}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-11-11", "time": "15:26:56", "unix": 1605108416}, {"error_code": 13, "error_message": "Kein Antrieb", "date": "2020-11-10", "time": "16:22:11", "unix": 1605025331}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-11-09", "time": "14:39:48", "unix": 1604932788}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-09", "time": "14:38:38", "unix": 1604932718}, {"error_code": 25, "error_message": "M�heinheit ist blockiert", "date": "2020-11-09", "time": "13:01:31", "unix": 1604926891}, {"error_code": 13, "error_message": "Kein Antrieb", "date": "2020-11-06", "time": "18:59:42", "unix": 1604689182}, {"error_code": 25, "error_message": "M�heinheit ist blockiert", "date": "2020-11-06", "time": "18:24:02", "unix": 1604687042}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-06", "time": "13:00:27", "unix": 1604667627}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-03", "time": "16:30:27", "unix": 1604421027}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-02", "time": "16:30:27", "unix": 1604334627}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-01", "time": "16:31:29", "unix": 1604248289}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-10-31", "time": "16:57:25", "unix": 1604163445}, {"error_code": 17, "error_message": "Ladestation ist blockiert", "date": "2020-10-30", "time": "14:45:24", "unix": 1604069124}, {"error_code": 18, "error_message": "Sto�sensor vorne ist defekt", "date": "2020-10-11", "time": "14:49:55", "unix": 1602427795}, {"error_code": 50, "error_message": "Leitdraht SK1 nicht gefunden", "date": "2020-10-09", "time": "14:01:10", "unix": 1602252070}, {"error_code": 12, "error_message": "Batterie leer", "date": "2020-10-07", "time": "18:57:53", "unix": 1602097073}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-10-02", "time": "17:26:34", "unix": 1601659594}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2020-09-24", "time": "18:00:58", "unix": 1600970458}], "successful": true}
+        // Hintergrundfarbe umwandeln (hex -> rgb)
+        if ($this->ReadPropertyBoolean("ErrorBackground")) {
+            list($er, $eg, $eb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("ErrorBackgroundColor")), -6), "#%02x%02x%02x");
+        }
+        $oca_tbg = 0.1;
+        $timestamp = true;
 
-if ($data['successful']) {
- //       if($content['successful'] == true){
-    // Hintergrundfarbe umwandeln (hex -> rgb)
-    if ($this->ReadPropertyBoolean("ErrorBackground")) {
-        list($er, $eg, $eb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("ErrorBackgroundColor")), -6), "#%02x%02x%02x");
-    }
-    $oca_tbg = 0.1;
-    $timestamp = true;
+        $htmlBox = "<style type='text/css'>";
+        if (!$this->ReadPropertyBoolean("ErrorBackground")) {
+            $bgt = "none";
+        } else {
+            $bgt = "rgba(".$er.",".$eg.",".$eb.",".$oca_tbg.")";
+        }
+        $htmlBox .= "#etable {position:relative;float:left;background:".$bgt.";font-size:".$this->ReadPropertyInteger("ErrorFontSize")."px;padding:10px;}";
+        $htmlBox .= "#espacer {width:".($this->ReadPropertyInteger("ErrorDateWidth") + $this->ReadPropertyInteger("ErrorHourWidth") + $this->ReadPropertyInteger("ErrorWMessageidth"))."px;height:5px;margin:auto;clear:both;}";
+        $htmlBox .= "#edate {float:left;width:".$this->ReadPropertyInteger("ErrorDateWidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
+        $htmlBox .= "#etime {float:left;width:".$this->ReadPropertyInteger("ErrorHourWidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
+        $htmlBox .= "#etext {float:left;width:".$this->ReadPropertyInteger("ErrorWMessageidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
+        $htmlBox .= "</style>";
 
-    $htmlBox = "<style type='text/css'>";
-    if (!$this->ReadPropertyBoolean("ErrorBackground")) {
-        $bgt = "none";
-    } else {
-        $bgt = "rgba(".$er.",".$eg.",".$eb.",".$oca_tbg.")";
-    }
-    $htmlBox .= "#etable {position:relative;float:left;background:".$bgt.";font-size:".$this->ReadPropertyInteger("ErrorFontSize")."px;padding:10px;}";
-            $htmlBox .= "#espacer {width:".($this->ReadPropertyInteger("ErrorDateWidth") + $this->ReadPropertyInteger("ErrorHourWidth") + $this->ReadPropertyInteger("ErrorWMessageidth"))."px;height:5px;margin:auto;clear:both;}";
-            $htmlBox .= "#edate {float:left;width:".$this->ReadPropertyInteger("ErrorDateWidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
-            $htmlBox .= "#etime {float:left;width:".$this->ReadPropertyInteger("ErrorHourWidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
-            $htmlBox .= "#etext {float:left;width:".$this->ReadPropertyInteger("ErrorWMessageidth")."px;height:".$this->ReadPropertyInteger("ErrorRowHigh")."px;padding:1px;}";
-            $htmlBox .= "</style>";
-
-            if(array_key_exists("errors", $data) and array_key_exists("0", $data['errors']) === true)
-            {
-                $htmlBox ="<div id='etable'>";
+        if(array_key_exists("errors", $data) and array_key_exists("0", $data['errors']) === true) {
+            $htmlBox ="<div id='etable'>";
+            $htmlBox .= "<div id='espacer'></div>";
+            foreach($data['errors'] as $key => $value) {
+                $htmlBox .= "<div>";
+                $htmlBox .= "<div id='edate'>".$value['date']."</div>";
+                $htmlBox .= "<div id='etime'>".$value['time']."</div>";
+                $htmlBox .= "<div id='etime'>Error Code: ".$value['error_code']."</div>";
+                $htmlBox .= "<div id='etext'> ".$value['error_message']."</div>";
+                $htmlBox .= "</div>";
                 $htmlBox .= "<div id='espacer'></div>";
-
-                foreach($data['errors'] as $key => $value)
-                {
-                    $htmlBox .= "<div>";
-                    $htmlBox .= "<div id='edate'>".$value['date']."</div>";
-                    $htmlBox .= "<div id='etime'>".$value['time']."</div>";
-                    $htmlBox .= "<div id='etime'>Error Code: ".$value['error_code']."</div>";
-                    $htmlBox .= "<div id='etext'> ".$value['error_message']."</div>";
-                    $htmlBox .= "</div>";
-                    $htmlBox .= "<div id='espacer'></div>";
-                }
-
-                if($timestamp == true) $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
-                $htmlBox .= "</div>";
             }
-            else{
-                $htmlBox .= "<div id='etable'>";
-                $htmlBox .= "<div style='font-size:".($conf_error['fsize'] + 2)."px;'>Fehlerspeicher ist leer</div>";
-                if($timestamp == true){
-                    $htmlBox .= "<div id='espacer'></div>";
-                    $htmlBox .= "<div id='espacer'></div>";
-                    $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
-                }
-                $htmlBox .= "</div>";
+            if ($timestamp) {
+                $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
             }
-            return $htmlBox;
- //       }
+            $htmlBox .= "</div>";
+        } else {
+            $htmlBox .= "<div id='etable'>";
+            $htmlBox .= "<div style='font-size:".($conf_error['fsize'] + 2)."px;'>Fehlerspeicher ist leer</div>";
+            if($timestamp) {
+                $htmlBox .= "<div id='espacer'></div>";
+                $htmlBox .= "<div id='espacer'></div>";
+                $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+            }
+            $htmlBox .= "</div>";
+        }
+        return $htmlBox;
     }
-    return false;
-}
 
 }
