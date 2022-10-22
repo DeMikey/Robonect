@@ -1930,7 +1930,7 @@ class RobonectWifiModul extends IPSModule
             $this->log("Kein ErrorList Objekt vorhanden");
             return false;
         }
-        if (!$data = @$this->executeHTTPCommand("error")) {
+        if (!$data = $this->executeHTTPCommand("error")) {
             $this->log("Fehlermeldungen: ".$data);
             return false;
         }
