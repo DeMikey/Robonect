@@ -1626,7 +1626,7 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     protected function NewMediaChart (int $ParentID, string $ChartIdent, string $ChartName, string $ChartFile, string $ArchivVarID, int $ChartFill, int $ChartLine, string $Title) {
     #================================================================================================
-        if (!$ChartID = @IPS_GetMediaIDByFile($BatteryVoltageChartFile)) {
+        if (!$ChartID = @IPS_GetMediaIDByFile($ChartFile)) {
             // Get Archiv ID
             $ArchivID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
             // Archivierung auf mowerVoltageBattery aktiviren
