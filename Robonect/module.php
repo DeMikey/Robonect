@@ -1930,7 +1930,8 @@ class RobonectWifiModul extends IPSModule
             return false;
         }
         $data = $this->executeHTTPCommand("error");
-        if ($data == false) {
+//        if ( !isset( $data ) or  !isset( $data['errors'] ) or !isset( $data['successful'] ) or ( $data['successful'] != true ) ) { return false; }
+        if (!isset( $data )) {
             $this->log("Fehlermeldungen: ".$data);
             return false;
         }
