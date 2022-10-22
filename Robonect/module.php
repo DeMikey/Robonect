@@ -1927,7 +1927,7 @@ class RobonectWifiModul extends IPSModule
             return false;
         }
         if (!$ErrorlistID = @@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
-            $this->log("Kein TimerList Objekt vorhanden");
+            $this->log("Kein ErrorList Objekt vorhanden");
             return false;
         }
         if (!$data = @$this->executeHTTPCommand("error")) {
