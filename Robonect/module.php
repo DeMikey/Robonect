@@ -1692,9 +1692,7 @@ class RobonectWifiModul extends IPSModule
             $this->log("Kein TimerList Objekt vorhanden");
             return false;
         }
-    
-    
-    
+     
         // Hintergrundfarbe Hauptfenster, Header und Fooder umwandeln (hex -> rgb)
         list($br, $bg, $bb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("TimerBackground")),-6), "#%02x%02x%02x");
         // Linienfarbe Grid umwandeln (hex -> rgb)
@@ -1923,6 +1921,15 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     protected function robo_GetErrorList() {
     #================================================================================================
+         //Hole Errorlist Id
+         if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+            $this->log ("Keine HTMLBox Kategory vorhanden");
+            return false;
+        }
+        if (!$ErrorlistID = @@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
+            $this->log("Kein TimerList Objekt vorhanden");
+            return false;
+        }
         if (!$data = @$this->executeHTTPCommand("error")) {
             $this->log("Fehlermeldungen: ".$data);
             return false;
@@ -1974,6 +1981,7 @@ class RobonectWifiModul extends IPSModule
             }
             $htmlBox .= "</div>";
         }
+        SetValueString($ErrorListID, $htmlBox);
         return $htmlBox;
     }
 
