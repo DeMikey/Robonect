@@ -1925,7 +1925,7 @@ class RobonectWifiModul extends IPSModule
             $this->log ("Keine HTMLBox Kategory vorhanden");
             return false;
         }
-        if (!$ErrorlistID = @@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
+        if (!$ErrorListID = @@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
             $this->log("Kein ErrorList Objekt vorhanden");
             return false;
         }
