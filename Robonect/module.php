@@ -1622,7 +1622,6 @@ class RobonectWifiModul extends IPSModule
         return "Success";
     }
 
-
     #================================================================================================
     protected function NewMediaChart (int $ParentID, string $ChartIdent, string $ChartName, string $ChartFile, string $ArchivVarID, int $ChartFill, int $ChartLine, string $Title) {
     #================================================================================================
@@ -1930,7 +1929,8 @@ class RobonectWifiModul extends IPSModule
             $this->log("Kein ErrorList Objekt vorhanden");
             return false;
         }
-        if (!$data = $this->executeHTTPCommand("error")) {
+        $data = $this->executeHTTPCommand("error");
+        if ($data == false) {
             $this->log("Fehlermeldungen: ".$data);
             return false;
         }
