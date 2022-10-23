@@ -2027,9 +2027,9 @@ class RobonectWifiModul extends IPSModule
         $col_minus = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarNegativColor")), -6);
         $config	= array(
             "mowerBatterySoc" 		=> array("name" => "Status", "unit" => "%", "factor" => 100),
-            "mowerVoltageBattery" 	=> array("name" => "Spannung", "unit" => "V", "factor" => 22),
+            "mowerVoltageBattery" 	=> array("name" => "Spannung", "unit" => "V", "factor" => 30),
             "BatteryCapacity" 	    => array("name" => "Kapazität", "unit" => "mAh", "factor" => 1201),
-            "BatteryCharging"  	    => array("name" => "Ladestrom", "unit" => "mA", "factor" => 1500),
+            "BatteryCharging"  	    => array("name" => "Ladestrom", "unit" => "mA", "factor" => 1600),
             "BatteryTemp" 		    => array("name" => "Temperatur", "unit" => "°C", "factor" => 50)
         );
         $BatteryData = array (
