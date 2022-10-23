@@ -2027,47 +2027,44 @@ class RobonectWifiModul extends IPSModule
         $col_minus = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarNegativColor")), -6);
         $config	= array(
             "mowerBatterySoc" 		=> array("name" => "Status", "unit" => "%", "factor" => 100),
-            "mowerVoltageBattery" 		=> array("name" => "Spannung", "unit" => "V", "factor" => 22),
-            "BatteryCapacity" 	=> array("name" => "Kapazität", "unit" => "mAh", "factor" => 1201),
-            "BatteryCharging"  	=> array("name" => "Ladestrom", "unit" => "mA", "factor" => 1500),
-            "BatteryTemp" 		=> array("name" => "Temperatur", "unit" => "°C", "factor" => 50)
+            "mowerVoltageBattery" 	=> array("name" => "Spannung", "unit" => "V", "factor" => 22),
+            "BatteryCapacity" 	    => array("name" => "Kapazität", "unit" => "mAh", "factor" => 1201),
+            "BatteryCharging"  	    => array("name" => "Ladestrom", "unit" => "mA", "factor" => 1500),
+            "BatteryTemp" 		    => array("name" => "Temperatur", "unit" => "°C", "factor" => 50)
         );
         $BatteryData = array (
-            "mowerBatterySoc" => $this->GetValue("mowerBatterySoc"),
-            "mowerVoltageBattery" => $this->GetValue("mowerVoltageBattery"),
-            "BatteryTemp" => $this->GetValue("BatteryTemp"),
-            "BatteryCapacity" => $this->GetValue("BatteryCapacity"),
-            "BatteryRemaining" => $this->GetValue("BatteryRemaining"),
-            "BatteryCharging" => $this->GetValue("BatteryCharging")
-
+            "mowerBatterySoc"       => $this->GetValue("mowerBatterySoc"),
+            "mowerVoltageBattery"   => $this->GetValue("mowerVoltageBattery"),
+            "BatteryTemp"           => $this->GetValue("BatteryTemp"),
+            "BatteryCapacity"       => $this->GetValue("BatteryCapacity"),
+        //    "BatteryRemaining"      => $this->GetValue("BatteryRemaining"),
+            "BatteryCharging"       => $this->GetValue("BatteryCharging")
         );
 
-    //        if(array_diff_key($content, $conf_batt['config']) === array_diff_key($conf_batt['config'], $content)){
-                // Hintergrundfarbe umwandeln (hex -> rgb)
-                if($this->ReadPropertyBoolean("BatteryBackground")) {
-                    list($tr, $tg, $tb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBackgroundColor")), -6), "#%02x%02x%02x");
+        // Hintergrundfarbe umwandeln (hex -> rgb)
+        if($this->ReadPropertyBoolean("BatteryBackground")) {
+            list($tr, $tg, $tb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBackgroundColor")), -6), "#%02x%02x%02x");
     
-                $htmlBox = "<style type='text/css'>";
-                if(!$this->ReadPropertyBoolean("BatteryBackground")) $bgt = "none";
-                else $bgt = "rgba(".$tr.",".$tg.",".$tb.",".$oca_tbg.")";
-                $htmlBox .= "#btable {position:relative;float:left;background:".$bgt.";font-size:".$fsize."px;padding:10px;}";
-                $htmlBox .= "#bspacer {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:5px;margin:auto;clear:both;}";
-                $htmlBox .= "#bcaption {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:15px;font-size:".($fsize + 2)."px;border-bottom:1px solid #FFFFFF;padding: 1px;}";
-                $htmlBox .= "#blabel {float:left;background:none;width:".$lwidth."px;height:".$bheight."px;padding:1px;}";
-                $htmlBox .= "#bvalue {float:left;background:none;width:".$vwidth."px;height:".$bheight."px;padding:1px;}";
-                $htmlBox .= "#bbase {float:left;width:".$bwidth."px;height:".($bheight + 2)."px;}";
-                $htmlBox .= "#bbg {background-color:".$col_bg.";width:".$bwidth."px;height:".($bheight - 6)."px;border:1px solid ".$col_bg.";}";
-                $htmlBox .= "#bbar {height:".($bheight - 6)."px;}";
-                $htmlBox .= "</style>";
+        $htmlBox = "<style type='text/css'>";
+        if(!$this->ReadPropertyBoolean("BatteryBackground")) $bgt = "none";
+        else $bgt = "rgba(".$tr.",".$tg.",".$tb.",".$oca_tbg.")";
+        $htmlBox .= "#btable {position:relative;float:left;background:".$bgt.";font-size:".$fsize."px;padding:10px;}";
+        $htmlBox .= "#bspacer {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:5px;margin:auto;clear:both;}";
+        $htmlBox .= "#bcaption {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:15px;font-size:".($fsize + 2)."px;border-bottom:1px solid #FFFFFF;padding: 1px;}";
+        $htmlBox .= "#blabel {float:left;background:none;width:".$lwidth."px;height:".$bheight."px;padding:1px;}";
+        $htmlBox .= "#bvalue {float:left;background:none;width:".$vwidth."px;height:".$bheight."px;padding:1px;}";
+        $htmlBox .= "#bbase {float:left;width:".$bwidth."px;height:".($bheight + 2)."px;}";
+        $htmlBox .= "#bbg {background-color:".$col_bg.";width:".$bwidth."px;height:".($bheight - 6)."px;border:1px solid ".$col_bg.";}";
+        $htmlBox .= "#bbar {height:".($bheight - 6)."px;}";
+        $htmlBox .= "</style>";
     
-                $htmlBox .= "<div id='btable'>";
-                $htmlBox .= "<div id='bspacer'></div>";
-    
-                foreach($BatteryData as $key => $value){
-                    $htmlBox .= "<div>";
-                    $htmlBox .= "<div id='blabel'>".$config[$key]['name']."</div>";
-                    $htmlBox .= "<div id='bvalue'>".$value." ".$config[$key]['unit']."</div>";
-                    $htmlBox .= "<div id='bbase'>";
+        $htmlBox .= "<div id='btable'>";
+        $htmlBox .= "<div id='bspacer'></div>";
+        foreach($BatteryData as $key => $value){
+            $htmlBox .= "<div>";
+            $htmlBox .= "<div id='blabel'>".$config[$key]['name']."</div>";
+            $htmlBox .= "<div id='bvalue'>".$value." ".$config[$key]['unit']."</div>";
+            $htmlBox .= "<div id='bbase'>";
                     $htmlBox .= "<div id='bbg'>";
                     if($value < 0) $htmlBox .= "<div id='bbar' style='float:right;background-color:".$col_minus."; width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
                     if($value >= 0)$htmlBox .= "<div id='bbar' style='background-color:".$col_plus.";width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
