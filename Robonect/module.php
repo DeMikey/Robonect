@@ -2005,8 +2005,8 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     protected function SetBatteryBox() {
     #================================================================================================
-        Global $conf_batt, $timestamp;
         // Hole Batterylist ID
+        $this->log("Erstelle Batteryliste.");
         if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
             $this->log ("Keine HTMLBox Kategory vorhanden");
             return false;
