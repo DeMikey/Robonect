@@ -421,7 +421,7 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     protected function GetBatteryData() {
     #================================================================================================
-        $data = $this->executeHTTPCommand("error");
+        $data = $this->executeHTTPCommand("battery");
         if ((!isset($data)) || (!$data['successful'])) {
             $this->log("Fehlermeldungen: ".$data);
             return false;
