@@ -2043,9 +2043,9 @@ class RobonectWifiModul extends IPSModule
         $this->log("Konfigurationsdaten Batteryliste geladen.");
 
         // Hintergrundfarbe umwandeln (hex -> rgb)
-        if($this->ReadPropertyBoolean("BatteryBackground")) {
+        if ($this->ReadPropertyBoolean("BatteryBackground")) {
             list($tr, $tg, $tb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBackgroundColor")), -6), "#%02x%02x%02x");
-    
+        }
         $htmlBox = "<style type='text/css'>";
         if(!$this->ReadPropertyBoolean("BatteryBackground")) $bgt = "none";
         else $bgt = "rgba(".$tr.",".$tg.",".$tb.",".$oca_tbg.")";
@@ -2066,21 +2066,19 @@ class RobonectWifiModul extends IPSModule
             $htmlBox .= "<div id='blabel'>".$config[$key]['name']."</div>";
             $htmlBox .= "<div id='bvalue'>".$value." ".$config[$key]['unit']."</div>";
             $htmlBox .= "<div id='bbase'>";
-                    $htmlBox .= "<div id='bbg'>";
-                    if($value < 0) $htmlBox .= "<div id='bbar' style='float:right;background-color:".$col_minus."; width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
-                    if($value >= 0)$htmlBox .= "<div id='bbar' style='background-color:".$col_plus.";width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
-                    $htmlBox .= "</div></div>";
-                    $htmlBox .= "<div id='bspacer'></div>";
-                }
-    
-                if($timestamp == true){
-                    //$htmlBox .= "<div id='bspacer'></div>";
-                    $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
-                }
-                $htmlBox .= "</div>";
-                SetValueString($BatteryListID, $htmlBox);
-                return $htmlBox;
-                }
+            $htmlBox .= "<div id='bbg'>";
+            if($value < 0) $htmlBox .= "<div id='bbar' style='float:right;background-color:".$col_minus."; width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
+            if($value >= 0)$htmlBox .= "<div id='bbar' style='background-color:".$col_plus.";width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
+            $htmlBox .= "</div></div>";
+            $htmlBox .= "<div id='bspacer'></div>";
+        }
+        if($timestamp){
+            //$htmlBox .= "<div id='bspacer'></div>";
+            $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+        }
+        $htmlBox .= "</div>";
+        SetValueString($BatteryListID, $htmlBox);
+        return $htmlBox;
     }
 
 
