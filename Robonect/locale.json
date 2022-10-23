@@ -18,6 +18,11 @@
       "MowingTime": "Mähzeit bei Sofortstart",
       "minutes": "Minuten",
 
+      "Battery charging current": "Batterie Ladestrom",
+      "Battery temperatur": "Batterie Temperatur",
+      "Battery capacity": "Batterie Kapazität",
+      "Battery remaining": "Batterie Restkapzität",
+
       "Camera settings": "Kamera Einstellungen",
       "Camera installed": "Kamera installiert",
       "Status display in the picture": "Status Anzeige im Bild",
@@ -49,7 +54,17 @@
       "Batterie voltage chart": "Batterie Spannungs Chart",
       "Fill color": "Füll Farbe",
       "Line color": "Linien Farbe",
-      "Voltaage": "Spannung",
+      "Voltage": "Spannung",
+      "Font size": "Schriftgrösse",
+      "Table background": "Tabellen Hintergrund",
+      "Background color": "Hintergrund Farbe",
+      "Column width names": "Spaltenbreite der Namen",
+      "Column width values": "Spaltenbreite der Werte",
+      "Bars length": "Balken länge",
+      "Bars high": "Balken höhe",
+      "Bar background color": "Balken Hintergrundfarbe",
+      "Bar positiv color": "Positive Balken Farbe",
+      "Bar negativ color": "Negaive Balken Farbe",
 
       "Timerlist": "Timerliste",
       "Errorlist": "Fehlerliste"

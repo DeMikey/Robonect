@@ -88,7 +88,17 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("ErrorDateWidth", 100);
         $this->RegisterPropertyInteger("ErrorHourWidth", 100);
         $this->RegisterPropertyInteger("ErrorWMessageidth", 100);
-
+        // HTML Box Battery
+        $this->RegisterPropertyInteger("BatteryFontSize", 12);
+        $this->RegisterPropertyBoolean("BatteryBackground", false);
+        $this->RegisterPropertyInteger("BatteryBackgroundColor", 16777215);
+        $this->RegisterPropertyInteger("BatteryColumWidthNames", 160);
+        $this->RegisterPropertyInteger("BatteryColumWidthValues", 90);
+        $this->RegisterPropertyInteger("BatteryBarLength", 390);
+        $this->RegisterPropertyInteger("BatteryBarHigh", 16);
+        $this->RegisterPropertyInteger("BatteryBarBackground", 6710886);
+        $this->RegisterPropertyInteger("BatteryBarPositivColor", 6591981);
+        $this->RegisterPropertyInteger("BatteryBarNegativColor", 16711680);
     }
 
     public function ApplyChanges()
@@ -407,6 +417,21 @@ class RobonectWifiModul extends IPSModule
             return $data['successful'];
         }
     }
+
+    #================================================================================================
+    protected function GetBatteryData() {
+    #================================================================================================
+        $data = $this->executeHTTPCommand("error");
+        if ((!isset($data)) || (!$data['successful'])) {
+            $this->log("Fehlermeldungen: ".$data);
+            return false;
+        }
+        $this->SetValue("BatteryCharging", $data['batteries'][0]['current']);
+        $this->SetValue("BatteryTemp", $data['batteries'][0]['temperature']);
+        $this->SetValue("BatteryCapacity", $data['batteries'][0]['capacity']['full']);
+        $this->SetValue("BatteryRemaining", $data['batteries'][0]['capacity']['remaining']);
+        $this->SetBatteryBox();
+    }    
 
     public function GetTimerFromMower() {
         // reads all timer information and transfers it to an IPS Timer Instance
@@ -789,6 +814,8 @@ class RobonectWifiModul extends IPSModule
         $topicList['/mower/statistic/hours']['Ident']       = 'mowerHours';
         $topicList['/wlan/rssi']['Ident']                   = 'mowerWlanStatus';
         $topicList['/mqtt']['Ident']                        = 'mowerMqttStatus';
+        $topicList['/mower/error/code']['Ident']            = 'mowerErrorCount';
+        $topicList['/mower/error/message']['Ident']         = 'mowerErrorMessage';
         $topicList['/mower/blades/quality']['Ident']        = 'mowerBladesQuality';
         $topicList['/mower/blades/hours']['Ident']          = 'mowerBladesOperatingHours';
         $topicList['/mower/blades/days']['Ident']           = 'mowerBladesAge';
@@ -964,6 +991,7 @@ class RobonectWifiModul extends IPSModule
 
             case 'mowerBatterySoc':
                 $this->SetValue("mowerBatterySoc", $payload );
+                $this->GetBatteryData();
                 break;
             case 'mowerVoltageBattery':
                 $this->SetValue("mowerVoltageBattery", $payload );
@@ -1002,6 +1030,13 @@ class RobonectWifiModul extends IPSModule
                 break;
             case 'mowerHumidity':
                 $this->SetValue("mowerHumidity", $payload );
+                break;
+            case 'mowerErrorCount':
+                $this->SetValue("mowerErrorCount", $payload );
+                $this->SetErrorBox();
+                break;                
+            case 'mowerErrorMessage':
+                $this->SetValue("mowerErrorMessage", $payload );
                 break;
             case 'mowerBladesQuality':
                 $this->SetValue("mowerBladesQuality", $payload );
@@ -1245,6 +1280,14 @@ class RobonectWifiModul extends IPSModule
             IPS_SetVariableProfileIcon('ROBONECT_Spannung', '' );
             IPS_SetVariableProfileText('ROBONECT_Spannung', "", " V" );
         }
+        
+        if (!IPS_VariableProfileExists('ROBONECT_MilliAmpereStunde')) {
+            IPS_CreateVariableProfile('ROBONECT_MilliAmpereStunde', 1);
+            IPS_SetVariableProfileDigits('ROBONECT_MilliAmpereStunde', 1);
+            IPS_SetVariableProfileIcon('ROBONECT_MilliAmpereStunde', 'Electricity');
+            IPS_SetVariableProfileText('ROBONECT_MilliAmpereStunde', "", " mAh");
+        }
+
         if (!IPS_VariableProfileExists('ROBONECT_Weekdays')) {
             IPS_CreateVariableProfile('ROBONECT_Weekdays', 1);
             IPS_SetVariableProfileIcon('ROBONECT_Weekdays', 'Calendar');
@@ -1401,9 +1444,14 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableInteger("mowerStatusSince", "Status seit", "~UnixTimestamp", 37);
         $this->RegisterVariableString("statusSinceDescriptive", "Status seit", "", 38);
 
+        //--- Battery --------------------------------------------------------------
+        $this->RegisterVariableInteger("mowerBatterySoc", "Akkustand", "~Battery.100", 40);
+        $this->RegisterVariableFloat("mowerVoltageBattery", "Akku-Spannung", "ROBONECT_Spannung", 41);
+        $this->RegisterVariableInteger("BatteryCharging", $this->Translate("Battery charging current"), "~MilliAmpere", 42);
+        $this->RegisterVariableFloat("BatteryTemp", $this->Translate("Battery temperatur"), "~Temperatur", 43);
+        $this->RegisterVariableInteger("BatteryCapacity", $this->Translate("Battery capacity"), "ROBONECT_MilliAmpereStunde", 44);
+        $this->RegisterVariableInteger("BatteryRemaining", $this->Translate("Battery remaining"), "ROBONECT_MilliAmpereStunde", 45);
         //--- Conditions --------------------------------------------------------------
-        $this->RegisterVariableInteger("mowerBatterySoc", "Akkustand", "~Battery.100", 50);
-        $this->RegisterVariableFloat("mowerVoltageBattery", "Akku-Spannung", "ROBONECT_Spannung", 51);
         $this->RegisterVariableFloat("mowerVoltageInternal", "Interne Spannung", "ROBONECT_Spannung", 52);
         $this->RegisterVariableFloat("mowerVoltageExternal", "Externe Spannung", "ROBONECT_Spannung", 53);
         $this->RegisterVariableInteger("mowerHours", "Arbeitsstunden", "ROBONECT_Stunden", 54);
@@ -1417,7 +1465,7 @@ class RobonectWifiModul extends IPSModule
 
         //--- Error List --------------------------------------------------------------
         $this->RegisterVariableInteger( "mowerErrorCount", "Anzahl Fehlermeldungen", "", 70 );
-        $this->RegisterVariableString( "mowerErrorList", "Fehlermeldungen", "~HTMLBox", 71 );
+        $this->RegisterVariableString( "mowerErrorMessage", "Fehlermeldungen", "", 71 );
 
         //--- Timer --------------------------------------------------------------
 
@@ -1453,40 +1501,6 @@ class RobonectWifiModul extends IPSModule
             }
             $Position = $Position + 4;
         }
-        /*
-        $this->RegisterVariableInteger( "mowerTimerStatus", "Timer Status", "ROBONECT_TimerStatus", 90 );
-
-        $TimerPlanActiveID = $this->RegisterVariableBoolean( "TimerPlanActive", "Timer-Plan aktiv", "ROBONECT_JaNein", 91 );
-
-        // check, if timer Plan Active is already there
-        if ( @IPS_GetObjectIDByIdent( 'TimerWeekPlan'.$this->InstanceID, $TimerPlanActiveID ) == false ) {
-            $weekPlanID = IPS_CreateEvent(2); // Weekplan
-            IPS_SetParent($weekPlanID, $TimerPlanActiveID);
-            IPS_SetName($weekPlanID, 'Timer Wochen Plan');
-            IPS_SetIdent($weekPlanID, 'TimerWeekPlan'.$this->InstanceID);
-
-            IPS_SetEventScheduleGroup($weekPlanID, 0, 1);  // Mon
-            IPS_SetEventScheduleGroup($weekPlanID, 1, 2);  // Tue
-            IPS_SetEventScheduleGroup($weekPlanID, 2, 4);  // Wed
-            IPS_SetEventScheduleGroup($weekPlanID, 3, 8);  // Thu
-            IPS_SetEventScheduleGroup($weekPlanID, 4, 16); // Fri
-            IPS_SetEventScheduleGroup($weekPlanID, 5, 32);  // Sat
-            IPS_SetEventScheduleGroup($weekPlanID, 6, 64); // Sun
-
-            IPS_SetEventScheduleAction($weekPlanID, 1, "mähen beenden", 0x000000, "SetValueBoolean(\$_IPS['TARGET'], false);");
-            IPS_SetEventScheduleAction($weekPlanID, 2, "mähen beginnen", 0x00FF00, "SetValueBoolean(\$_IPS['TARGET'], true);");
-
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 0, 1, 0, 0, 0, 1);
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 1, 1, 0, 0, 0, 1);
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 2, 1, 0, 0, 0, 1);
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 3, 1, 0, 0, 0, 1);
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 4, 1, 0, 0, 0, 1);
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 5, 1, 0, 0, 0, 1);
-            IPS_SetEventScheduleGroupPoint($weekPlanID, 6, 1, 0, 0, 0, 1);
-
-            IPS_SetEventActive($weekPlanID, true);
-        }
-        */
         $this->RegisterVariableInteger( "mowerNextTimerstart", "nächster Timerstart", "~UnixTimestamp", 92 );
         $this->RegisterVariableInteger("timerTransmitAction", "Timer lesen/schreiben", "ROBONECT_TimerTransmitAction", 93 );
         $this->EnableAction("timerTransmitAction");
@@ -1558,7 +1572,11 @@ class RobonectWifiModul extends IPSModule
             if (!@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
                 IPS_SetParent($this->RegisterVariableString("Errorlist", $this->Translate('Errorlist'), "~HTMLBox", 202), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
-            $this->robo_GetErrorList();
+            if (!@IPS_GetObjectIDByIdent("Batterylist", $HTMLboxCat)) {
+                IPS_SetParent($this->RegisterVariableString("Batterylist", $this->Translate('Batterylist'), "~HTMLBox", 202), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+            }
+            $this->SetErrorBox();
+            $this->GetBatteryData();
         }
 
     }
@@ -1918,24 +1936,22 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    protected function robo_GetErrorList() {
+    protected function SetErrorBox() {
     #================================================================================================
          //Hole Errorlist Id
          if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
             $this->log ("Keine HTMLBox Kategory vorhanden");
             return false;
         }
-        if (!$ErrorListID = @@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
+        if (!$ErrorListID = @IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
             $this->log("Kein ErrorList Objekt vorhanden");
             return false;
         }
         $data = $this->executeHTTPCommand("error");
-//        if ( !isset( $data ) or  !isset( $data['errors'] ) or !isset( $data['successful'] ) or ( $data['successful'] != true ) ) { return false; }
         if ((!isset( $data )) || (!$data['successful'])) {
             $this->log("Fehlermeldungen: ".$data);
             return false;
         }
-        // {"errors": [{"error_code": 0, "error_message": "Fehler 0", "date": "2020-09-22", "time": "16:57:11", "unix": 1600793831}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2022-07-02", "time": "16:31:07", "unix": 1656779467}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2022-06-22", "time": "16:53:54", "unix": 1655916834}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2022-06-03", "time": "16:30:26", "unix": 1654273826}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2022-05-27", "time": "16:30:29", "unix": 1653669029}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2022-05-18", "time": "14:45:51", "unix": 1652885151}, {"error_code": 11, "error_message": "Batterie schwach", "date": "2022-05-13", "time": "17:13:26", "unix": 1652462006}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-05-13", "time": "17:11:48", "unix": 1652461908}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-05-13", "time": "16:45:25", "unix": 1652460325}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-05-09", "time": "07:18:28", "unix": 1652080708}, {"error_code": 30, "error_message": "Batterieproblem", "date": "2022-04-29", "time": "19:39:40", "unix": 1651261180}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2022-04-29", "time": "14:10:11", "unix": 1651241411}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-04-15", "time": "20:39:05", "unix": 1650055145}, {"error_code": 12, "error_message": "Batterie leer", "date": "2022-04-15", "time": "20:04:43", "unix": 1650053083}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2022-04-13", "time": "14:11:05", "unix": 1649859065}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2022-03-17", "time": "18:48:18", "unix": 1647542898}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-10-29", "time": "14:13:03", "unix": 1635516783}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-10-26", "time": "16:32:10", "unix": 1635265930}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-10-08", "time": "17:01:28", "unix": 1633712488}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-09-17", "time": "15:52:10", "unix": 1631893930}, {"error_code": 30, "error_message": "Batterieproblem", "date": "2021-08-18", "time": "20:34:04", "unix": 1629318844}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-06-30", "time": "13:32:20", "unix": 1625059940}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-06-18", "time": "19:19:07", "unix": 1624043947}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-06-16", "time": "16:24:56", "unix": 1623860696}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-05-20", "time": "21:00:00", "unix": 1621544400}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2021-05-20", "time": "20:57:37", "unix": 1621544257}, {"error_code": 18, "error_message": "Sto�sensor vorne ist defekt", "date": "2021-05-20", "time": "14:01:59", "unix": 1621519319}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-05-13", "time": "13:32:07", "unix": 1620912727}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2021-05-13", "time": "13:29:49", "unix": 1620912589}, {"error_code": 16, "error_message": "Nummer3 steckt in Ladestation fest", "date": "2021-05-04", "time": "13:00:25", "unix": 1620133225}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2021-04-28", "time": "16:37:30", "unix": 1619627850}, {"error_code": 12, "error_message": "Batterie leer", "date": "2021-04-26", "time": "10:46:01", "unix": 1619433961}, {"error_code": 12, "error_message": "Batterie leer", "date": "2020-11-15", "time": "16:22:49", "unix": 1605457369}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-11-11", "time": "15:26:56", "unix": 1605108416}, {"error_code": 13, "error_message": "Kein Antrieb", "date": "2020-11-10", "time": "16:22:11", "unix": 1605025331}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-11-09", "time": "14:39:48", "unix": 1604932788}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-09", "time": "14:38:38", "unix": 1604932718}, {"error_code": 25, "error_message": "M�heinheit ist blockiert", "date": "2020-11-09", "time": "13:01:31", "unix": 1604926891}, {"error_code": 13, "error_message": "Kein Antrieb", "date": "2020-11-06", "time": "18:59:42", "unix": 1604689182}, {"error_code": 25, "error_message": "M�heinheit ist blockiert", "date": "2020-11-06", "time": "18:24:02", "unix": 1604687042}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-06", "time": "13:00:27", "unix": 1604667627}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-03", "time": "16:30:27", "unix": 1604421027}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-02", "time": "16:30:27", "unix": 1604334627}, {"error_code": 2, "error_message": "Nummer3 hat kein Schleifensignal erkannt", "date": "2020-11-01", "time": "16:31:29", "unix": 1604248289}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-10-31", "time": "16:57:25", "unix": 1604163445}, {"error_code": 17, "error_message": "Ladestation ist blockiert", "date": "2020-10-30", "time": "14:45:24", "unix": 1604069124}, {"error_code": 18, "error_message": "Sto�sensor vorne ist defekt", "date": "2020-10-11", "time": "14:49:55", "unix": 1602427795}, {"error_code": 50, "error_message": "Leitdraht SK1 nicht gefunden", "date": "2020-10-09", "time": "14:01:10", "unix": 1602252070}, {"error_code": 12, "error_message": "Batterie leer", "date": "2020-10-07", "time": "18:57:53", "unix": 1602097073}, {"error_code": 15, "error_message": "Nummer3 ist angehoben", "date": "2020-10-02", "time": "17:26:34", "unix": 1601659594}, {"error_code": 1, "error_message": "Nummer3 hat Arbeitsbereich �berschritten", "date": "2020-09-24", "time": "18:00:58", "unix": 1600970458}], "successful": true}
         // Hintergrundfarbe umwandeln (hex -> rgb)
         if ($this->ReadPropertyBoolean("ErrorBackground")) {
             list($er, $eg, $eb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("ErrorBackgroundColor")), -6), "#%02x%02x%02x");
@@ -1985,5 +2001,89 @@ class RobonectWifiModul extends IPSModule
         SetValueString($ErrorListID, $htmlBox);
         return $htmlBox;
     }
+
+    #================================================================================================
+    protected function SetBatteryBox() {
+    #================================================================================================
+        Global $conf_batt, $timestamp;
+        // Hole Batterylist ID
+        if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+            $this->log ("Keine HTMLBox Kategory vorhanden");
+            return false;
+        }
+        if (!$BatteryListID = @IPS_GetObjectIDByIdent("Batterylist", $HTMLboxCat)) {
+            $this->log("Kein ErrorList Objekt vorhanden");
+            return false;
+        }
+        $timestamp = true;
+        $oca_tbg = 0.1;
+        $fsize = $this->ReadPropertyInteger("BatteryFontSize");
+        $lwidth = $this->ReadPropertyInteger("BatteryColumWidthNames");
+        $vwidth = $this->ReadPropertyInteger("BatteryColumWidthValues");
+        $bwidth = $this->ReadPropertyInteger("BatteryBarLength");
+        $bheight = $this->ReadPropertyInteger("BatteryBarHigh");
+        $col_bg = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarBackground")), -6);
+        $col_plus = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarPositivColor")), -6);
+        $col_minus = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarNegativColor")), -6);
+        $config	= array(
+            "mowerBatterySoc" 		=> array("name" => "Status", "unit" => "%", "factor" => 100),
+            "mowerVoltageBattery" 		=> array("name" => "Spannung", "unit" => "V", "factor" => 22),
+            "BatteryCapacity" 	=> array("name" => "Kapazität", "unit" => "mAh", "factor" => 1201),
+            "BatteryCharging"  	=> array("name" => "Ladestrom", "unit" => "mA", "factor" => 1500),
+            "BatteryTemp" 		=> array("name" => "Temperatur", "unit" => "°C", "factor" => 50)
+        );
+        $BatteryData = array (
+            "mowerBatterySoc" => $this->GetValue("mowerBatterySoc"),
+            "mowerVoltageBattery" => $this->GetValue("mowerVoltageBattery"),
+            "BatteryTemp" => $this->GetValue("BatteryTemp"),
+            "BatteryCapacity" => $this->GetValue("BatteryCapacity"),
+            "BatteryRemaining" => $this->GetValue("BatteryRemaining"),
+            "BatteryCharging" => $this->GetValue("BatteryCharging")
+
+        );
+
+    //        if(array_diff_key($content, $conf_batt['config']) === array_diff_key($conf_batt['config'], $content)){
+                // Hintergrundfarbe umwandeln (hex -> rgb)
+                if($this->ReadPropertyBoolean("BatteryBackground")) {
+                    list($tr, $tg, $tb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBackgroundColor")), -6), "#%02x%02x%02x");
+    
+                $htmlBox = "<style type='text/css'>";
+                if(!$this->ReadPropertyBoolean("BatteryBackground")) $bgt = "none";
+                else $bgt = "rgba(".$tr.",".$tg.",".$tb.",".$oca_tbg.")";
+                $htmlBox .= "#btable {position:relative;float:left;background:".$bgt.";font-size:".$fsize."px;padding:10px;}";
+                $htmlBox .= "#bspacer {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:5px;margin:auto;clear:both;}";
+                $htmlBox .= "#bcaption {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:15px;font-size:".($fsize + 2)."px;border-bottom:1px solid #FFFFFF;padding: 1px;}";
+                $htmlBox .= "#blabel {float:left;background:none;width:".$lwidth."px;height:".$bheight."px;padding:1px;}";
+                $htmlBox .= "#bvalue {float:left;background:none;width:".$vwidth."px;height:".$bheight."px;padding:1px;}";
+                $htmlBox .= "#bbase {float:left;width:".$bwidth."px;height:".($bheight + 2)."px;}";
+                $htmlBox .= "#bbg {background-color:".$col_bg.";width:".$bwidth."px;height:".($bheight - 6)."px;border:1px solid ".$col_bg.";}";
+                $htmlBox .= "#bbar {height:".($bheight - 6)."px;}";
+                $htmlBox .= "</style>";
+    
+                $htmlBox .= "<div id='btable'>";
+                $htmlBox .= "<div id='bspacer'></div>";
+    
+                foreach($BatteryData as $key => $value){
+                    $htmlBox .= "<div>";
+                    $htmlBox .= "<div id='blabel'>".$config[$key]['name']."</div>";
+                    $htmlBox .= "<div id='bvalue'>".$value." ".$config[$key]['unit']."</div>";
+                    $htmlBox .= "<div id='bbase'>";
+                    $htmlBox .= "<div id='bbg'>";
+                    if($value < 0) $htmlBox .= "<div id='bbar' style='float:right;background-color:".$col_minus."; width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
+                    if($value >= 0)$htmlBox .= "<div id='bbar' style='background-color:".$col_plus.";width:".(floor((abs($value) * 100) / $config[$key]['factor']))."%;'></div></div>";
+                    $htmlBox .= "</div></div>";
+                    $htmlBox .= "<div id='bspacer'></div>";
+                }
+    
+                if($timestamp == true){
+                    //$htmlBox .= "<div id='bspacer'></div>";
+                    $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+                }
+                $htmlBox .= "</div>";
+                SetValueString($BatteryListID, $htmlBox);
+                return $htmlBox;
+                }
+    }
+
 
 }
