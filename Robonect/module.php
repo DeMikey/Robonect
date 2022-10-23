@@ -1448,7 +1448,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableInteger("mowerBatterySoc", "Akkustand", "~Battery.100", 40);
         $this->RegisterVariableFloat("mowerVoltageBattery", "Akku-Spannung", "ROBONECT_Spannung", 41);
         $this->RegisterVariableInteger("BatteryCharging", $this->Translate("Battery charging current"), "~Milliampere", 42);
-        $this->RegisterVariableFloat("BatteryTemp", $this->Translate("Battery temperatur"), "~Temperatur", 43);
+        $this->RegisterVariableFloat("BatteryTemp", $this->Translate("Battery temperatur"), "~Temperature", 43);
         $this->RegisterVariableInteger("BatteryCapacity", $this->Translate("Battery capacity"), "ROBONECT_MilliAmpereStunde", 44);
         $this->RegisterVariableInteger("BatteryRemaining", $this->Translate("Battery remaining"), "ROBONECT_MilliAmpereStunde", 45);
         //--- Conditions --------------------------------------------------------------

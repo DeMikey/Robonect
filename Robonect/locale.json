@@ -18,10 +18,10 @@
       "MowingTime": "Mähzeit bei Sofortstart",
       "minutes": "Minuten",
 
-      "Battery charging current": "Batterie Ladestrom",
-      "Battery temperatur": "Batterie Temperatur",
-      "Battery capacity": "Batterie Kapazität",
-      "Battery remaining": "Batterie Restkapzität",
+      "Battery charging current": "Akku Ladestrom",
+      "Battery temperatur": "Akku Temperatur",
+      "Battery capacity": "Akku Kapazität",
+      "Battery remaining": "Akku Restkapzität",
 
       "Camera settings": "Kamera Einstellungen",
       "Camera installed": "Kamera installiert",
@@ -67,7 +67,8 @@
       "Bar negativ color": "Negaive Balken Farbe",
 
       "Timerlist": "Timerliste",
-      "Errorlist": "Fehlerliste"
+      "Errorlist": "Fehlerliste",
+      "Batterylist": "Batteryliste"
     }
   }
 }
