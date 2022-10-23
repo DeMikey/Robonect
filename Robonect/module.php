@@ -427,7 +427,7 @@ class RobonectWifiModul extends IPSModule
             return false;
         }
         $this->SetValue("BatteryCharging", $data['batteries'][0]['current']);
-        $this->SetValue("BatteryTemp", $data['batteries'][0]['temperature']);
+        $this->SetValue("BatteryTemp", intval($data['batteries'][0]['temperature'])/100);
         $this->SetValue("BatteryCapacity", $data['batteries'][0]['capacity']['full']);
         $this->SetValue("BatteryRemaining", $data['batteries'][0]['capacity']['remaining']);
         $this->SetBatteryBox();
