@@ -2028,8 +2028,8 @@ class RobonectWifiModul extends IPSModule
         $config	= array(
             "mowerBatterySoc" 		=> array("name" => "Status", "unit" => "%", "factor" => 100),
             "mowerVoltageBattery" 	=> array("name" => "Spannung", "unit" => "V", "factor" => 30),
-            "BatteryCapacity" 	    => array("name" => "Kapazität", "unit" => "mAh", "factor" => 1201),
-            "BatteryCharging"  	    => array("name" => "Ladestrom", "unit" => "mA", "factor" => 1600),
+            "BatteryCapacity" 	    => array("name" => "Kapazität", "unit" => "mAh", "factor" => 1600),
+            "BatteryCharging"  	    => array("name" => "Ladestrom", "unit" => "mA", "factor" => 1500),
             "BatteryTemp" 		    => array("name" => "Temperatur", "unit" => "°C", "factor" => 50)
         );
         $BatteryData = array (
