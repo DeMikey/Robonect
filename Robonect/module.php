@@ -2040,6 +2040,7 @@ class RobonectWifiModul extends IPSModule
         //    "BatteryRemaining"      => $this->GetValue("BatteryRemaining"),
             "BatteryCharging"       => $this->GetValue("BatteryCharging")
         );
+        $this->log("Konfigurationsdaten Batteryliste geladen.");
 
         // Hintergrundfarbe umwandeln (hex -> rgb)
         if($this->ReadPropertyBoolean("BatteryBackground")) {
