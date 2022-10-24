@@ -53,6 +53,18 @@
       { "type": "SelectColor", "name": "ChartBatteryVoltageFill", "caption": "Fill color", "allowTransparent": "false", "value": 16777215},
       { "type": "SelectColor", "name": "ChartBatteryVoltageLine", "caption": "Line color", "allowTransparent": "false", "value": 16777215}
     ]},
+    { "type": "ExpansionPanel", "caption": "Battery capacity chart settings", "items": [
+      { "type": "SelectColor", "name": "ChartBatteryCapacityFill", "caption": "Fill color", "allowTransparent": "false", "value": 16777215},
+      { "type": "SelectColor", "name": "ChartBatteryCapacityLine", "caption": "Line color", "allowTransparent": "false", "value": 16777215}
+    ]},
+    { "type": "ExpansionPanel", "caption": "Battery charging chart settings", "items": [
+      { "type": "SelectColor", "name": "ChartBatteryChargingFill", "caption": "Fill color", "allowTransparent": "false", "value": 16777215},
+      { "type": "SelectColor", "name": "ChartBatteryChargingLine", "caption": "Line color", "allowTransparent": "false", "value": 16777215}
+    ]},
+    { "type": "ExpansionPanel", "caption": "Battery temperature chart settings", "items": [
+      { "type": "SelectColor", "name": "ChartBatteryTemperatureFill", "caption": "Fill color", "allowTransparent": "false", "value": 16777215},
+      { "type": "SelectColor", "name": "ChartBatteryTemperatureLine", "caption": "Line color", "allowTransparent": "false", "value": 16777215}
+    ]},
     { "type": "CheckBox", "name": "HtmlBoxElements", "caption":  "Create Html elements" },
     { "type": "ExpansionPanel", "caption": "Timer settings", "items": [
       { "type": "NumberSpinner", "name": "TimerFontSize", "caption":  "Font size", "minimum":  8, "maximum": 18, "value": 11},

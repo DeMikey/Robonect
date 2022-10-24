@@ -49,7 +49,13 @@ class RobonectWifiModul extends IPSModule
         // Madia
         $this->RegisterPropertyInteger("ChartBatteryVoltageFill", 33023);
         $this->RegisterPropertyInteger("ChartBatteryVoltageLine", 160);
-
+        $this->RegisterPropertyInteger("ChartBatteryCapacityFill", 16744576);
+        $this->RegisterPropertyInteger("ChartBatteryCapacityLine", 16711680);
+        $this->RegisterPropertyInteger("ChartBatteryChargingFill", 8421631);
+        $this->RegisterPropertyInteger("ChartBatteryChargingLine", 8388863);
+        $this->RegisterPropertyInteger("ChartBatteryTemperaturFill", 65280);
+        $this->RegisterPropertyInteger("ChartBatteryTemperaturLine", 32768);
+        
         // HTML Box Timer
         $this->RegisterPropertyInteger("TimerFontSize", 11);
         $this->RegisterPropertyInteger("TimerBackground", 16777215);
@@ -1555,8 +1561,17 @@ class RobonectWifiModul extends IPSModule
                 IPS_SetParent($MediaCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
             // Batterie Spannung Chart
-            $BatteryVoltageChartFile ='media/' . 'ChartBattVolt.' . $this->InstanceID . '.chart';
-            $this->NewMediaChart($MediaCat, "ChartBatterieVoltage", "Batterie voltage chart", $BatteryVoltageChartFile, $this->GetIDForIdent("mowerVoltageBattery"), $this->ReadPropertyInteger("ChartBatteryVoltageFill"), $this->ReadPropertyInteger("ChartBatteryVoltageLine"), "Voltaage");
+            $BatteryChartFile ='media/' . 'ChartBattVolt.' . $this->InstanceID . '.chart';
+            $this->NewMediaChart($MediaCat, "ChartBatteryVoltage", "Battery voltage chart", $BatteryChartFile, $this->GetIDForIdent("mowerVoltageBattery"), $this->ReadPropertyInteger("ChartBatteryVoltageFill"), $this->ReadPropertyInteger("ChartBatteryVoltageLine"), "Voltaage");
+            // Batterie Kapazität Chart
+            $BatteryChartFile ='media/' . 'ChartBattCapacity.' . $this->InstanceID . '.chart';
+            $this->NewMediaChart($MediaCat, "ChartBatteryCapacity", "Battery capacity chart", $BatteryChartFile, $this->GetIDForIdent("BatteryRemaining"), $this->ReadPropertyInteger("ChartBatteryCapacityFill"), $this->ReadPropertyInteger("ChartBatteryCapacityLine"), "Capacity");
+            // Batterie Ladestrom Chart
+            $BatteryChartFile ='media/' . 'ChartBattCharging.' . $this->InstanceID . '.chart';
+            $this->NewMediaChart($MediaCat, "ChartBatteryCharging", "Battery charging chart", $BatteryChartFile, $this->GetIDForIdent("BatteryCharging"), $this->ReadPropertyInteger("ChartBatteryChargingFill"), $this->ReadPropertyInteger("ChartBatteryChargingLine"), "Charging");
+            // Batterie Temperatur Chart
+            $BatteryChartFile ='media/' . 'ChartBattTemperature.' . $this->InstanceID . '.chart';
+            $this->NewMediaChart($MediaCat, "ChartBatteryTemperature", "Battery temperatur chart", $BatteryChartFile, $this->GetIDForIdent("BatteryTemp"), $this->ReadPropertyInteger("ChartBatteryTemperatureFill"), $this->ReadPropertyInteger("ChartBatteryTemperatureLine"), "Temperature");
         }
 
         //----HTMLBox
@@ -2025,6 +2040,7 @@ class RobonectWifiModul extends IPSModule
         $col_bg = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarBackground")), -6);
         $col_plus = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarPositivColor")), -6);
         $col_minus = "#".substr("000000".dechex($this->ReadPropertyInteger("BatteryBarNegativColor")), -6);
+        // ToDo Facktor Werte ins Formular
         $config	= array(
             "mowerBatterySoc" 		=> array("name" => "Status", "unit" => "%", "factor" => 100),
             "mowerVoltageBattery" 	=> array("name" => "Spannung", "unit" => "V", "factor" => 30),

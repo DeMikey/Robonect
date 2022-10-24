@@ -51,10 +51,22 @@
       "Weekdays": "Wochentage",
 
       "Camera picture": "Kamerabild",
-      "Batterie voltage chart": "Batterie Spannungs Chart",
+
+      "Battery voltage chart settings": "Akku Spannung Chart Einstellungen",
+      "Battery voltage chart": "Akku Spannungs Chart",
       "Fill color": "Füll Farbe",
       "Line color": "Linien Farbe",
       "Voltage": "Spannung",
+      "Battery capacity chart settings": "Akku Kapazität Chart Einstellungen",
+      "Battery capacity chart": "Akku Kapazität Chart",
+      "Capacity": "Kapazität",
+      "Battery charging chart settings": "Akku Ladestrom Chart Einstellungen",
+      "Battery charging chart": "Akku Ladestrom Chart",
+      "Charging": "Ladestrom",
+      "Battery temperature chart settings": "Akku Temperatur Chart Einstellungen",
+      "Battery temperature chart": "Akku Temperatur Chart",
+      "Temperature": "Temperatur",
+
       "Font size": "Schriftgrösse",
       "Table background": "Tabellen Hintergrund",
       "Background color": "Hintergrund Farbe",
