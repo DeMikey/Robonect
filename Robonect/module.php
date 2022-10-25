@@ -2360,11 +2360,11 @@ class RobonectWifiModul extends IPSModule
         foreach ($data['drive'] as $key => $value) {
             foreach ($data['drive'][$key] as $motokey => $motovalue) {
                 $htmlBox .= "<div>";
-                $htmlBox .= "<div id='dlabel'>" . $onfig[$key][$motokey]['name'] . "</div>";
+                $htmlBox .= "<div id='dlabel'>" . $config[$key][$motokey]['name'] . "</div>";
                 $htmlBox .= "<div id='dvalue'>" . $motovalue . " " . $config[$key][$motokey]['unit'] . "</div>";
                 $htmlBox .= "<div id='dbase'>";
                 $htmlBox .= "<div id='dbg'>";
-                if ($motovalue < 0) $htmlBox .= "<div id='dbar' style='float:right;background-color:" . $col_minus . "; width:" . (floor((abs($motovalue) * 100) / $onfig[$key][$motokey]['factor'])) . "%;'></div></div>";
+                if ($motovalue < 0) $htmlBox .= "<div id='dbar' style='float:right;background-color:" . $col_minus . "; width:" . (floor((abs($motovalue) * 100) / $config[$key][$motokey]['factor'])) . "%;'></div></div>";
                 if ($motovalue >= 0) $htmlBox .= "<div id='dbar' style='background-color:" . $col_plus . ";width:" . (floor((abs($motovalue) * 100) / $config[$key][$motokey]['factor'])) . "%;'></div></div>";
                 $htmlBox .= "</div></div>";
                 $htmlBox .= "<div id='dspacer'></div>";
@@ -2378,7 +2378,7 @@ class RobonectWifiModul extends IPSModule
                 $htmlBox .= "<div id='dspacer'></div>";
                 foreach ($data['blade'] as $motokey => $motovalue) {
                     $htmlBox .= "<div>";
-                    $htmlBox .= "<div id='dlabel'>" . $onfig[$key][$motokey]['name'] . "</div>";
+                    $htmlBox .= "<div id='dlabel'>" . $config[$key][$motokey]['name'] . "</div>";
                     $htmlBox .= "<div id='dvalue'>" . $motovalue . " " . $config[$key][$motokey]['unit'] . "</div>";
                     $htmlBox .= "<div id='dbase'>";
                     $htmlBox .= "<div id='dbg'>";
