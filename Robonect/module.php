@@ -2072,7 +2072,7 @@ class RobonectWifiModul extends IPSModule
         $config	= array(
             "mowerBatterySoc" 		=> array("name" => "Status", "unit" => "%", "factor" => 100),
             "mowerVoltageBattery" 	=> array("name" => "Spannung", "unit" => "V", "factor" => 30),
-            "BatteryCapacity" 	    => array("name" => "Kapazität", "unit" => "mAh", "factor" => 1600),
+            "BatteryRemaining" 	    => array("name" => "Kapazität", "unit" => "mAh", "factor" => 1600),
             "BatteryCharging"  	    => array("name" => "Ladestrom", "unit" => "mA", "factor" => 1500),
             "BatteryTemp" 		    => array("name" => "Temperatur", "unit" => "°C", "factor" => 50)
         );
@@ -2080,8 +2080,8 @@ class RobonectWifiModul extends IPSModule
             "mowerBatterySoc"       => $this->GetValue("mowerBatterySoc"),
             "mowerVoltageBattery"   => $this->GetValue("mowerVoltageBattery"),
             "BatteryTemp"           => $this->GetValue("BatteryTemp"),
-            "BatteryCapacity"       => $this->GetValue("BatteryCapacity"),
-        //    "BatteryRemaining"      => $this->GetValue("BatteryRemaining"),
+        //    "BatteryCapacity"       => $this->GetValue("BatteryCapacity"),
+            "BatteryRemaining"      => $this->GetValue("BatteryRemaining"),
             "BatteryCharging"       => $this->GetValue("BatteryCharging")
         );
         $this->log("Konfigurationsdaten Batteryliste geladen.");
