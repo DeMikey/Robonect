@@ -2129,10 +2129,10 @@ class RobonectWifiModul extends IPSModule
             return false;
         }
         $height = $this->ReadPropertyInteger("OperHoursHeigh");
-        $width = $this->RegisterPropertyInteger("OperHoursWidth");
-        $h_offset = $this->RegisterPropertyInteger("OperHoursHOffset");
-        $col_bar = $this->RegisterPropertyInteger("OperHoursBarColor");
-        $col_txt = $this->RegisterPropertyInteger("OperHoursFontColor");
+        $width = $this->ReadPropertyInteger("OperHoursWidth");
+        $h_offset = $this->ReadPropertyInteger("OperHoursHOffset");
+        $col_bar = $this->ReadropertyInteger("OperHoursBarColor");
+        $col_txt = $this->ReadPropertyInteger("OperHoursFontColor");
         $oca_bg = 0.1;
         $oca_bgb = 0.3;
 
