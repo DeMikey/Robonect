@@ -2131,8 +2131,8 @@ class RobonectWifiModul extends IPSModule
         $height = $this->ReadPropertyInteger("OperHoursHeigh");
         $width = $this->ReadPropertyInteger("OperHoursWidth");
         $h_offset = $this->ReadPropertyInteger("OperHoursHOffset");
-        $col_bar = $this->ReadPropertyInteger("OperHoursBarColor");
-        $col_txt = $this->ReadPropertyInteger("OperHoursFontColor");
+        $col_bar = "#".substr("000000".dechex($this->ReadPropertyInteger("OperHoursBarColor")), -6);
+        $col_txt = "#".substr("000000".dechex($this->ReadPropertyInteger("OperHoursFontColor")), -6);
         $oca_bg = 0.1;
         $oca_bgb = 0.3;
 
