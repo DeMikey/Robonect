@@ -113,6 +113,17 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("OperHoursFieldBackgroundColor", 11316396);
         $this->RegisterPropertyInteger("OperHoursBarColor", 3054334);
         $this->RegisterPropertyInteger("OperHoursFontColor", 0);
+        // HTML Box Battery
+        $this->RegisterPropertyInteger("DriveFontSize", 12);
+        $this->RegisterPropertyBoolean("DriveBackground", false);
+        $this->RegisterPropertyInteger("DriveBackgroundColor", 16777215);
+        $this->RegisterPropertyInteger("DriveColumWidthNames", 160);
+        $this->RegisterPropertyInteger("DriveColumWidthValues", 90);
+        $this->RegisterPropertyInteger("DriveBarLength", 390);
+        $this->RegisterPropertyInteger("DriveBarHigh", 16);
+        $this->RegisterPropertyInteger("DriveBarBackground", 6710886);
+        $this->RegisterPropertyInteger("DriveBarPositivColor", 6591981);
+        $this->RegisterPropertyInteger("DriveBarNegativColor", 16711680);
 
     }
 
@@ -1602,9 +1613,13 @@ class RobonectWifiModul extends IPSModule
             if (!@IPS_GetObjectIDByIdent("TimeStatlist", $HTMLboxCat)) {
                 IPS_SetParent($this->RegisterVariableString("TimeStatlist", $this->Translate('Operation hours list'), "~HTMLBox", 204), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
+            if (!@IPS_GetObjectIDByIdent("Drivelist", $HTMLboxCat)) {
+                IPS_SetParent($this->RegisterVariableString("Drivelist", $this->Translate('Drivelist'), "~HTMLBox", 204), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+            }
              $this->SetErrorBox();
             $this->GetBatteryData();
             $this->SetTimeStatBox();
+            $this->SetDrivesBox();
         }
 
     }
@@ -1614,19 +1629,19 @@ class RobonectWifiModul extends IPSModule
     public function ForwardData($JSONString) {
     #================================================================================================
          
-            // Empfangene Daten von der Device Instanz
-            $this->SendDebug("ForwardData", $JSONString, 0);
-            $data = json_decode($JSONString);
-            if($this->GetStatus() == 201){
-                $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. Mower is offline"), 0);
-                $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. Mower is offline")." - ".$data->Payload, KL_ERROR);
-            }elseif($this->GetStatus() == 202){
-                $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline"), 0);
-                $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline")." - ".$data->Payload, KL_ERROR);
-            }else{
-                $this->sendMQTT($data->Topic, $data->Payload);
-            }
+        // Empfangene Daten von der Device Instanz
+        $this->SendDebug("ForwardData", $JSONString, 0);
+        $data = json_decode($JSONString);
+        if($this->GetStatus() == 201){
+            $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. Mower is offline"), 0);
+            $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. Mower is offline")." - ".$data->Payload, KL_ERROR);
+        } elseif ($this->GetStatus() == 202){
+            $this->SendDebug("ForwardData", $this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline"), 0);
+            $this->LogMessage('[ID: '.$this->InstanceID.'] '.$this->Translate("Forwarding rejected. MQTT-Landroid-Bridge is offline")." - ".$data->Payload, KL_ERROR);
+        } else {
+            $this->sendMQTT($data->Topic, $data->Payload);
         }
+    }
     
     #================================================================================================
     protected function sendMQTT($Topic, $Payload) {
@@ -2113,9 +2128,8 @@ class RobonectWifiModul extends IPSModule
     #================================================================================================
     protected function SetTimeStatBox() {
     #================================================================================================
-    Global $conf_time, $timestamp;
-         //Hole Errorlist Id
-         if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+        //Hole Errorlist Id
+        if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
             $this->log ("Keine HTMLBox Kategory vorhanden");
             return false;
         }
@@ -2135,6 +2149,7 @@ class RobonectWifiModul extends IPSModule
         $col_txt = "#".substr("000000".dechex($this->ReadPropertyInteger("OperHoursFontColor")), -6);
         $oca_bg = 0.1;
         $oca_bgb = 0.3;
+        $timestamp = true;
 
         foreach ($data['seek'] as $duration) {
             $timearray['search'][] = $duration['duration'];
@@ -2274,5 +2289,114 @@ class RobonectWifiModul extends IPSModule
         SetValueString($TimeStatListID, $htmlBox);
         return $htmlBox;
     }
+
+    #================================================================================================
+    protected function SetDrivesBox() {
+    #================================================================================================
+        if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+            $this->log ("Keine HTMLBox Kategory vorhanden");
+            return false;
+        }
+        if (!$DriveListID = @IPS_GetObjectIDByIdent("Drivelist", $HTMLboxCat)) {
+            $this->log("Kein Time Statistik List Objekt vorhanden");
+            return false;
+        }
+        $data = $this->executeHTTPCommand("motor");
+        if ((!isset( $data )) || (!$data['successful'])) {
+            $this->log("Fehlermeldungen: ".$data);
+            return false;
+        }
+
+        $timestamp = true;
+        $oca_tbg = 0.1;
+        $fsize = $this->ReadPropertyInteger("DriveFontSize");
+        $lwidth = $this->ReadPropertyInteger("DriveColumWidthNames");
+        $vwidth = $this->ReadPropertyInteger("DriveColumWidthValues");
+        $bwidth = $this->ReadPropertyInteger("DriveBarLength");
+        $bheight = $this->ReadPropertyInteger("DriveBarHigh");
+        $col_bg = "#".substr("000000".dechex($this->ReadPropertyInteger("DriveBarBackground")), -6);
+        $col_plus = "#".substr("000000".dechex($this->ReadPropertyInteger("DriveBarPositivColor")), -6);
+        $col_minus = "#".substr("000000".dechex($this->ReadPropertyInteger("DriveBarNegativColor")), -6);
+
+        $config	= array(
+            "left" => array(
+                "current" 	=> array("name" => "Leistungsstufe links", "unit" => "%", "factor" => 100),
+                "speed" 	=> array("name" => "Geschwindigkeit links", "unit" => "cm/s", "factor" => 100),
+                "power" 	=> array("name" => "Strom links", "unit" => "mA", "factor" => 700)
+            ),
+            "right" => array (
+                "current" 	=> array("name" => "Leistungsstufe rechts", "unit" => "%", "factor" => 100),
+                "speed"  	=> array("name" => "Geschwindigkeit rechts", "unit" => "cm/s", "factor" => 100),
+                "power" 	=> array("name" => "Strom rechts", "unit" => "mA", "factor" => 700)
+            ),
+            "blade" => array (
+                "speed" 	=> array("name" => "Geschwindigkeit", "unit" => "RPM", "factor" => 3000),
+                "current" 	=> array("name" => "Strom", "unit" => "mA", "factor" => 500),
+                "average" 	=> array("name" => "Durchschittsgeschwindigkeit", "unit" => "RPM", "factor" => 3000)
+            ),
+        );
+
+
+        // Hintergrundfarbe umwandeln (hex -> rgb)
+        if ($this->ReadPropertyBoolean("DriveBackground")) {
+            list($tr, $tg, $tb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("DriveBackgroundColor")), -6), "#%02x%02x%02x");
+        }
+        $htmlBox = "<style type='text/css'>";
+        if(!$this->ReadPropertyBoolean("DriveBackground")) $bgt = "none";
+        else $bgt = "rgba(".$tr.",".$tg.",".$tb.",".$oca_tbg.")";
+        $htmlBox .= "#dtable {position:relative;float:left;background:".$bgt.";font-size:".$fsize."px;padding:10px;}";
+        $htmlBox .= "#dspacer {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:5px;margin:auto;clear:both;}";
+        $htmlBox .= "#dcaption {width:".($bwidth + $lwidth + $vwidth + 6)."px;height:15px;font-size:".($fsize + 2)."px;border-bottom:1px solid #FFFFFF;padding: 1px;}";
+        $htmlBox .= "#dlabel {float:left;background:none;width:".$lwidth."px;height:".$bheight."px;padding:1px;}";
+        $htmlBox .= "#dvalue {float:left;background:none;width:".$vwidth."px;height:".$bheight."px;padding:1px;}";
+        $htmlBox .= "#dbase {float:left;width:".$bwidth."px;height:".($bheight + 2)."px;}";
+        $htmlBox .= "#dbg {background-color:".$col_bg.";width:".$bwidth."px;height:".($bheight - 6)."px;border:1px solid ".$col_bg.";}";
+        $htmlBox .= "#dbar {height:".($bheight - 6)."px;}";
+        $htmlBox .= "</style>";
+        $htmlBox .= "<div id='dtable'>";
+        $htmlBox .= "<div id='dcaption'>Fahrmotoren</div>";
+        $htmlBox .= "<div id='dspacer'></div>";
+        $htmlBox .= "<div id='dspacer'></div>";
+        foreach ($data['drive'] as $key => $value) {
+            foreach ($data['drive'][$key] as $motokey => $motovalue) {
+                $htmlBox .= "<div>";
+                $htmlBox .= "<div id='dlabel'>" . $onfig[$key][$motokey]['name'] . "</div>";
+                $htmlBox .= "<div id='dvalue'>" . $motovalue . " " . $config[$key][$motokey]['unit'] . "</div>";
+                $htmlBox .= "<div id='dbase'>";
+                $htmlBox .= "<div id='dbg'>";
+                if ($motovalue < 0) $htmlBox .= "<div id='dbar' style='float:right;background-color:" . $col_minus . "; width:" . (floor((abs($motovalue) * 100) / $onfig[$key]{$motokey}['factor'])) . "%;'></div></div>";
+                if ($motovalue >= 0) $htmlBox .= "<div id='dbar' style='background-color:" . $col_plus . ";width:" . (floor((abs($motovalue) * 100) / $config[$key][$motokey]['factor'])) . "%;'></div></div>";
+                $htmlBox .= "</div></div>";
+                $htmlBox .= "<div id='dspacer'></div>";
+            }
+        }
+        foreach($data as $key => $value) {
+            if($key == "blade") {
+                $htmlBox .= "<div id='dspacer'></div>";
+                $htmlBox .= "<div id='dcaption'>Mähmotor</div>";
+                $htmlBox .= "<div id='dspacer'></div>";
+                $htmlBox .= "<div id='dspacer'></div>";
+                foreach ($data['blade'] as $motokey => $motovalue) {
+                    $htmlBox .= "<div>";
+                    $htmlBox .= "<div id='dlabel'>" . $onfig[$key][$motokey]['name'] . "</div>";
+                    $htmlBox .= "<div id='dvalue'>" . $motovalue . " " . $config[$key][$motokey]['unit'] . "</div>";
+                    $htmlBox .= "<div id='dbase'>";
+                    $htmlBox .= "<div id='dbg'>";
+                    if ($motovalue < 0) $htmlBox .= "<div id='dbar' style='float:right;background-color:" . $col_minus . "; width:" . (floor((abs($motovalue) * 100) / $config[$key][$motokey]['factor'])) . "%;'></div></div>";
+                    if ($motovalue >= 0) $htmlBox .= "<div id='dbar' style='background-color:" . $col_plus . ";width:" . (floor((abs($motovalue) * 100) / $config[$key][$motokey]['factor'])) . "%;'></div></div>";
+                    $htmlBox .= "</div></div>";
+                    $htmlBox .= "<div id='dspacer'></div>";
+                }
+            }
+        }
+    
+        if($timestamp){
+            $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+        }
+        $htmlBox .= "</div>";
+        SetValueString($DriveListID, $htmlBox);
+        return $htmlBox;
+    }
+    
 
 }

@@ -127,7 +127,19 @@
       { "type": "SelectColor", "name": "OperHoursBarColor", "caption": "Bar color", "allowTransparent": "false", "value": 3054334},
       { "type": "SelectColor", "name": "OperHoursFontColor", "caption": "Font color", "allowTransparent": "false", "value": 0}
     ]},
-    { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
+    { "type": "ExpansionPanel", "caption": "Drive settings", "items": [
+      { "type": "NumberSpinner", "name": "DriveFontSize", "caption":  "Font size", "minimum":  8, "maximum": 18, "value": 12},
+      { "type": "CheckBox", "name": "DriveBackground", "caption": "Table background"},
+      { "type": "SelectColor", "name": "DriveBackgroundColor", "caption": "Background color", "allowTransparent": "false", "value": 16777215},
+      { "type": "NumberSpinner", "name": "DriveColumWidthNames", "caption": "Column width names", "minimum": 50, "maximum": 200, "value": 160},
+      { "type": "NumberSpinner", "name": "DriveColumWidthValues", "caption": "Column width values", "minimum": 50, "maximum": 200, "value": 90},
+      { "type": "NumberSpinner", "name": "DriveBarLength", "caption": "Bars length", "minimum": 50, "maximum": 500, "value": 390},
+      { "type": "NumberSpinner", "name": "DriveBarHigh", "caption": "Bars heigh", "minimum": 5, "maximum": 30, "value": 16},
+      { "type": "SelectColor", "name": "DriveBarBackground", "caption": "Bar background color", "allowTransparent": "false", "value": 6710886},
+      { "type": "SelectColor", "name": "DriveBarPositivColor", "caption": "Bar positiv color", "allowTransparent": "false", "value": 6591981},
+      { "type": "SelectColor", "name": "DriveBarNegativColor", "caption": "Bar negativ color", "allowTransparent": "false", "value": 16711680}
+    ]},
+   { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
 
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "Debugging" },
