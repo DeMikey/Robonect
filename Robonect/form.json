@@ -113,10 +113,19 @@
       { "type": "NumberSpinner", "name": "BatteryColumWidthNames", "caption": "Column width names", "minimum": 50, "maximum": 200, "value": 160},
       { "type": "NumberSpinner", "name": "BatteryColumWidthValues", "caption": "Column width values", "minimum": 50, "maximum": 200, "value": 90},
       { "type": "NumberSpinner", "name": "BatteryBarLength", "caption": "Bars length", "minimum": 50, "maximum": 500, "value": 390},
-      { "type": "NumberSpinner", "name": "BatteryBarHigh", "caption": "Bars high", "minimum": 5, "maximum": 30, "value": 16},
+      { "type": "NumberSpinner", "name": "BatteryBarHigh", "caption": "Bars heigh", "minimum": 5, "maximum": 30, "value": 16},
       { "type": "SelectColor", "name": "BatteryBarBackground", "caption": "Bar background color", "allowTransparent": "false", "value": 6710886},
       { "type": "SelectColor", "name": "BatteryBarPositivColor", "caption": "Bar positiv color", "allowTransparent": "false", "value": 6591981},
       { "type": "SelectColor", "name": "BatteryBarNegativColor", "caption": "Bar negativ color", "allowTransparent": "false", "value": 16711680}
+    ]},
+    { "type": "ExpansionPanel", "caption": "Operating hours settings", "items": [
+      { "type": "NumberSpinner", "name": "OperHoursHeigh", "caption":  "Heigh", "minimum":  80, "maximum": 200, "value": 140},
+      { "type": "NumberSpinner", "name": "OperHoursWidth", "caption": "Width", "minimum": 400, "maximum": 800, "value": 650},
+      { "type": "NumberSpinner", "name": "OperHoursHOffset", "caption":  "Distance from above", "minimum": 5, "maximum": 60, "value": 20},
+      { "type": "SelectColor", "name": "OperHoursBackgroundColor", "caption": "Background color", "allowTransparent": "false", "value": 16777215},
+      { "type": "SelectColor", "name": "OperHoursFieldBackgroundColor", "caption": "Field background color", "allowTransparent": "false", "value": 11316396},
+      { "type": "SelectColor", "name": "OperHoursBarColor", "caption": "Bar color", "allowTransparent": "false", "value": 3054334},
+      { "type": "SelectColor", "name": "OperHoursFontColor", "caption": "Font color", "allowTransparent": "false", "value": 0}
     ]},
     { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
 

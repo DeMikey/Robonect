@@ -105,6 +105,15 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("BatteryBarBackground", 6710886);
         $this->RegisterPropertyInteger("BatteryBarPositivColor", 6591981);
         $this->RegisterPropertyInteger("BatteryBarNegativColor", 16711680);
+        // HTML Box Betriebsstunden
+        $this->RegisterPropertyInteger("OperHoursHeigh", 130);
+        $this->RegisterPropertyInteger("OperHoursWidth", 650);
+        $this->RegisterPropertyInteger("OperHoursHOffset", 20);
+        $this->RegisterPropertyInteger("OperHoursBackgroundColor", 16777215);
+        $this->RegisterPropertyInteger("OperHoursFieldBackgroundColor", 11316396);
+        $this->RegisterPropertyInteger("OperHoursBarColor", 3054334);
+        $this->RegisterPropertyInteger("OperHoursFontColor", 0);
+
     }
 
     public function ApplyChanges()
@@ -2097,5 +2106,170 @@ class RobonectWifiModul extends IPSModule
         return $htmlBox;
     }
 
+    #================================================================================================
+    protected function SetTimeStatBox() {
+    #================================================================================================
+    Global $conf_time, $timestamp;
+         //Hole Errorlist Id
+         if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+            $this->log ("Keine HTMLBox Kategory vorhanden");
+            return false;
+        }
+        if (!$TimeStatListID = @IPS_GetObjectIDByIdent("TimeStatlist", $HTMLboxCat)) {
+            $this->log("Kein Time Statistik List Objekt vorhanden");
+            return false;
+        }
+        $data = $this->executeHTTPCommand("hour");
+        if ((!isset( $data )) || (!$data['successful'])) {
+            $this->log("Fehlermeldungen: ".$data);
+            return false;
+        }
+        $height = $this->ReadPropertyInteger("OperHoursHeigh");
+        $width = $this->RegisterPropertyInteger("OperHoursWidth");
+        $h_offset = $this->RegisterPropertyInteger("OperHoursHOffset");
+        $col_bar = $this->RegisterPropertyInteger("OperHoursBarColor");
+        $col_txt = $this->RegisterPropertyInteger("OperHoursFontColor");
+        $oca_bg = 0.1;
+        $oca_bgb = 0.3;
+
+        foreach ($data['seek'] as $duration) {
+            $timearray['search'][] = $duration['duration'];
+        }
+        foreach ($data['mowing'] as $duration) {
+            $timearray['mow'][] = $duration['duration'];
+        }
+    
+        //Ausgabe der Daten
+        // CSS - Teil
+        // Hintergrundfarbe umwandeln (hex -> rgb)
+        list($tr, $tg, $tb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("OperHoursBackgroundColor")), -6), "#%02x%02x%02x");
+        
+        // Hintergrundfarbe Bars umwandeln (hex -> rgb)
+        list($br, $bg, $bb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("OperHoursFieldBackgroundColor")), -6), "#%02x%02x%02x");
+    
+        $htmlBox = "<style type='text/css'>";
+        $bgt = "rgba(".$tr.",".$tg.",".$tb.",".$oca_bg.")";
+        $htmlBox .= "#table {position:relative;float:left;background:".$bgt.";width:".($width + 7)."px;padding: 5px;}";
+        $bgl = "rgba(".$br.",".$bg.",".$bb.",".$oca_bgb.")";
+        $htmlBox .= "#list {position:relative;background:".$bgl.";width:".$width."px;padding: 0px;}";
+        $htmlBox .= "#q-graph {position:relative;width:".$width."px;height:".$height."px;";
+        $htmlBox .= "margin: 1.1em 0 3.5em; padding: 0;";
+        $htmlBox .= "background:rgba(".$br.",".$bg.",".$bb.",".$oca_bgb.");";
+        $htmlBox .= "border-bottom: 1px solid gray; list-style: none; ";
+        $htmlBox .= "font: 9px Helvetica, Geneva, sans-serif;}";
+        $htmlBox .= "#q-graph ul {margin: 0; padding: 0; list-style: none;}";
+        $htmlBox .= "#q-graph li {position: absolute; bottom: 0; width: 150px; z-index: 2; margin: 0; padding: 0; text-align: center; list-style: none;}";
+        $htmlBox .= "#q-graph li.qtr {height: ".($height - $h_offset)."px; padding-top: 2px; border-right: none;}";
+        $htmlBox .= "#q-graph li.bar {width: 25px; border: 1px solid; border-bottom: none; color: ".$col_txt.";}";
+        $htmlBox .= "#q-graph li.bar p {margin: 5px 0 0; padding: 0;}";
+        $htmlBox .= "#q-graph li.time {left: 7px; background: ".$col_bar."; border-color: #EDC #BA9 #000 #EDC;}";
+        $htmlBox .= "#q-graph #q1 {left: 0;}";
+        $htmlBox .= "#q-graph #q2 {left: 32px;}";
+        $htmlBox .= "#q-graph #q3 {left: 64px;}";
+        $htmlBox .= "#q-graph #q4 {left: 96px;}";
+        $htmlBox .= "#q-graph #q5 {left: 128px;}";
+        $htmlBox .= "#q-graph #q6 {left: 160px;}";
+        $htmlBox .= "#q-graph #q7 {left: 192px;}";
+        $htmlBox .= "#q-graph #q8 {left: 224px;}";
+        $htmlBox .= "#q-graph #q9 {left: 256px;}";
+        $htmlBox .= "#q-graph #q10 {left: 288px;}";
+        $htmlBox .= "#q-graph #q11 {left: 320px;}";
+        $htmlBox .= "#q-graph #q12 {left: 352px;}";
+        $htmlBox .= "#q-graph #q13 {left: 384px;}";
+        $htmlBox .= "#q-graph #q14 {left: 416px;}";
+        $htmlBox .= "#q-graph #q15 {left: 448px;}";
+        $htmlBox .= "#q-graph #q16 {left: 480px;}";
+        $htmlBox .= "#q-graph #q17 {left: 512px;}";
+        $htmlBox .= "#q-graph #q18 {left: 544px;}";
+        $htmlBox .= "#q-graph #q19 {left: 576px;}";
+        $htmlBox .= "#q-graph #q20 {left: 608px; border-right: none;}";
+        $htmlBox .= "</style>";
+    
+        // Tabellenerstellung
+        $htmlBox .="<body>";
+        $htmlBox .= "<div id='table'>";
+        $htmlBox .= "<table style='font-size:12px;text-align:left;'>";
+        $htmlBox .= "<tr style='height:5px;'><td></td></tr>";
+        $htmlBox .= "<tr><th style='font-size:13px;'>Allgemein</th></tr>";
+        $htmlBox .= "<tr><td style='border-top: 1px solid #ffffff;'></td></tr>";
+        $htmlBox .= '<tr><td>';
+        $htmlBox .= "<div id='list'><table>";
+        $htmlBox .= "<tr><td width=70>Laufzeit:</td><td>".$data['general']['run']." h</td>";
+        $htmlBox .= "<td width=30></td>";
+        $htmlBox .= "<td width=70>Suchzeit:</td><td>".$data['general']['search']." h</td>";
+        $htmlBox .= "<td width=30></td>";
+        $htmlBox .= "<td width=100>Vollladungen:</td><td>".$data['general']['charges']."</td></tr>";
+        $htmlBox .= "<tr><td>Mähzeit:</td><td>".$data['general']['mow']." h</td>";
+        $htmlBox .= "<td></td>";
+        $htmlBox .= "<td>Ladezeit:</td><td>".$data['general']['charge']." h</td>";
+        $htmlBox .= "<td></td>";
+        $htmlBox .= "<td>Fehler:</td><td>".$data['general']['errors']."</td></tr>";
+        $htmlBox .= "</table></div></td></tr>";
+        $htmlBox .= "<tr style='height:20px;'><td></td></tr>";
+        // Suchzeiten
+        $htmlBox .= "<tr><th style='font-size:13px;'>Suchzeiten</th></tr>";
+        $htmlBox .= "<tr><td style='border-top: 1px solid #ffffff;'></td></tr>";
+        $htmlBox .= "<tr><td>";
+        // Bargraph Suchzeiten erzeugen
+        $htmlBox .= '<ul id="q-graph">';
+        $htmlBox .= "<span><table>";
+        $htmlBox .= "<tr><td width=60>Minimale Zeit:</td><td>".min($timearray['search'])." min</td></tr>";
+        $htmlBox .= "<tr><td>Maximale Zeit:</td><td>".max($timearray['search'])." min</td></tr>";
+        $htmlBox .= "<tr><td>Durchschnitt:</td><td>".floor((array_sum($timearray['search']) / count($timearray['search'])))." min</td></tr>";
+        $htmlBox .= "</table></span>";
+    
+        for($i = 1; $i <= count($timearray['search']); $i++){
+            $htmlBox .= '<li class="qtr" id="q'.$i.'">';
+            $htmlBox .= '<ul>';
+    
+            $high = ((($height - $h_offset) * $timearray['search'][$i-1]) / max($timearray['search']));
+            if ($high > 0) {
+                $htmlBox .= sprintf('<li class="time bar" style="height: %dpx;"><p>%d min</p></li>', $high, $timearray['search'][$i-1]);
+            } else {
+                $htmlBox .= sprintf('<li class="time bar" style="height: %dpx;"><p style="margin:-15px 0 0;"> min</p></li>', $high, $timearray['search'][$i-1]);
+            }    
+            $htmlBox .= '</ul>';
+            $htmlBox .= '</li>';
+        }
+        $htmlBox .= '</ul>';
+        $htmlBox .= "</td></tr>";
+        // Mähzeiten
+        $htmlBox .= "<tr><th style='font-size:13px;'>Mähzeiten</th></tr>";
+        $htmlBox .= "<tr><td style='border-top: 1px solid #ffffff;'></td></tr>";
+        $htmlBox .= "<tr><td>";
+        // Bargraph Mähzeiten erzeugen
+        $htmlBox .= '<ul id="q-graph">';
+        $htmlBox .= "<span><table>";
+        $htmlBox .= "<tr><td width=60>Minimale Zeit:</td><td>".min($timearray['mow'])." min</td></tr>";
+        $htmlBox .= "<tr><td>Maximale Zeit:</td><td>".max($timearray['mow'])." min</td></tr>";
+        $htmlBox .= "<tr><td>Durchschnitt:</td><td>".floor((array_sum($timearray['mow']) / count($timearray['mow'])))." min</td></tr>";
+        $htmlBox .= "</table></span>";
+   
+        for($i = 1; $i <= count($timearray['mow']); $i++){
+            $htmlBox .= '<li class="qtr" id="q'.$i.'">';
+            $htmlBox .= '<ul>';
+    
+            $high = ((($height - $h_offset) * $timearray['mow'][$i-1]) / max($timearray['mow']));
+            if ($high > 0) {
+                $htmlBox .= sprintf('<li class="time bar" style="height: %dpx;"><p> %d min</p></li>', $high, $timearray['mow'][$i-1]);
+            } else {
+                $htmlBox .= sprintf('<li class="time bar" style="height: %dpx;"><p style="margin:-15px 0 0;">%d min</p></li>', $high, $timearray['mow'][$i-1]);
+            }
+            $htmlBox .= '</ul>';
+            $htmlBox .= '</li>';
+        }
+        $htmlBox .= '</ul>';
+        $htmlBox .= "</td></tr>";
+        if($timestamp) $htmlBox .= "<tr style='font-size:10px;text-align:right;'><td>Update: ".date("d.m.Y H:i:s")."</td></tr>";
+        $htmlBox .= "</table>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div style='clear:both;'></div>";
+        $htmlBox .="</body>";
+    
+        //    IPS_SemaphoreLeave("openBufferTimeStat");
+    
+        
+        return $htmlBox;
+    }
 
 }
