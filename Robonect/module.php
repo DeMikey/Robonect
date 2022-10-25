@@ -1580,7 +1580,7 @@ class RobonectWifiModul extends IPSModule
             $this->NewMediaChart($MediaCat, "ChartBatteryCharging", "Battery charging chart", $BatteryChartFile, $this->GetIDForIdent("BatteryCharging"), $this->ReadPropertyInteger("ChartBatteryChargingFill"), $this->ReadPropertyInteger("ChartBatteryChargingLine"), "ROBONECT_MilliAmpereStunde", "Charging");
             // Batterie Temperatur Chart
             $BatteryChartFile ='media/' . 'ChartBattTemperature.' . $this->InstanceID . '.chart';
-            $this->NewMediaChart($MediaCat, "ChartBatteryTemperature", "Battery temperatur chart", $BatteryChartFile, $this->GetIDForIdent("BatteryTemp"), $this->ReadPropertyInteger("ChartBatteryTemperatureFill"), $this->ReadPropertyInteger("ChartBatteryTemperatureLine"), "~Temperature", "Temperature");
+            $this->NewMediaChart($MediaCat, "ChartBatteryTemperature", "Battery temperature chart", $BatteryChartFile, $this->GetIDForIdent("BatteryTemp"), $this->ReadPropertyInteger("ChartBatteryTemperatureFill"), $this->ReadPropertyInteger("ChartBatteryTemperatureLine"), "~Temperature", "Temperature");
         }
 
         //----HTMLBox
@@ -1604,6 +1604,7 @@ class RobonectWifiModul extends IPSModule
             }
              $this->SetErrorBox();
             $this->GetBatteryData();
+            $this->SetTimeStatBox();
         }
 
     }
