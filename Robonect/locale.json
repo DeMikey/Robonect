@@ -77,6 +77,7 @@
       "Bar background color": "Balken Hintergrundfarbe",
       "Bar positiv color": "Positive Balken Farbe",
       "Bar negativ color": "Negaive Balken Farbe",
+      "Operating hours settings": "Betriebstunden Einstellungen",
       "Heigh": "Höhe",
       "Width": "Breite",
       "Distance from above": "Abstand der Balken zum oberen Rand",
@@ -86,7 +87,8 @@
 
       "Timerlist": "Timerliste",
       "Errorlist": "Fehlerliste",
-      "Batterylist": "Batteryliste"
+      "Batterylist": "Batteryliste",
+      "Operation hours list": "Betriebstundenliste"
     }
   }
 }

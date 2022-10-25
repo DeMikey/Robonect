@@ -1597,9 +1597,12 @@ class RobonectWifiModul extends IPSModule
                 IPS_SetParent($this->RegisterVariableString("Errorlist", $this->Translate('Errorlist'), "~HTMLBox", 202), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
             if (!@IPS_GetObjectIDByIdent("Batterylist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Batterylist", $this->Translate('Batterylist'), "~HTMLBox", 202), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Batterylist", $this->Translate('Batterylist'), "~HTMLBox", 203), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
             }
-            $this->SetErrorBox();
+            if (!@IPS_GetObjectIDByIdent("TimeStatlist", $HTMLboxCat)) {
+                IPS_SetParent($this->RegisterVariableString("TimeStatlist", $this->Translate('Operation hours list'), "~HTMLBox", 204), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+            }
+             $this->SetErrorBox();
             $this->GetBatteryData();
         }
 
@@ -2267,8 +2270,7 @@ class RobonectWifiModul extends IPSModule
         $htmlBox .="</body>";
     
         //    IPS_SemaphoreLeave("openBufferTimeStat");
-    
-        
+        SetValueString($TimeStatListID, $htmlBox);
         return $htmlBox;
     }
 
