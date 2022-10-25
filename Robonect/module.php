@@ -53,8 +53,8 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("ChartBatteryCapacityLine", 16711680);
         $this->RegisterPropertyInteger("ChartBatteryChargingFill", 8421631);
         $this->RegisterPropertyInteger("ChartBatteryChargingLine", 8388863);
-        $this->RegisterPropertyInteger("ChartBatteryTemperaturFill", 65280);
-        $this->RegisterPropertyInteger("ChartBatteryTemperaturLine", 32768);
+        $this->RegisterPropertyInteger("ChartBatteryTemperatureFill", 65280);
+        $this->RegisterPropertyInteger("ChartBatteryTemperatureLine", 32768);
         
         // HTML Box Timer
         $this->RegisterPropertyInteger("TimerFontSize", 11);
@@ -1571,16 +1571,16 @@ class RobonectWifiModul extends IPSModule
             }
             // Batterie Spannung Chart
             $BatteryChartFile ='media/' . 'ChartBattVolt.' . $this->InstanceID . '.chart';
-            $this->NewMediaChart($MediaCat, "ChartBatteryVoltage", "Battery voltage chart", $BatteryChartFile, $this->GetIDForIdent("mowerVoltageBattery"), $this->ReadPropertyInteger("ChartBatteryVoltageFill"), $this->ReadPropertyInteger("ChartBatteryVoltageLine"), "Voltaage");
+            $this->NewMediaChart($MediaCat, "ChartBatteryVoltage", "Battery voltage chart", $BatteryChartFile, $this->GetIDForIdent("mowerVoltageBattery"), $this->ReadPropertyInteger("ChartBatteryVoltageFill"), $this->ReadPropertyInteger("ChartBatteryVoltageLine"), "ROBONECT_Spannung", "Voltaage");
             // Batterie Kapazität Chart
             $BatteryChartFile ='media/' . 'ChartBattCapacity.' . $this->InstanceID . '.chart';
-            $this->NewMediaChart($MediaCat, "ChartBatteryCapacity", "Battery capacity chart", $BatteryChartFile, $this->GetIDForIdent("BatteryRemaining"), $this->ReadPropertyInteger("ChartBatteryCapacityFill"), $this->ReadPropertyInteger("ChartBatteryCapacityLine"), "Capacity");
+            $this->NewMediaChart($MediaCat, "ChartBatteryCapacity", "Battery capacity chart", $BatteryChartFile, $this->GetIDForIdent("BatteryRemaining"), $this->ReadPropertyInteger("ChartBatteryCapacityFill"), $this->ReadPropertyInteger("ChartBatteryCapacityLine"), "~Milliampere", "Capacity");
             // Batterie Ladestrom Chart
             $BatteryChartFile ='media/' . 'ChartBattCharging.' . $this->InstanceID . '.chart';
-            $this->NewMediaChart($MediaCat, "ChartBatteryCharging", "Battery charging chart", $BatteryChartFile, $this->GetIDForIdent("BatteryCharging"), $this->ReadPropertyInteger("ChartBatteryChargingFill"), $this->ReadPropertyInteger("ChartBatteryChargingLine"), "Charging");
+            $this->NewMediaChart($MediaCat, "ChartBatteryCharging", "Battery charging chart", $BatteryChartFile, $this->GetIDForIdent("BatteryCharging"), $this->ReadPropertyInteger("ChartBatteryChargingFill"), $this->ReadPropertyInteger("ChartBatteryChargingLine"), "ROBONECT_MilliAmpereStunde", "Charging");
             // Batterie Temperatur Chart
             $BatteryChartFile ='media/' . 'ChartBattTemperature.' . $this->InstanceID . '.chart';
-            $this->NewMediaChart($MediaCat, "ChartBatteryTemperature", "Battery temperatur chart", $BatteryChartFile, $this->GetIDForIdent("BatteryTemp"), $this->ReadPropertyInteger("ChartBatteryTemperatureFill"), $this->ReadPropertyInteger("ChartBatteryTemperatureLine"), "Temperature");
+            $this->NewMediaChart($MediaCat, "ChartBatteryTemperature", "Battery temperatur chart", $BatteryChartFile, $this->GetIDForIdent("BatteryTemp"), $this->ReadPropertyInteger("ChartBatteryTemperatureFill"), $this->ReadPropertyInteger("ChartBatteryTemperatureLine"), "~Temperature", "Temperature");
         }
 
         //----HTMLBox
@@ -1665,7 +1665,7 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    protected function NewMediaChart (int $ParentID, string $ChartIdent, string $ChartName, string $ChartFile, string $ArchivVarID, int $ChartFill, int $ChartLine, string $Title) {
+    protected function NewMediaChart (int $ParentID, string $ChartIdent, string $ChartName, string $ChartFile, string $ArchivVarID, int $ChartFill, int $ChartLine, string $ChartProfile, string $Title) {
     #================================================================================================
         if (!$ChartID = @IPS_GetMediaIDByFile($ChartFile)) {
             // Get Archiv ID
@@ -1678,7 +1678,7 @@ class RobonectWifiModul extends IPSModule
                 IPS_ApplyChanges($ArchivID);
             }
     
-            $Json = '{"datasets": [{"variableID": '.$ArchivVarID.',"fillColor": "#'.substr("000000".dechex($ChartFill), -6).'","strokeColor": "#'.substr("000000".dechex($ChartLine), -6).'","title": "'.$this->Translate($Title).'","timeOffset": 0}],"profile": "ROBONECT_Spannung","type": "line"}';
+            $Json = '{"datasets": [{"variableID": '.$ArchivVarID.',"fillColor": "#'.substr("000000".dechex($ChartFill), -6).'","strokeColor": "#'.substr("000000".dechex($ChartLine), -6).'","title": "'.$this->Translate($Title).'","timeOffset": 0}],"profile": "'.$ChartProfile.'","type": "line"}';
     
             $ChartID = IPS_CreateMedia(4);
             IPS_SetParent($ChartID, $ParentID);
