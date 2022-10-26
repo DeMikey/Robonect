@@ -125,12 +125,12 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("DriveBarPositivColor", 6591981);
         $this->RegisterPropertyInteger("DriveBarNegativColor", 16711680);
         // HTML Box Version
-        $this->RegisterPropertyInteger("VersionFontSize", 11);
+        $this->RegisterPropertyInteger("VersionFontSize", 12);
         $this->RegisterPropertyBoolean("VersionBackground", false);
         $this->RegisterPropertyInteger("VersionBackgroundColor", 16777215);
-        $this->RegisterPropertyInteger("VersionRowHigh", 25);
+        $this->RegisterPropertyInteger("VersionRowHigh", 20);
         $this->RegisterPropertyInteger("VersionColumWidthNames", 160);
-        $this->RegisterPropertyInteger("VersionColumWidthValues", 90);
+        $this->RegisterPropertyInteger("VersionColumWidthValues", 180);
 
     }
 
