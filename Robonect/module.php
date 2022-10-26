@@ -124,6 +124,13 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("DriveBarBackground", 6710886);
         $this->RegisterPropertyInteger("DriveBarPositivColor", 6591981);
         $this->RegisterPropertyInteger("DriveBarNegativColor", 16711680);
+        // HTML Box Version
+        $this->RegisterPropertyInteger("VersionFontSize", 11);
+        $this->RegisterPropertyBoolean("VersionBackground", false);
+        $this->RegisterPropertyInteger("VersionBackgroundColor", 16777215);
+        $this->RegisterPropertyInteger("VersionRowHigh", 25);
+        $this->RegisterPropertyInteger("VersionColumWidthNames", 160);
+        $this->RegisterPropertyInteger("VersionColumWidthValues", 90);
 
     }
 
@@ -1602,24 +1609,28 @@ class RobonectWifiModul extends IPSModule
                     IPS_SetParent($HTMLboxCat, $this->InstanceID); // Kategorie Timer einsortieren unter der Robonect Instanz
             }
             if (!@IPS_GetObjectIDByIdent("Timerlist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "~HTMLBox", 201), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Timerlist", $this->Translate('Timerlist'), "~HTMLBox", 201), $HTMLboxCat); 
             }
             if (!@IPS_GetObjectIDByIdent("Errorlist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Errorlist", $this->Translate('Errorlist'), "~HTMLBox", 202), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Errorlist", $this->Translate('Errorlist'), "~HTMLBox", 202), $HTMLboxCat); 
             }
             if (!@IPS_GetObjectIDByIdent("Batterylist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Batterylist", $this->Translate('Batterylist'), "~HTMLBox", 203), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Batterylist", $this->Translate('Batterylist'), "~HTMLBox", 203), $HTMLboxCat); 
             }
             if (!@IPS_GetObjectIDByIdent("TimeStatlist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("TimeStatlist", $this->Translate('Operation hours list'), "~HTMLBox", 204), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("TimeStatlist", $this->Translate('Operation hours list'), "~HTMLBox", 204), $HTMLboxCat); 
             }
             if (!@IPS_GetObjectIDByIdent("Drivelist", $HTMLboxCat)) {
-                IPS_SetParent($this->RegisterVariableString("Drivelist", $this->Translate('Drivelist'), "~HTMLBox", 204), $HTMLboxCat); // Timer Weekdays unter die Kategory Timer verschieben.
+                IPS_SetParent($this->RegisterVariableString("Drivelist", $this->Translate('Drivelist'), "~HTMLBox", 204), $HTMLboxCat); 
             }
-             $this->SetErrorBox();
+            if (!@IPS_GetObjectIDByIdent("Versionlist", $HTMLboxCat)) {
+                IPS_SetParent($this->RegisterVariableString("Versionlist", $this->Translate('Versionlist'), "~HTMLBox", 204), $HTMLboxCat);
+            }
+            $this->SetErrorBox();
             $this->GetBatteryData();
             $this->SetTimeStatBox();
             $this->SetDrivesBox();
+            $this->SetVersion();
         }
 
     }
@@ -2049,7 +2060,6 @@ class RobonectWifiModul extends IPSModule
     protected function SetBatteryBox() {
     #================================================================================================
         // Hole Batterylist ID
-        $this->log("Erstelle Batteryliste.");
         if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
             $this->log ("Keine HTMLBox Kategory vorhanden");
             return false;
@@ -2398,5 +2408,128 @@ class RobonectWifiModul extends IPSModule
         return $htmlBox;
     }
     
+    #================================================================================================
+    protected function SetVersion() {
+    #================================================================================================
+        if (!$HTMLboxCat = @IPS_GetCategoryIDByName('HTMLBox', $this->InstanceID)) {
+            $this->log ("Keine HTMLBox Kategory vorhanden");
+            return false;
+        }
+        if (!$VersionListID = @IPS_GetObjectIDByIdent("Drivelist", $HTMLboxCat)) {
+            $this->log("Kein Time Statistik List Objekt vorhanden");
+            return false;
+        }
+        $data = $this->executeHTTPCommand("version");
+        if ((!isset( $data )) || (!$data['successful'])) {
+            $this->log("Fehlermeldungen: ".$data);
+            return false;
+        }
+        $timestamp = true;
+        $oca_tbg = 0.1;	
+        $fsize = $this->ReadPropertyInteger("VersionFontSize");
+        $height = $this->ReadPropertyInteger("VersionRowHigh");
+        $lwidth = $this->ReadPropertyInteger("VersionColumWidthNames");
+        $vwidth = $this->ReadPropertyInteger("VersionColumWidthValues");
+
+        // Hintergrundfarbe umwandeln (hex -> rgb)
+        if ($this->ReadPropertyBoolean("VersionBackground")) {
+            list($vr, $vg, $vb) = sscanf("#".substr("000000".dechex($this->ReadPropertyInteger("VersionBackgroundColor")), -6), "#%02x%02x%02x");
+        }
+   
+        $htmlBox = "<style type='text/css'>";
+        if(!$this->ReadPropertyBoolean("VersionBackground")) $bgt = "none";
+        else $bgt = "rgba(".$vr.",".$vg.",".$vb.",".$oca_tbg.")";
+        $htmlBox .= "#vtable {position:relative;float:left;background:".$bgt.";font-size:".$fsize."px;padding:10px;}";
+        $htmlBox .= "#vspacer {width:".($lwidth + $vwidth + 10)."px;height:5px;margin:auto;clear:both;}";
+        $htmlBox .= "#vcaption {width:".($lwidth + $vwidth + 10)."px;height:18px;font-size:".($fsize + 2)."px;border-bottom:1px solid #FFFFFF;padding: 1px;}";
+        $htmlBox .= "#vlabel {float:left;width:".$lwidth."px;height:".$height."px;padding:1px;}";
+        $htmlBox .= "#vvalue {float:left;width:".$vwidth."px;height:".$height."px;padding:1px;}";
+        $htmlBox .= "</style>";
+        $htmlBox .="<div id='vtable'>";
+        $htmlBox .= "<div id='vcaption'>Gerätekonfiguration</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vlabel'>Seriennummer:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['mower']['hardware']['serial']."</div>";
+        $htmlBox .= "<div><div id='vlabel'>Produktion:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['mower']['hardware']['production']."</div></div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vcaption'>Geräteversion</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div><div id='vlabel'>MSW-Software:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['mower']['msw']['title']."</div></div>";
+        $htmlBox .= "<div><div id='vlabel'>MSW-Version:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['mower']['msw']['version']."</div></div>";
+        $htmlBox .= "<div><div id='vlabel'>MSW-Datum:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['mower']['msw']['compiled']."</div></div>";
+        $htmlBox .= "<div><div id='vlabel'>SUB-Version:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['mower']['sub']['version']."</div></div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vcaption'>Robonect</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Seriennummer:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['serial']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Firmware-Version:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['application']['version']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Firmware-kompiliert:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['application']['compiled']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Firmware-Bemerkung:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['application']['comment']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vcaption'>Bootloader</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Seriennummer:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['bootloader']['version']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Bootloader-kompiliert:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['bootloader']['compiled']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>Bootloader-Bemerkung:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['bootloader']['comment']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div id='vcaption'>W-Lan</div>";
+        $htmlBox .= "<div id='vspacer'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>AT-Version:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['wlan']['at-version']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+        $htmlBox .= "<div>";
+        $htmlBox .= "<div id='vlabel'>SDK-Version-kompiliert:</div>";
+        $htmlBox .= "<div id='vvalue'>".$data['wlan']['sdk-version']."</div>";
+        $htmlBox .= "</div>";
+        $htmlBox .= "<div id='vspacer2'></div>";
+    
+        if($timestamp){
+            $htmlBox .= "<div id='vspacer'></div>";
+            $htmlBox .= "<div id='vspacer'></div>";
+            $htmlBox .= "<div style='font-size:10px;text-align:right;'>Update: ".date("d.m.Y H:i:s")."</div>";
+        }
+        $htmlBox .="</div>";
+
+        SetValueString($VersionListID, $htmlBox);
+
+        return $htmlBox;
+    }
 
 }

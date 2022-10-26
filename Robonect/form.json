@@ -139,7 +139,15 @@
       { "type": "SelectColor", "name": "DriveBarPositivColor", "caption": "Bar positiv color", "allowTransparent": "false", "value": 6591981},
       { "type": "SelectColor", "name": "DriveBarNegativColor", "caption": "Bar negativ color", "allowTransparent": "false", "value": 16711680}
     ]},
-   { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
+    { "type": "ExpansionPanel", "caption": "Version settings", "items": [
+      { "type": "NumberSpinner", "name": "VersionFontSize", "caption":  "Font size", "minimum":  8, "maximum": 18, "value": 12},
+      { "type": "CheckBox", "name": "VersionBackground", "caption": "Table background"},
+      { "type": "SelectColor", "name": "VersionBackgroundColor", "caption": "Background color", "allowTransparent": "false", "value": 16777215},
+      { "type": "NumberSpinner", "name": "VersionRowHigh", "caption": "Row high", "minimum": 20, "maximum": 30, "value": 20},
+      { "type": "NumberSpinner", "name": "VersionColumWidthNames", "caption": "Column width names", "minimum": 50, "maximum": 200, "value": 160},
+      { "type": "NumberSpinner", "name": "VersionColumWidthValues", "caption": "Column width values", "minimum": 50, "maximum": 200, "value": 180}
+   ]},
+    { "type": "CheckBox", "name": "Webfrontend", "caption":  "Create Webfrontend" },
 
     { "type": "Label", "caption": "   " },
     { "type": "Label", "label": "Debugging" },

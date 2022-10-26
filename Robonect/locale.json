@@ -52,6 +52,12 @@
 
       "Camera picture": "Kamerabild",
 
+      "Error settings": "Error Einstellungen",
+      "Row high": "Zeilen Höhe",
+      "Date colum width": "Datum Spaltenbreite",
+      "Hour colum width": "Zeit Spaltenbreite",
+      "Message colum width": "Meldung Spaltenbreite",
+      
       "Battery voltage chart settings": "Akku Spannung Chart Einstellungen",
       "Battery voltage chart": "Akku Spannungs Chart",
       "Fill color": "Füll Farbe",
@@ -84,12 +90,14 @@
       "Field background color": "Feld Hintergrund",
       "Bar color": "Balken Farbe",
       "Font color": "Schrift Farbe",
+      "Version settings": "Version Einstellungen",
 
       "Timerlist": "Timerliste",
       "Errorlist": "Fehlerliste",
       "Batterylist": "Batteryliste",
       "Operation hours list": "Betriebstundenliste",
-      "Drivelist": "Motorliste"
+      "Drivelist": "Motorliste",
+      "Versionlist": "Versionliste"
     }
   }
 }
