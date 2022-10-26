@@ -2415,7 +2415,7 @@ class RobonectWifiModul extends IPSModule
             $this->log ("Keine HTMLBox Kategory vorhanden");
             return false;
         }
-        if (!$VersionListID = @IPS_GetObjectIDByIdent("Drivelist", $HTMLboxCat)) {
+        if (!$VersionListID = @IPS_GetObjectIDByIdent("Versionlist", $HTMLboxCat)) {
             $this->log("Kein Time Statistik List Objekt vorhanden");
             return false;
         }
