@@ -933,6 +933,7 @@ class RobonectWifiModul extends IPSModule
         switch ( $ident ) {
             case 'mowerName':
                 $this->SetValue("mowerName", $payload);
+                $this->SetWlan();
                 break;
             case 'mowerSerial':
                 $this->SetValue("mowerSerial", $payload);
@@ -1488,7 +1489,6 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableFloat("mowerVoltageInternal", "Interne Spannung", "ROBONECT_Spannung", 52);
         $this->RegisterVariableFloat("mowerVoltageExternal", "Externe Spannung", "ROBONECT_Spannung", 53);
         $this->RegisterVariableInteger("mowerHours", "Arbeitsstunden", "ROBONECT_Stunden", 54);
-        $this->RegisterVariableInteger( "mowerWlanStatus", "WLAN Signalstärke", "~Intensity.100", 55 );
         $this->RegisterVariableInteger( "mowerMqttStatus", "MQTT Status", "ROBONECT_MQTTStatus", 56 );
         $this->RegisterVariableFloat( "mowerTemperature", "Temperatur im Rasenmäher", "~Temperature", 57 );
         $this->RegisterVariableInteger( "mowerHumidity", "Feuchtigkeit im Rasenmäher", "~Humidity", 58 );
@@ -1497,8 +1497,19 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterVariableInteger( "mowerBladesAge", "Alter der Messer", "ROBONECT_Tage", 61 );
 
         //--- Error List --------------------------------------------------------------
-        $this->RegisterVariableInteger( "mowerErrorCount", "Fehlercode", "", 70 );
-        $this->RegisterVariableString( "mowerErrorMessage", "Fehlermeldungen", "", 71 );
+        $this->RegisterVariableInteger( "mowerErrorCount", "Fehlercode", "", 62 );
+        $this->RegisterVariableString( "mowerErrorMessage", "Fehlermeldungen", "", 63 );
+
+        //--- Network
+        $this->RegisterVariableBoolean("mowerAPEnabled", "AP aktiv", "ROBONECT_JaNein", 70);
+        $this->RegisterVariableString("mowerAPMac", "AP Macadresse", "", 71);
+        $this->RegisterVariableBoolean("mowerStationEnabled", "Station aktiv", "ROBONECT_JaNein", 72);
+        $this->RegisterVariableString("mowerStationMac", "Station Macadresse", "", 73);
+        $this->RegisterVariableInteger("mowerWlanStatus", "WLAN Signalstärke", "~Intensity.100", 74);
+        $this->RegisterVariableString("mowerStationSSID", "Station SSID", "", 75);
+        $this->RegisterVariableString("mowerStationPassword", "Station Password", "", 76);
+        $this->RegisterVariableBoolean("mowerStationDHCPEnabled", "Station DHCP aktiv", "ROBONECT_JaNein", 77);
+        $this->RegisterVariableString("mowerStationIP", "Station IP", "", 78);
 
         //--- Timer --------------------------------------------------------------
 
@@ -1631,6 +1642,7 @@ class RobonectWifiModul extends IPSModule
             $this->SetTimeStatBox();
             $this->SetDrivesBox();
             $this->SetVersion();
+            $this->SetWlan();
         }
 
     }
@@ -2530,6 +2542,55 @@ class RobonectWifiModul extends IPSModule
         SetValueString($VersionListID, $htmlBox);
 
         return $htmlBox;
+    }
+
+    #================================================================================================
+    protected function SetWlan() {
+    #================================================================================================
+        $data = $this->executeHTTPCommand("wlan");
+        if ((!isset( $data )) || (!$data['successful'])) {
+            $this->log("Fehlermeldungen: ".$data);
+            return false;
+        }
+        foreach ($data['ap'] as $Key => $Value) {
+            switch ($Key) {
+                case 'enable':
+                    $this->SetValue("mowerAPEnabled", $Value);
+                    break;
+                case 'mac':
+                    $this->SetValue("mowerAPMac", $Value);
+                    break;
+                default:
+                    $this->log("Neuer Wlan AP Eintrag gefunden Key: ".$Key." Wert: ".$Value);
+                break;
+            }
+        }
+        foreach ($data['station'] as $Key => $Value ) {
+            switch ($Key) {
+                case 'enable':
+                    $this->SetValue("mowerStationEnabled", $Value);
+                    break;
+                case 'mac':
+                    $this->SetValue("mowerStationMac", $Value);
+                    break;
+                case 'ssid':
+                    $this->SetValue("mowerStationSSID", $Value);
+                    break;
+                case 'password':
+                    $this->SetValue("mowerStationPassword", $Value);
+                    break;
+                case 'dhcp':
+                    $this->SetValue("mowerStationDHCPEnabled", $Value);
+                    break;
+                case 'ip':
+                    $this->SetValue("mowerStationIP", $Value);
+                    break;
+                default:
+                    $this->log("Neuer Wlan Station Eintrag gefunden Key: ".$Key." Wert: ".$Value);
+                break;
+            }
+        }
+        return true;
     }
 
 }
