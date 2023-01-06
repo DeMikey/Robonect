@@ -7,7 +7,6 @@
 // Klassendefinition
 class RobonectWifiModul extends IPSModule
 {
-
     /**
      * Die folgenden Funktionen stehen automatisch zur Verfügung, wenn das Modul über die "Module Control" eingefügt wurden.
      * Die Funktionen werden, mit dem selbst eingerichteten Prefix, in PHP und JSON-RPC wiefolgt zur Verfügung gestellt:
@@ -28,19 +27,19 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyString("IPAddress", '0.0.0.0');
         $this->RegisterPropertyString("Username", '');
         $this->RegisterPropertyString("Password", '');
-        $this->RegisterPropertyBoolean( "HTTPUpdateTimer", false );
+        $this->RegisterPropertyBoolean("HTTPUpdateTimer", false);
         $this->RegisterPropertyString("MQTTTopic", '');
-        $this->RegisterPropertyInteger( "UpdateTimer", 10 );
-        $this->RegisterPropertyInteger( "MowingTime", 180 );
-        $this->RegisterPropertyBoolean( "CameraInstalled", false );
-        $this->RegisterPropertyBoolean( "StatusImage", false );
-        $this->RegisterPropertyBoolean( "DateIamge", false );
+        $this->RegisterPropertyInteger("UpdateTimer", 10);
+        $this->RegisterPropertyInteger("MowingTime", 180);
+        $this->RegisterPropertyBoolean("CameraInstalled", false);
+        $this->RegisterPropertyBoolean("StatusImage", false);
+        $this->RegisterPropertyBoolean("DateIamge", false);
         $this->RegisterPropertyInteger("TextColorImage", 350);
-        $this->RegisterPropertyBoolean( "MediaElements", false );
-        $this->RegisterPropertyBoolean( "HtmlBoxElements", false );
-        $this->RegisterPropertyBoolean( "Webfrontend", false );
+        $this->RegisterPropertyBoolean("MediaElements", false);
+        $this->RegisterPropertyBoolean("HtmlBoxElements", false);
+        $this->RegisterPropertyBoolean("Webfrontend", false);
 
-        $this->RegisterPropertyBoolean( "DebugLog", false );
+        $this->RegisterPropertyBoolean("DebugLog", false);
 
         // Timer
         $this->RegisterTimer("ROBONECT_UpdateTimer", 0, 'ROBONECT_Update($_IPS[\'TARGET\']);');
@@ -55,7 +54,7 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("ChartBatteryChargingLine", 8388863);
         $this->RegisterPropertyInteger("ChartBatteryTemperatureFill", 65280);
         $this->RegisterPropertyInteger("ChartBatteryTemperatureLine", 32768);
-        
+
         // HTML Box Timer
         $this->RegisterPropertyInteger("TimerFontSize", 11);
         $this->RegisterPropertyInteger("TimerBackground", 16777215);
@@ -131,7 +130,6 @@ class RobonectWifiModul extends IPSModule
         $this->RegisterPropertyInteger("VersionRowHigh", 20);
         $this->RegisterPropertyInteger("VersionColumWidthNames", 160);
         $this->RegisterPropertyInteger("VersionColumWidthValues", 180);
-
     }
 
     public function ApplyChanges()
@@ -144,51 +142,54 @@ class RobonectWifiModul extends IPSModule
         $this->registerVariables();
 
         // Set Timer
-        if ( $this->ReadPropertyBoolean( "HTTPUpdateTimer" ) and $this->ReadPropertyInteger("UpdateTimer") >= 10 ) {
+        if ($this->ReadPropertyBoolean("HTTPUpdateTimer") and $this->ReadPropertyInteger("UpdateTimer") >= 10) {
             $this->SetTimerInterval("ROBONECT_UpdateTimer", $this->ReadPropertyInteger("UpdateTimer")*1000);
         } else {
-            $this->SetTimerInterval("ROBONECT_UpdateTimer", 0 );
+            $this->SetTimerInterval("ROBONECT_UpdateTimer", 0);
         }
 
         // Set CamTimer
-        if ($this->ReadPropertyBoolean( "CameraInstalled" )) {
+        if ($this->ReadPropertyBoolean("CameraInstalled")) {
             $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 30000);
         }
     }
 
-    public function Update() {
+    public function Update()
+    {
         $semaphore = 'Robonect'.$this->InstanceID.'_Update';
-        $this->log('Update - Try to enter Semaphore' );
-        if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { return false; };
-        $this->log('Update - Semaphore entered' );
+        $this->log('Update - Try to enter Semaphore');
+        if (IPS_SemaphoreEnter($semaphore, 0) == false) {
+            return false;
+        };
+        $this->log('Update - Semaphore entered');
 
         // HTTP status request
-        $data = $this->executeHTTPCommand( 'status' );
+        $data = $this->executeHTTPCommand('status');
         if ($data == false) {
-            IPS_SemaphoreLeave( $semaphore );
-            $this->log('Update - Semaphore leaved' );
+            IPS_SemaphoreLeave($semaphore);
+            $this->log('Update - Semaphore leaved');
             return false;
-        } elseif ( isset( $data['successful'] ) ) {
+        } elseif (isset($data['successful'])) {
             // set values to variables
 
             //--- Identification
-            $this->updateIdent( "mowerName", $data['name'] );
-            $this->updateIdent( "mowerSerial", $data['id'] );
+            $this->updateIdent("mowerName", $data['name']);
+            $this->updateIdent("mowerSerial", $data['id']);
 
             //--- Network
-            $this->updateIdent( "mowerWlanStatus", $data['wlan']['signal'] );
+            $this->updateIdent("mowerWlanStatus", $data['wlan']['signal']);
 
             //--- Status
-            $this->updateIdent( "mowerMode", $data['status']['mode'] );
-            $this->updateIdent( "mowerStatus", $data['status']['status'] );
-            $this->updateIdent( "mowerStopped", $data['status']['stopped'] );
-            $this->updateIdent( "mowerStatusSinceDurationSec", $data['status']['duration'] );
-            $this->updateIdent( "mowerMode",  $data['status']['mode'] );
+            $this->updateIdent("mowerMode", $data['status']['mode']);
+            $this->updateIdent("mowerStatus", $data['status']['status']);
+            $this->updateIdent("mowerStopped", $data['status']['stopped']);
+            $this->updateIdent("mowerStatusSinceDurationSec", $data['status']['duration']);
+            $this->updateIdent("mowerMode", $data['status']['mode']);
 
             //--- Condition
-            $this->updateIdent("mowerBatterySoc", $data['status']['battery'] );
-            $this->updateIdent("mowerHours", $data['status']['hours'] );
-            $this->updateIdent("mowerTemperature", $data['health']['temperature'] );
+            $this->updateIdent("mowerBatterySoc", $data['status']['battery']);
+            $this->updateIdent("mowerHours", $data['status']['hours']);
+            $this->updateIdent("mowerTemperature", $data['health']['temperature']);
             $this->updateIdent("mowerHumidity", $data['health']['humidity']);
             if (isset($data['blades']['quality'])) {
                 $this->updateIdent("mowerBladesQuality", $data['blades']['quality']);
@@ -202,86 +203,80 @@ class RobonectWifiModul extends IPSModule
 
             //--- Timer
             $this->updateIdent("mowerTimerStatus", $data['timer']['status']);
-            if ( isset( $data['timer']['next'] ) ) {
-                $this->updateIdent("mowerNextTimerstart", $data['timer']['next']['unix'] );
+            if (isset($data['timer']['next'])) {
+                $this->updateIdent("mowerNextTimerstart", $data['timer']['next']['unix']);
             } else {
-                $this->updateIdent("mowerNextTimerstart", 0 );
+                $this->updateIdent("mowerNextTimerstart", 0);
             }
 
             //--- Clock
-            $this->updateIdent("mowerUnixTimestamp", $data['clock']['unix'] );
+            $this->updateIdent("mowerUnixTimestamp", $data['clock']['unix']);
         }
 
         // Get Health Data
-        $data = $this->executeHTTPCommand( 'health' );
+        $data = $this->executeHTTPCommand('health');
         if ($data == false) {
             return false;
-        } elseif ( isset( $data['successful'] ) ) {#
-            $this->updateIdent("mowerVoltageInternal", $data['health']['voltages']['int3v3']/1000 );
-            $this->updateIdent("mowerVoltageExternal", $data['health']['voltages']['ext3v3'] );
-            $this->updateIdent("mowerVoltageBattery", $data['health']['voltages']['batt']/1000 );
+        } elseif (isset($data['successful'])) {#
+            $this->updateIdent("mowerVoltageInternal", $data['health']['voltages']['int3v3']/1000);
+            $this->updateIdent("mowerVoltageExternal", $data['health']['voltages']['ext3v3']);
+            $this->updateIdent("mowerVoltageBattery", $data['health']['voltages']['batt']/1000);
         }
 
         // Set Timer
-        if ( $this->ReadPropertyBoolean( "HTTPUpdateTimer" ) and $this->ReadPropertyInteger("UpdateTimer") >= 10 ) {
+        if ($this->ReadPropertyBoolean("HTTPUpdateTimer") and $this->ReadPropertyInteger("UpdateTimer") >= 10) {
             $this->SetTimerInterval("ROBONECT_UpdateTimer", $this->ReadPropertyInteger("UpdateTimer")*1000);
         } else {
-            $this->SetTimerInterval("ROBONECT_UpdateTimer", 0 );
+            $this->SetTimerInterval("ROBONECT_UpdateTimer", 0);
         }
 
-        if ( $this->ReadPropertyBoolean( "CameraInstalled" )) {
+        if ($this->ReadPropertyBoolean("CameraInstalled")) {
             $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 60000, $this->UpdateImage());
         }
 
-        IPS_SemaphoreLeave( $semaphore );
-        $this->log('Update - Semaphore leaved' );
+        IPS_SemaphoreLeave($semaphore);
+        $this->log('Update - Semaphore leaved');
     }
 
     #================================================================================================
-    public function Start() {
-    #================================================================================================
-    $Response = @$this->sendMQTT('/control', 'start');
+    public function Start()
+    {
+        #================================================================================================
+        $Response = @$this->sendMQTT('/control', 'start');
         return $Response;
-        // start the current modus of the lawnmower; tested
-        // get data via HTTP Request
-//        $data = $this->executeHTTPCommand( 'start' );
-//        if ( $data == false ) {
-//            return false;
-//        } else {
-//            return $data['successful'];
-//        }
     }
 
     #================================================================================================
-    public function Stop() {
-    #================================================================================================
-    $Response = @$this->sendMQTT('/control', 'stop');
+    public function Stop()
+    {
+        #================================================================================================
+        $Response = @$this->sendMQTT('/control', 'stop');
         return $Response;
-        // stop the current modus of the lawnmower; tested
-        // get data via HTTP Request
-//        $data = $this->executeHTTPCommand( 'stop' );
-//        if ( $data == false ) {
-//            return false;
-//        } else {
-//            return $data['successful'];
-//        }
     }
 
-    public function UpdateErrorList() {
+    //Obsolate kann gelöscht werden sobald alle <refenzen weg sind
+    public function UpdateErrorList()
+    {
         // $format = initial / "JSON" (return plain json)
         //           Array (returns encoded json)
         //           Http (returns a Http table)
 
         $semaphore = 'Robonect'.$this->InstanceID.'_ErrorList';
-        if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { return false; };
+        if (IPS_SemaphoreEnter($semaphore, 0) == false) {
+            return false;
+        };
 
-        $data = $this->executeHTTPCommand( 'error' );
-        if ( !isset( $data ) or  !isset( $data['errors'] ) or !isset( $data['successful'] ) or ( $data['successful'] != true ) ) { return false; }
+        $data = $this->executeHTTPCommand('error');
+        if (!isset($data) or  !isset($data['errors']) or !isset($data['successful']) or ($data['successful'] != true)) {
+            return false;
+        }
 
-        if ( count( $data['errors'] ) == 0 ) { return true; }
+        if (count($data['errors']) == 0) {
+            return true;
+        }
 
-        $errorCount = count( $data['errors'] );
-        $this->SetValue("mowerErrorCount", $errorCount );
+        $errorCount = count($data['errors']);
+        $this->SetValue("mowerErrorCount", $errorCount);
 
         $errorListHTML = '<table>';
         $errorListHTML = $errorListHTML.'<colgroup>';
@@ -295,10 +290,12 @@ class RobonectWifiModul extends IPSModule
         $errorListHTML = $errorListHTML.'</thead>Beschreibung</tr>';
         $errorListHTML = $errorListHTML.'<tbody>';
 
-        for ( $x = 0; $x < $errorCount; $x++  ) {
+        for ($x = 0; $x < $errorCount; $x++) {
             $error = $data['errors'][$x];
             $colorCode = '#555555';
-            if ( ($x % 2 ) != 0 ) $colorCode = '#333333';
+            if (($x % 2) != 0) {
+                $colorCode = '#333333';
+            }
             $errorListHTML = $errorListHTML.'<tr style="background-color:"'.$colorCode.'>';
 
             $index = $x+1;
@@ -314,137 +311,159 @@ class RobonectWifiModul extends IPSModule
         $errorListHTML = $errorListHTML.'</tbody>';
         $errorListHTML = $errorListHTML.'</table>';
 
-        $this->SetValue("mowerErrorList", $errorListHTML );
+        $this->SetValue("mowerErrorList", $errorListHTML);
 
-        IPS_SemaphoreLeave( $semaphore );
+        IPS_SemaphoreLeave($semaphore);
     }
 
-    public function ClearErrors() {
-        $data = $this->executeHTTPCommand('error&clear=1' );
-        if ( $data == false ) {
+    public function ClearErrors()
+    {
+        $data = $this->executeHTTPCommand('error&clear=1');
+        if ($data == false) {
             return false;
         } else {
-            if ( $data['successful'] == true ) {
-                $this->SetValue("mowerErrorcount", 0 );
+            if ($data['successful'] == true) {
+                $this->SetValue("mowerErrorcount", 0);
             }
             return $data['successful'];
         }
     }
 
     #================================================================================================
-    public function DriveHome() {
-    #================================================================================================
+    public function DriveHome()
+    {
+        #================================================================================================
         // Mower should drive to home position
         $Response = @$this->sendMQTT('/control/mode', 'home');
         return $Response;
- //        $data = $this->executeHTTPCommand('mode&mode=home' );
- //       if ( $data == false ) {
- //           return false;
- //       } else {
- //           return $data['successful'];
- //       }
     }
 
-    public function SetService( string $Service ) {
+    public function SetService(string $Service)
+    {
         // Set Mode of the Mower
 
         // check parameter
-        if ( $Service !== "reboot" && $Service !== "sleep" && $Service !== "shutdown") return false;
+        if ($Service !== "reboot" && $Service !== "sleep" && $Service !== "shutdown") {
+            return false;
+        }
         $Response = @$this->sendMQTT('/control/mode', $Service);
         return $Response;
     }
 
     #================================================================================================
-    public function SetMode( string $mode ) {
-    #================================================================================================
+    public function SetMode(string $mode)
+    {
+        #================================================================================================
         // check parameter
-        if ( $mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto" ) return false;
+        if ($mode !== "home" && $mode !== "eod" && $mode !== "man" && $mode !== "auto") {
+            return false;
+        }
         $Response = @$this->sendMQTT('/control/mode', $mode);
         return $Response;
-//        $data = $this->executeHTTPCommand('mode&mode='.$mode );
-//        if ( $data == false ) {
-//            return false;
-//        } else {
-//            return $data['successful'];
-//        }
     }
 
     #================================================================================================
-    public function ReleaseDoor() {
-    #================================================================================================
+    public function ReleaseDoor()
+    {
+        #================================================================================================
         // Bestätigen das Tor offen ist
-        $Response = @$this->sendMQTT('/control/door',"release");
+        $Response = @$this->sendMQTT('/control/door', "release");
         return $Response;
     }
 
-    public function StartMowingNow( int $duration ) {
+    public function StartMowingNow(int $duration)
+    {
         // start mowing now for XX minutes and go HOME afterwards (tested)
         $durationToRun = $duration;
-        if ( $durationToRun == 0 ) {
+        if ($durationToRun == 0) {
             $durationToRun = $this->ReadPropertyInteger("MowingTime");
         }
-        if ( $durationToRun > 1440 or $durationToRun < 10 ) return false;
+        if ($durationToRun > 1440 or $durationToRun < 10) {
+            return false;
+        }
 
-        $start = date( 'H:i', time() );
-        $data = $this->executeHTTPCommand('mode&mode=job&start='.$start.'&duration='.$durationToRun.'&after=home' );
-        if ( $data == false ) {
+        $start = date('H:i', time());
+        $data = $this->executeHTTPCommand('mode&mode=job&start='.$start.'&duration='.$durationToRun.'&after=home');
+        if ($data == false) {
             return false;
         } else {
             return $data['successful'];
         }
     }
 
-    public function ScheduleJob( int $duration, string $modeAfter, string $start, string $stop ) {
+    public function ScheduleJob(int $duration, string $modeAfter, string $start, string $stop)
+    {
         // remote start positions are not supported!
 
         // check parameters
-        if ( $duration > 1440 or $duration < 60 ) return false;
+        if ($duration > 1440 or $duration < 60) {
+            return false;
+        }
 
         $modeParam = $modeAfter;
-        if ( $modeParam == '' ) {
+        if ($modeParam == '') {
             // default HOME
             $modeParam = 'home';
         }
-        if ( $modeParam !== "home" && $modeParam !== "eod" && $modeParam !== "man" && $modeParam !== "auto" ) return false;
+        if ($modeParam !== "home" && $modeParam !== "eod" && $modeParam !== "man" && $modeParam !== "auto") {
+            return false;
+        }
 
 
         $startParam = $start;
-        if ( $startParam == '' ) {
+        if ($startParam == '') {
             // default now
-            $startParam = date( 'H:i', time() );
+            $startParam = date('H:i', time());
         }
-        if ( strlen( $startParam ) > 5 ) { return false; }
-        if ( preg_match('((1[0-1]1[0-9]|2[0-3]):[0-5][0-9]?)', $startParam ) == false ) { return false; }
+        if (strlen($startParam) > 5) {
+            return false;
+        }
+        if (preg_match('((1[0-1]1[0-9]|2[0-3]):[0-5][0-9]?)', $startParam) == false) {
+            return false;
+        }
 
-        $startIntValue = intval( substr( $startParam, 0, 2 ) ) * 60 + intval( substr( $startParam, 3, 2 ) );
+        $startIntValue = intval(substr($startParam, 0, 2)) * 60 + intval(substr($startParam, 3, 2));
 
         $stopParam = $stop;
-        if ( $stopParam == '' ) {
+        if ($stopParam == '') {
             // default stop = start + duration + 2min
             $stopIntValue = $startIntValue + $duration + 5;
-            $hour = intdiv( $stopIntValue, 60 );
-            $minutes = $stopIntValue - ( $hour * 60 );
-            if ( $hour > 23 ) { $hour = $hour - 24; };
+            $hour = intdiv($stopIntValue, 60);
+            $minutes = $stopIntValue - ($hour * 60);
+            if ($hour > 23) {
+                $hour = $hour - 24;
+            };
 
             $stopParam = '';
-            if ( $hour < 10 ) $stopParam = '0';
+            if ($hour < 10) {
+                $stopParam = '0';
+            }
             $stopParam = $stopParam.$hour.':';
-            if ( $minutes < 10 ) $stopParam = $stopParam.'0';
+            if ($minutes < 10) {
+                $stopParam = $stopParam.'0';
+            }
             $stopParam = $stopParam.$minutes;
-
         }
-        if ( strlen( $stopParam ) > 5 ) { return false; }
-        if ( preg_match('(([0-1][0-9]|2[0-3]):[0-5][0-9]?)', $stopParam ) == false ) { return false; }
+        if (strlen($stopParam) > 5) {
+            return false;
+        }
+        if (preg_match('(([0-1][0-9]|2[0-3]):[0-5][0-9]?)', $stopParam) == false) {
+            return false;
+        }
 
-        $stopIntValue = intval( substr( $stopParam, 0, 2 ) ) * 60 + intval( substr( $stopParam, 3, 2 ) );
-        if ( $stopIntValue < $startIntValue ) { $stopIntValue = $stopIntValue + 1440; }
+        $stopIntValue = intval(substr($stopParam, 0, 2)) * 60 + intval(substr($stopParam, 3, 2));
+        if ($stopIntValue < $startIntValue) {
+            $stopIntValue = $stopIntValue + 1440;
+        }
         // check duration is not longer than mowing interval
-        if ( ( $stopIntValue - $startIntValue ) < $duration ) { return false; }
+        if (($stopIntValue - $startIntValue) < $duration) {
+            return false;
+        }
 
 
         //--- execute Command
-        $data = $this->executeHTTPCommand('mode&mode=job&start='.$startParam.'&stop='.$stopParam.'&duration='.$duration.'&after='.$modeParam );
-        if ( $data == false ) {
+        $data = $this->executeHTTPCommand('mode&mode=job&start='.$startParam.'&stop='.$stopParam.'&duration='.$duration.'&after='.$modeParam);
+        if ($data == false) {
             return false;
         } else {
             return $data['successful'];
@@ -452,8 +471,9 @@ class RobonectWifiModul extends IPSModule
     }
 
     #================================================================================================
-    protected function GetBatteryData() {
-    #================================================================================================
+    protected function GetBatteryData()
+    {
+        #================================================================================================
         $data = $this->executeHTTPCommand("battery");
         if ((!isset($data)) || (!$data['successful'])) {
             $this->log("Fehlermeldungen: ".$data);
@@ -464,103 +484,109 @@ class RobonectWifiModul extends IPSModule
         $this->SetValue("BatteryCapacity", $data['batteries'][0]['capacity']['full']);
         $this->SetValue("BatteryRemaining", $data['batteries'][0]['capacity']['remaining']);
         $this->SetBatteryBox();
-    }    
+    }
 
-    public function GetTimerFromMower() {
+    // Obsolate kann gelöscht werden sobald keine referenzen mehr vorhanden sind
+    public function GetTimerFromMower()
+    {
         // reads all timer information and transfers it to an IPS Timer Instance
 
-        define( 'WEEKDAYS', ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'] );
+        define('WEEKDAYS', ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su']);
 
-        $data = $this->executeHTTPCommand( 'timer' );
-        if ( !isset( $data ) or  !isset( $data['timer'] ) or !isset( $data['successful'] ) or ( $data['successful'] != true ) ) { return false; }
+        $data = $this->executeHTTPCommand('timer');
+        if (!isset($data) or  !isset($data['timer']) or !isset($data['successful']) or ($data['successful'] != true)) {
+            return false;
+        }
 
-        if ( $this->GetIDForIdent('TimerPlanActive' ) == false ) { return false; }
+        if ($this->GetIDForIdent('TimerPlanActive') == false) {
+            return false;
+        }
 
         $TimerPlanActiveID = $this->GetIDForIdent('TimerPlanActive');
-        $WochenplanEventID = @IPS_GetObjectIDByIdent( 'TimerWeekPlan'.$this->InstanceID, $TimerPlanActiveID );
-        if ( $WochenplanEventID == false ) { return false; }
+        $WochenplanEventID = @IPS_GetObjectIDByIdent('TimerWeekPlan'.$this->InstanceID, $TimerPlanActiveID);
+        if ($WochenplanEventID == false) {
+            return false;
+        }
 
         // delete and re-create the ScheduleGroups to rebuild them from scratch
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 0, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 1, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 2, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 3, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 4, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 5, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 6, 0 );
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 0, 1);  // Mon
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 1, 2);  // Tue
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 2, 4);  // Wed
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 3, 8);  // Thu
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 4, 16); // Fri
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 5, 32);  // Sat
-        IPS_SetEventScheduleGroup( $WochenplanEventID, 6, 64); // Sun
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 0, 1, 0, 0, 0, 1);
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 1, 1, 0, 0, 0, 1);
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 2, 1, 0, 0, 0, 1);
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 3, 1, 0, 0, 0, 1);
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 4, 1, 0, 0, 0, 1);
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 5, 1, 0, 0, 0, 1);
-        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, 6, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 0, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 1, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 2, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 3, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 4, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 5, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 6, 0);
+        IPS_SetEventScheduleGroup($WochenplanEventID, 0, 1);  // Mon
+        IPS_SetEventScheduleGroup($WochenplanEventID, 1, 2);  // Tue
+        IPS_SetEventScheduleGroup($WochenplanEventID, 2, 4);  // Wed
+        IPS_SetEventScheduleGroup($WochenplanEventID, 3, 8);  // Thu
+        IPS_SetEventScheduleGroup($WochenplanEventID, 4, 16); // Fri
+        IPS_SetEventScheduleGroup($WochenplanEventID, 5, 32);  // Sat
+        IPS_SetEventScheduleGroup($WochenplanEventID, 6, 64); // Sun
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 0, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 1, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 2, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 3, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 4, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 5, 1, 0, 0, 0, 1);
+        IPS_SetEventScheduleGroupPoint($WochenplanEventID, 6, 1, 0, 0, 0, 1);
 
         $timerList = $data['timer'];
-        for ( $x = 0; $x<=13; $x++ ) {
-
+        for ($x = 0; $x<=13; $x++) {
             $timer = $timerList[$x];
-            if ( $timer['enabled'] == true ) {
-
-                for ( $weekday = 0; $weekday <= 6; $weekday = $weekday + 1 ) {
-                    if ( $timer['weekdays'][WEEKDAYS[$weekday]] ) {
-                        $startHour = intval( substr( $timer['start'], 0, 2 ) );
-                        $startMinutes = intval( substr( $timer['start'], 3, 2 ) );
-                        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, $weekday, 2, $startHour, $startMinutes, 0, 2 );
-                        $stopHour = intval( substr( $timer['end'], 0, 2 ) );
-                        $stopMinutes = intval( substr( $timer['end'], 3, 2 ) );
-                        IPS_SetEventScheduleGroupPoint( $WochenplanEventID, $weekday, 3, $stopHour, $stopMinutes, 0, 1 );
+            if ($timer['enabled'] == true) {
+                for ($weekday = 0; $weekday <= 6; $weekday = $weekday + 1) {
+                    if ($timer['weekdays'][WEEKDAYS[$weekday]]) {
+                        $startHour = intval(substr($timer['start'], 0, 2));
+                        $startMinutes = intval(substr($timer['start'], 3, 2));
+                        IPS_SetEventScheduleGroupPoint($WochenplanEventID, $weekday, 2, $startHour, $startMinutes, 0, 2);
+                        $stopHour = intval(substr($timer['end'], 0, 2));
+                        $stopMinutes = intval(substr($timer['end'], 3, 2));
+                        IPS_SetEventScheduleGroupPoint($WochenplanEventID, $weekday, 3, $stopHour, $stopMinutes, 0, 1);
                     }
                 }
-
             }
         }
 
         return $data;
     }
 
-    public function SetTimerToMower() {
+    public function SetTimerToMower()
+    {
         // transfer the wekk plan timer to the mower
         // Wochenplan auslesen
 
         $TimerPlanActiveID = $this->GetIDForIdent("TimerPlanActive");
 
-        if ( $TimerPlanActiveID == false ) {
+        if ($TimerPlanActiveID == false) {
             return false;
         }
         $TimerPlanActiveID = $this->GetIDForIdent('TimerPlanActive');
-        $WochenplanEventID = @IPS_GetObjectIDByIdent( 'TimerWeekPlan'.$this->InstanceID, $TimerPlanActiveID );
-        if ( $WochenplanEventID === false ) {
+        $WochenplanEventID = @IPS_GetObjectIDByIdent('TimerWeekPlan'.$this->InstanceID, $TimerPlanActiveID);
+        if ($WochenplanEventID === false) {
             return;
         }
         $Wochenplan = IPS_GetEvent($WochenplanEventID);
 
         $listOfWeekdays = array("mo","tu","we","th","fr","sa","su");
-        $emptyWeekdays = json_decode( '{"mo": false, "tu": false, "we": false, "th": false, "fr": false, "sa": false, "su": false}', true );
-        $emptyTimer = json_decode( '{"id": 0, "enabled": false, "start": "08:00", "end": "18:00", "weekdays": {"mo": false, "tu": false, "we": false, "th": false, "fr": false, "sa": false, "su": false}}', true);
+        $emptyWeekdays = json_decode('{"mo": false, "tu": false, "we": false, "th": false, "fr": false, "sa": false, "su": false}', true);
+        $emptyTimer = json_decode('{"id": 0, "enabled": false, "start": "08:00", "end": "18:00", "weekdays": {"mo": false, "tu": false, "we": false, "th": false, "fr": false, "sa": false, "su": false}}', true);
         $timerID = 1;
         $timerList = [];
 
         // über die Schedule-Gruppen (Tage) loopen
-        if ( isset( $Wochenplan ) and isset( $Wochenplan['ScheduleGroups'] ) ) {
-            for( $tag = 0; $tag <= 6; $tag = $tag + 1 ) {
+        if (isset($Wochenplan) and isset($Wochenplan['ScheduleGroups'])) {
+            for ($tag = 0; $tag <= 6; $tag = $tag + 1) {
                 // Montag (Tag 0) - Sonntag (Tag 6)
 
-                if ( isset( $Wochenplan['ScheduleGroups'][$tag] ) and
-                    isset( $Wochenplan['ScheduleGroups'][$tag]['Points'] ) and
-                    count($Wochenplan['ScheduleGroups'][$tag]['Points'] ) > 0 ) {
+                if (isset($Wochenplan['ScheduleGroups'][$tag]) and
+                    isset($Wochenplan['ScheduleGroups'][$tag]['Points']) and
+                    count($Wochenplan['ScheduleGroups'][$tag]['Points']) > 0) {
                     $maehenGestartet = false;
                     $StartZeit = "";
 
-                    for( $x = 0; $x < count($Wochenplan['ScheduleGroups'][$tag]['Points']); $x++ ) {
-                        if ( ( $maehenGestartet == false ) and ( $Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['ActionID'] == 2 ) ) {
+                    for ($x = 0; $x < count($Wochenplan['ScheduleGroups'][$tag]['Points']); $x++) {
+                        if (($maehenGestartet == false) and ($Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['ActionID'] == 2)) {
                             // ActionID = 2 => mähenStarten; nur, wenn maehen nicht gestartet einen neuen Timer planen
                             $timer['id']       = $timerID;
                             $timer['enabled']  = true;
@@ -569,9 +595,13 @@ class RobonectWifiModul extends IPSModule
                             $timer['weekdays'] = [];
 
                             $StartStunde = $Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['Start']['Hour'];
-                            if ( strlen( $StartStunde ) == 1 ) $StartStunde = '0'.$StartStunde;
+                            if (strlen($StartStunde) == 1) {
+                                $StartStunde = '0'.$StartStunde;
+                            }
                             $StartMinute = $Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['Start']['Minute'];
-                            if ( strlen( $StartMinute ) == 1 ) $StartMinute = '0'.$StartMinute;
+                            if (strlen($StartMinute) == 1) {
+                                $StartMinute = '0'.$StartMinute;
+                            }
                             $StartZeit = $StartStunde.":".$StartMinute;
                             $timer['start'] = $StartZeit;
                             $timer['weekdays'] = $emptyWeekdays;
@@ -579,32 +609,38 @@ class RobonectWifiModul extends IPSModule
                             $maehenGestartet = true;
                             continue;
                         }
-                        if ( ( $maehenGestartet == true ) and ( $Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['ActionID'] == 1 ) ) {
+                        if (($maehenGestartet == true) and ($Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['ActionID'] == 1)) {
                             // ActionID = 1 => mähenBeenden; nur, wenn maehen gestartet das Event beenden
 
                             $StopStunde = $Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['Start']['Hour'];
-                            if ( strlen( $StopStunde ) == 1 ) $StopStunde = '0'.$StopStunde;
+                            if (strlen($StopStunde) == 1) {
+                                $StopStunde = '0'.$StopStunde;
+                            }
                             $StopMinute = $Wochenplan['ScheduleGroups'][$tag]['Points'][$x]['Start']['Minute'];
-                            if ( strlen( $StopMinute ) == 1 ) $StopMinute = '0'.$StopMinute;
+                            if (strlen($StopMinute) == 1) {
+                                $StopMinute = '0'.$StopMinute;
+                            }
 
                             $StopZeit = $StopStunde.":".$StopMinute;
-                            if ( $StopZeit == '00:00' ) $StopZeit = '23:59';
+                            if ($StopZeit == '00:00') {
+                                $StopZeit = '23:59';
+                            }
 
                             $timer['end'] = $StopZeit;
 
                             // prüfen, ob der Timer neu ist, oder ein bereits vorhandener genutzt werden kann
-                            for ($y = 0; $y < count( $timerList ); $y++ ) {
-                                if ( $timerList[$y]['start'] == $timer['start'] and
-                                    $timerList[$y]['end']   == $timer['end'] ) {
+                            for ($y = 0; $y < count($timerList); $y++) {
+                                if ($timerList[$y]['start'] == $timer['start'] and
+                                    $timerList[$y]['end']   == $timer['end']) {
                                     // Timer passt, also Wochentag hinzufügen und neue Timer verwerfen
                                     $timerList[$y]['weekdays'][$listOfWeekdays[$tag]] = true;
                                     $timer['id'] = '';
                                 }
                             }
 
-                            if ( $timer['id'] == $timerID ) {
+                            if ($timer['id'] == $timerID) {
                                 // neuer Timer
-                                array_push( $timerList, $timer);
+                                array_push($timerList, $timer);
                                 $timerID++;
                             }
 
@@ -614,22 +650,22 @@ class RobonectWifiModul extends IPSModule
                     }
                 }
 
-                if ( $maehenGestartet == true ) {
+                if ($maehenGestartet == true) {
                     // eine Mähung fängt vor 0:00 an und hört auf 0:00 auf => kein stop mähen an dem Tag!
                     $timer['end'] = '23:59';
                     // prüfen, ob der Timer neu ist, oder ein bereits vorhandener genutzt werden kann
-                    for ($y = 0; $y < count( $timerList ); $y++ ) {
-                        if ( $timerList[$y]['start'] == $timer['start'] and
-                            $timerList[$y]['end']   == $timer['end'] ) {
+                    for ($y = 0; $y < count($timerList); $y++) {
+                        if ($timerList[$y]['start'] == $timer['start'] and
+                            $timerList[$y]['end']   == $timer['end']) {
                             // Timer passt, also Wochentag hinzufügen und neue Timer verwerfen
                             $timerList[$y]['weekdays'][$listOfWeekdays[$tag]] = true;
                             $timer['id'] = '';
                         }
                     }
 
-                    if ( $timer['id'] == $timerID ) {
+                    if ($timer['id'] == $timerID) {
                         // neuer Timer
-                        array_push( $timerList, $timer);
+                        array_push($timerList, $timer);
                         $timerID++;
                     }
 
@@ -638,42 +674,42 @@ class RobonectWifiModul extends IPSModule
             }
         };
 
-        $missingTimers = 14-count( $timerList );
-        for( $z=0; $z <= $missingTimers; $z++ ) {
+        $missingTimers = 14-count($timerList);
+        for ($z=0; $z <= $missingTimers; $z++) {
             $timer = $emptyTimer;
             $timer['id'] = $timerID;
             $timerID++;
-            array_push( $timerList, $timer );
+            array_push($timerList, $timer);
         }
 
         // Robonect Programmieren
         $success = true;
-        for ( $x = 0; $x <= 13; $x++ ) {
-
+        for ($x = 0; $x <= 13; $x++) {
             $cmd = 'timer&timer='.$timerList[$x]['id'].'&start='.$timerList[$x]['start'].'&end='.$timerList[$x]['end'];
-            for ( $tag = 0; $tag <= 6; $tag++ ) {
-                if ( $timerList[$x]['weekdays'][$listOfWeekdays[$tag]] == true ) {
+            for ($tag = 0; $tag <= 6; $tag++) {
+                if ($timerList[$x]['weekdays'][$listOfWeekdays[$tag]] == true) {
                     $cmd = $cmd.'&'.$listOfWeekdays[$tag].'=1';
                 } else {
                     $cmd = $cmd.'&'.$listOfWeekdays[$tag].'=0';
                 }
             }
-            if ( $timerList[$x]['enabled'] == true ) {
+            if ($timerList[$x]['enabled'] == true) {
                 $cmd = $cmd."&enable=1";
             } else {
                 $cmd = $cmd."&enable=0";
             }
 
             // Kommando senden
-            $success = $success and $this->executeHTTPCommand( $cmd );
+            $success = $success and $this->executeHTTPCommand($cmd);
         }
 
         return $success;
     }
 
     #================================================================================================
-    protected function executeHTTPCommand( $command ) {
-    #================================================================================================
+    protected function executeHTTPCommand($command)
+    {
+        #================================================================================================
         $IPAddress = trim($this->ReadPropertyString("IPAddress"));
         $Username = trim($this->ReadPropertyString("Username"));
         $Password = trim($this->ReadPropertyString("Password"));
@@ -688,7 +724,7 @@ class RobonectWifiModul extends IPSModule
         }
         $this->log('Http Request send');
         switch ($command) {
-            case 'cam' :
+            case 'cam':
                 $URL = 'http://' . $IPAddress . '/cam.jpg';
                 try {
                     $ch = curl_init();
@@ -700,8 +736,8 @@ class RobonectWifiModul extends IPSModule
                         CURLOPT_TIMEOUT => 30
                     ]);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    if( ! $data = curl_exec($ch)) {
-                        $this->log ((curl_error($ch)));
+                    if (! $data = curl_exec($ch)) {
+                        $this->log((curl_error($ch)));
                         curl_close($ch);
                         return false;
                     }
@@ -715,10 +751,10 @@ class RobonectWifiModul extends IPSModule
                 };
                 return $data;
                 break;
-            case '' : 
+            case '':
                 return false;
                 break;
-            default :
+            default:
                 $URL = 'http://' . $IPAddress . '/json?cmd=' . $command;
                 try {
                     $ch = curl_init();
@@ -731,8 +767,8 @@ class RobonectWifiModul extends IPSModule
                     ]);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     //  $json = curl_exec($ch);
-                    if( ! $json = curl_exec($ch)) {
-                        $this->log ((curl_error($ch)));
+                    if (! $json = curl_exec($ch)) {
+                        $this->log((curl_error($ch)));
                         curl_close($ch);
                         return false;
                     }
@@ -745,12 +781,12 @@ class RobonectWifiModul extends IPSModule
                     return false;
                 };
                 if (strlen($json) > 3) {
-                  $this->SetStatus(102); // Robonect found
+                    $this->SetStatus(102); // Robonect found
                 } else {
-                  $this->SetStatus(202); // No Device at IP
+                    $this->SetStatus(202); // No Device at IP
                 }
                 $this->log("Response: ".$json);
-                return json_decode( utf8_encode($json), true, 1000, JSON_INVALID_UTF8_IGNORE);
+                return json_decode(utf8_encode($json), true, 1000, JSON_INVALID_UTF8_IGNORE);
                 break;
         }
         return false;
@@ -758,28 +794,27 @@ class RobonectWifiModul extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
-
         switch ($Ident) {
             case "mowerModeInteractive":
-                switch( $Value ) {
+                switch($Value) {
                     case 0: // manuell
-                        if ( $this->SetMode( 'man' ) ) {
-                            $this->SetValue("mowerModeInteractive", $Value );
+                        if ($this->SetMode('man')) {
+                            $this->SetValue("mowerModeInteractive", $Value);
                         }
                         break;
                         break;
                     case 1: // Timer auto
-                        if ( $this->SetMode( 'auto' ) ) {
-                            $this->SetValue("mowerModeInteractive", $Value );
+                        if ($this->SetMode('auto')) {
+                            $this->SetValue("mowerModeInteractive", $Value);
                         }
                         break;
                 }
                 break;
 
             case "manualAction":
-                switch( $Value ) {
+                switch($Value) {
                     case 0: // jetzt mähen
-                        if ($this->StartMowingNow(0) ) {
+                        if ($this->StartMowingNow(0)) {
                             $this->SetValue("manualAction", $Value);
                         }
                         break;
@@ -787,12 +822,12 @@ class RobonectWifiModul extends IPSModule
                     case 1: // pause / weitermachen
                         // wir müssen zunächst sicher sein, das "manuell gestoppt" sauber sitzt
                         $this->Update();
-                        if ( GetValueBoolean($this->GetIDForIdent('mowerStopped')) == false ) {
-                            if ( $this->Stop() ) {
+                        if (GetValueBoolean($this->GetIDForIdent('mowerStopped')) == false) {
+                            if ($this->Stop()) {
                                 $this->SetValue("manualAction", 1);
                             }
                         } else {
-                            if ( $this->Start() ) {
+                            if ($this->Start()) {
                                 $this->SetValue("manualAction", -1);
                             }
                         }
@@ -800,15 +835,15 @@ class RobonectWifiModul extends IPSModule
                         break;
 
                     case 2: // mähen beenden
-                        if ( $this->SetMode( 'home' ) ) {
-                            $this->SetValue("manualAction", $Value );
+                        if ($this->SetMode('home')) {
+                            $this->SetValue("manualAction", $Value);
                         }
                         $this->Update();
                         break;
                 }
                 break;
             case 'timerTransmitAction':
-                switch( $Value ) {
+                switch($Value) {
                     case 0: // vom Robonect lesen
                         $this->GetTimerFromMower();
                         break;
@@ -820,7 +855,8 @@ class RobonectWifiModul extends IPSModule
         }
     }
 
-    public function ReceiveData($JSONString) {
+    public function ReceiveData($JSONString)
+    {
         // MQTT Tropics
         $topicList['/device/name']['Ident']                 = 'mowerName';
         $topicList['/device/serial']['Ident']               = 'mowerSerial';
@@ -861,31 +897,31 @@ class RobonectWifiModul extends IPSModule
 
         $topicList['/mower/timer/next/unix']['Ident']       = 'mowerNextTimerstart';
 
-        if ( $JSONString == '' ) {
-            $this->log('No JSON' );
+        if ($JSONString == '') {
+            $this->log('No JSON');
             return true;
         }
-		$this->SendDebug("Received", $JSONString, 0);
-        $Data = json_decode( $JSONString);
+        $this->SendDebug("Received", $JSONString, 0);
+        $Data = json_decode($JSONString);
         // Prüfen ob alles OK ist
         if ($Data === false or $Data->DataID != '{7F7632D9-FA40-4F38-8DEA-C83CD4325A32}') {
             $this->SendDebug("nvalid Parent", KL_ERROR, 0);
-            $this->log('Invalid Parent' );
+            $this->log('Invalid Parent');
             return true;
         }
 
         $mqttTopic = $this->ReadPropertyString("MQTTTopic");
-        if ( ( $mqttTopic == "" ) or ( strpos( $Data->Topic, $mqttTopic.'/' ) === false ) ) {
+        if (($mqttTopic == "") or (strpos($Data->Topic, $mqttTopic.'/') === false)) {
             $this->SendDebug("Bad Topic", $Data->Topic, 0);
             $this->log('Bad Topic');
-             return true;
+            return true;
         }
 
-        $topic = substr( $Data->Topic, strlen( $mqttTopic), (strlen($Data->Topic) - strlen($mqttTopic)));
+        $topic = substr($Data->Topic, strlen($mqttTopic), (strlen($Data->Topic) - strlen($mqttTopic)));
 
         $this->log('Topic: '.$topic. ', Payload: '.$Data->Payload);
 
-        if ( isset( $topicList[$topic] ) ) {
+        if (isset($topicList[$topic])) {
             $this->log('Try to update data ' . $topicList[$topic]['Ident'] . ' with ' . $Data->Payload);
             $this->updateIdent($topicList[$topic]['Ident'], $Data->Payload);
             if ($topicList[$topic]['Ident'] != 'mowerMqttStatus') {
@@ -904,7 +940,7 @@ class RobonectWifiModul extends IPSModule
                 $this->log("Timer Buffer Variable not found!");
             }
             // Topc kürzen auf Timer Kanal und spliten auf Kanal und Wert
-            list ($TimerChannel, $TimerValue) = explode('/', str_replace('/mower/timer/', '', $topic));
+            list($TimerChannel, $TimerValue) = explode('/', str_replace('/mower/timer/', '', $topic));
             // Kanal in integer umwandel
             $TimerChannel = intval(str_replace('ch', '', $TimerChannel));
             $TimerChannel++;
@@ -923,14 +959,13 @@ class RobonectWifiModul extends IPSModule
             SetValue($TimerVariableID, $Data->Payload);
             $this->SetTimerBox(null);
         } else {
-            $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload );
+            $this->log('Unkown Topic: '.$topic. ', Payload: '.$Data->Payload);
         }
-
     }
 
-    protected function updateIdent( string $ident, $payload ) {
-
-        switch ( $ident ) {
+    protected function updateIdent(string $ident, $payload)
+    {
+        switch ($ident) {
             case 'mowerName':
                 $this->SetValue("mowerName", $payload);
                 $this->SetWlan();
@@ -942,7 +977,7 @@ class RobonectWifiModul extends IPSModule
 
             case 'mowerMode':
                 $this->SetValue("mowerMode", $payload);
-                if ( $payload == 0 ) {
+                if ($payload == 0) {
                     $this->SetValue("mowerModeInteractive", 1); // automatisch = Timer
                 } else {
                     $this->SetValue("mowerModeInteractive", 0); // sonst = manuell
@@ -978,14 +1013,18 @@ class RobonectWifiModul extends IPSModule
             case 'mowerStatusSinceDurationSec':
                 $durationSince = 0+filter_var($payload, FILTER_SANITIZE_NUMBER_INT);
                 $statusSinceTimestamp = time() - $durationSince;
-                $this->LogMessage( 'Duration: '.$durationSince.' Timestamp: '.$statusSinceTimestamp, KL_DEBUG );
-                $this->SetValue("mowerStatusSince", $statusSinceTimestamp );
+                $this->LogMessage('Duration: '.$durationSince.' Timestamp: '.$statusSinceTimestamp, KL_DEBUG);
+                $this->SetValue("mowerStatusSince", $statusSinceTimestamp);
                 if (intdiv($durationSince, 86400) > 0) {
                     $Text = intdiv($durationSince, 86400) . ' Tag';
-                    if (intdiv($durationSince, 86400) > 1) $Text = $Text . 'en';
+                    if (intdiv($durationSince, 86400) > 1) {
+                        $Text = $Text . 'en';
+                    }
                 } else {
                     $Text = "";
-                    if (intdiv($durationSince, 3600) > 0) $Text = intdiv($durationSince, 3600) . " Stunden ";
+                    if (intdiv($durationSince, 3600) > 0) {
+                        $Text = intdiv($durationSince, 3600) . " Stunden ";
+                    }
                     $Text = $Text . date("i", $durationSince) . " Minuten";
                 }
                 $this->SetValue("statusSinceDescriptive", $Text);
@@ -993,29 +1032,37 @@ class RobonectWifiModul extends IPSModule
             case 'mowerStatusSinceDurationMin':
                 $durationSince = 0+filter_var($payload, FILTER_SANITIZE_NUMBER_INT);
                 $statusSinceTimestamp = time() - $durationSince*60; // substract seconds
-                $this->log('Duration: '.$durationSince.' Timestamp: '.$statusSinceTimestamp );
-                $this->SetValue("mowerStatusSince", $statusSinceTimestamp );
+                $this->log('Duration: '.$durationSince.' Timestamp: '.$statusSinceTimestamp);
+                $this->SetValue("mowerStatusSince", $statusSinceTimestamp);
                 $duration = $durationSince*60;
                 if (intdiv($duration, 86400) > 0) {
                     $Text = intdiv($duration, 86400) . ' Tag';
-                    if (intdiv($duration, 86400) > 1) $Text = $Text . 'en';
+                    if (intdiv($duration, 86400) > 1) {
+                        $Text = $Text . 'en';
+                    }
                 } else {
                     $Text = "";
-                    if (intdiv($duration, 3600) > 0) $Text = intdiv($duration, 3600) . " Stunden ";
+                    if (intdiv($duration, 3600) > 0) {
+                        $Text = intdiv($duration, 3600) . " Stunden ";
+                    }
                     $Text = $Text . date("i", $duration) . " Minuten";
                 }
                 $this->SetValue("statusSinceDescriptive", $Text);
                 break;
             case 'mowerStatusSinceTimestamp':
                 $statusSinceTimestamp = $payload;
-                $difference = ( time() - $payload) / 60;
-                $this->SetValue("mowerStatusSince", $statusSinceTimestamp );
+                $difference = (time() - $payload) / 60;
+                $this->SetValue("mowerStatusSince", $statusSinceTimestamp);
                 if (intdiv($difference, 86400) > 0) {
                     $Text = intdiv($difference, 86400) . ' Tag';
-                    if (intdiv($difference, 86400) > 1) $Text = $Text . 'en';
+                    if (intdiv($difference, 86400) > 1) {
+                        $Text = $Text . 'en';
+                    }
                 } else {
                     $Text = "";
-                    if (intdiv($difference, 3600) > 0) $Text = intdiv($difference, 3600) . " Stunden ";
+                    if (intdiv($difference, 3600) > 0) {
+                        $Text = intdiv($difference, 3600) . " Stunden ";
+                    }
                     $Text = $Text . date("i", $payload) . " Minuten";
                 }
                 $this->SetValue("statusSinceDescriptive", $Text);
@@ -1024,20 +1071,20 @@ class RobonectWifiModul extends IPSModule
 
 
             case 'mowerBatterySoc':
-                $this->SetValue("mowerBatterySoc", $payload );
+                $this->SetValue("mowerBatterySoc", $payload);
                 $this->GetBatteryData();
                 break;
             case 'mowerVoltageBattery':
-                $this->SetValue("mowerVoltageBattery", $payload );
+                $this->SetValue("mowerVoltageBattery", $payload);
                 break;
             case 'mowerVoltageInternal':
-                $this->SetValue("mowerVoltageInternal", $payload );
+                $this->SetValue("mowerVoltageInternal", $payload);
                 break;
             case 'mowerVoltageExternal':
-                $this->SetValue("mowerVoltageExternal", $payload );
+                $this->SetValue("mowerVoltageExternal", $payload);
                 break;
             case 'mowerHours':
-                $this->SetValue("mowerHours", $payload );
+                $this->SetValue("mowerHours", $payload);
                 break;
             case 'mowerWlanStatus':
                 $WLANIntensity = 100;
@@ -1050,45 +1097,45 @@ class RobonectWifiModul extends IPSModule
                 $this->SetValue("mowerWlanStatus", $WLANIntensity);
                 break;
             case 'mowerMqttStatus':
-                switch ( $payload ) {
+                switch ($payload) {
                     case 'online':
-                        $this->SetValue("mowerMqttStatus", 1 );
+                        $this->SetValue("mowerMqttStatus", 1);
                         break;
                     default:
-                        $this->SetValue("mowerMqttStatus", 0 );
+                        $this->SetValue("mowerMqttStatus", 0);
                         break;
                 }
                 break;
             case 'mowerTemperature':
-                $this->SetValue("mowerTemperature", $payload );
+                $this->SetValue("mowerTemperature", $payload);
                 break;
             case 'mowerHumidity':
-                $this->SetValue("mowerHumidity", $payload );
+                $this->SetValue("mowerHumidity", $payload);
                 break;
             case 'mowerErrorCount':
-                $this->SetValue("mowerErrorCount", $payload );
+                $this->SetValue("mowerErrorCount", $payload);
                 $this->SetErrorBox();
-                break;                
+                break;
             case 'mowerErrorMessage':
-                $this->SetValue("mowerErrorMessage", $payload );
+                $this->SetValue("mowerErrorMessage", $payload);
                 break;
             case 'mowerBladesQuality':
-                $this->SetValue("mowerBladesQuality", $payload );
+                $this->SetValue("mowerBladesQuality", $payload);
                 break;
             case 'mowerBladesOperatingHours':
-                $this->SetValue("mowerBladesOperatingHours", $payload );
+                $this->SetValue("mowerBladesOperatingHours", $payload);
                 break;
             case 'mowerBladesAge':
-                $this->SetValue("mowerBladesAge", $payload );
+                $this->SetValue("mowerBladesAge", $payload);
                 break;
 
 
             case 'mowerTimerStatus':
-                $this->SetValue( "mowerTimerStatus", $payload );
+                $this->SetValue("mowerTimerStatus", $payload);
                 break;
             case 'mowerNextTimerstart':
-                if ( $payload == 0 ) {
-                    $this->SetValue("mowerNextTimerstart", 0 );
+                if ($payload == 0) {
+                    $this->SetValue("mowerNextTimerstart", 0);
                 } else {
                     $unixTimestamp = $payload;
                     $dateTimeZoneLocal = new DateTimeZone(date_default_timezone_get());
@@ -1098,21 +1145,21 @@ class RobonectWifiModul extends IPSModule
                 }
                 break;
 
-                case 'WeatherTemperature':
-                    $this->SetValue("WeatherTemperature", $payload );
-                    break;
-                case 'WeatherHumidity':
-                    $this->SetValue("WeatherHumidity", $payload );
-                    break;
-                case 'WeatherBreak':
-                    $this->SetValue("WeatherBreak", $payload );
-                    break;
-                case 'WeatherRain':
-                    $this->SetValue("WeatherRain", $payload );
-                    break;
-                case 'WeatherService':
-                    $this->SetValue("WeatherService", $payload );
-                    break;
+            case 'WeatherTemperature':
+                $this->SetValue("WeatherTemperature", $payload);
+                break;
+            case 'WeatherHumidity':
+                $this->SetValue("WeatherHumidity", $payload);
+                break;
+            case 'WeatherBreak':
+                $this->SetValue("WeatherBreak", $payload);
+                break;
+            case 'WeatherRain':
+                $this->SetValue("WeatherRain", $payload);
+                break;
+            case 'WeatherService':
+                $this->SetValue("WeatherService", $payload);
+                break;
 
 
             case 'mowerUnixTimestamp':
@@ -1120,64 +1167,80 @@ class RobonectWifiModul extends IPSModule
                 $dateTimeZoneLocal = new DateTimeZone(date_default_timezone_get());
                 $localTime = new DateTime("now", $dateTimeZoneLocal);
                 $unixTimestamp = $unixTimestamp - $dateTimeZoneLocal->getOffset($localTime);
-                $this->SetValue("mowerUnixTimestamp", $unixTimestamp );
+                $this->SetValue("mowerUnixTimestamp", $unixTimestamp);
                 break;
-
         }
-
     }
 
     #================================================================================================
-    public function UpdateImage () {
-    #================================================================================================
+    public function UpdateImage()
+    {
+        #================================================================================================
         $semaphore = 'Robonect'.$this->InstanceID.'_Update';
-        if ( IPS_SemaphoreEnter( $semaphore, 0 ) == false ) { 
-            $this->log('UpdateImage - No semaphore entered' );
-            return false; 
+        if (IPS_SemaphoreEnter($semaphore, 0) == false) {
+            $this->log('UpdateImage - No semaphore entered');
+            return false;
         }
-        $this->log('UpdateImage - Semaphore entered' );
+        $this->log('UpdateImage - Semaphore entered');
         $media_file =  'media/' . 'Cam.' . $this->InstanceID . '.jpg';
 
+        /*
         if (!$media_id = @IPS_GetMediaIDByFile($media_file)) {
-            return false;
-       }
-
-        // update media content
-        $filename = IPS_GetKernelDir() . $media_file;
-        $fileContent = $this->executeHTTPCommand('cam');
-        if (!$fileContent) {
-            $this->log('UpdateImage - Keine Gültige Antwort vom Server !!!');
-            return false;
-        }
-        $result = file_put_contents($filename, $fileContent);
-        if (!$result) {
-            $this->log( 'UpdateImage - Fehler beim schreiben des Bildes '.$filename);
-            return false;
-        }
-        // Bild Overlay erstellen
-        $source = imagecreatefromjpeg($filename);
-        if($this->ReadPropertyBoolean("StatusImage") or $this->ReadPropertyBoolean("DateIamge")) {
-            $TextStatus = $this->GetValue ("mowerStatusPlain");
-            $col = $this->ReadPropertyInteger("TextColorImage");
-            if ($this->ReadPropertyBoolean("StatusImage") and $this->ReadPropertyBoolean("DateIamge")) {
-                imagestring($source, 4, 5, 460, date("d.m.Y H:i:s")." | Status: ".utf8_decode($TextStatus), $col);
-            } elseif($this->ReadPropertyBoolean("DateIamge")) {
-                imagestring($source, 4, 5, 460, date("d.m.Y H:i:s"), $col);
-            } elseif($this->ReadPropertyBoolean("StatusImage")) {
-                imagestring($source, 4, 5, 460, utf8_decode($TextStatus), $col);
+            return false; Kann gelöscht werden wenn alles funktioniert
+           }
+           */
+        if ($media_id = @IPS_GetMediaIDByFile($media_file)) {
+            // update media content
+            $filename = IPS_GetKernelDir() . $media_file;
+            $fileContent = $this->executeHTTPCommand('cam');
+            /* Kann gelöscht werden wenn alles funktioniert
+            if (!$fileContent) {
+                $this->log('UpdateImage - Keine Gültige Antwort vom Server !!!');
+                return false;
             }
-            imageline($source, 0, 455, 640, 455, $col);
+            */
+            if ($fileContent) {
+                /* Kann gelöscht werden wenn alles funktioniert
+                $result = file_put_contents($filename, $fileContent);
+                        if (!$result) {
+                        $this->log( 'UpdateImage - Fehler beim schreiben des Bildes '.$filename);
+                        return false;
+                    }
+                */
+                if (file_put_contents($filename, $fileContent)) {
+                    // Bild Overlay erstellen
+                    $source = imagecreatefromjpeg($filename);
+                    if ($this->ReadPropertyBoolean("StatusImage") or $this->ReadPropertyBoolean("DateIamge")) {
+                        $TextStatus = $this->GetValue("mowerStatusPlain");
+                        $col = $this->ReadPropertyInteger("TextColorImage");
+                        if ($this->ReadPropertyBoolean("StatusImage") and $this->ReadPropertyBoolean("DateIamge")) {
+                            imagestring($source, 4, 5, 460, date("d.m.Y H:i:s")." | Status: ".utf8_decode($TextStatus), $col);
+                        } elseif ($this->ReadPropertyBoolean("DateIamge")) {
+                            imagestring($source, 4, 5, 460, date("d.m.Y H:i:s"), $col);
+                        } elseif ($this->ReadPropertyBoolean("StatusImage")) {
+                            imagestring($source, 4, 5, 460, utf8_decode($TextStatus), $col);
+                        }
+                        imageline($source, 0, 455, 640, 455, $col);
+                    }
+                    imagejpeg($source, $filename, 100);
+                    ImageDestroy($source);
+                    IPS_SetMediaFile($media_id, $media_file, true);
+                //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
+                } else {
+                    $this->log('UpdateImage - Fehler beim schreiben des Bildes '.$filename);
+                }
+            } else {
+                $this->log('UpdateImage - Keine Gültige Antwort vom Server !!!');
+            }
         }
-        imagejpeg($source, $filename, 100);
-        ImageDestroy($source);
-        IPS_SetMediaFile($media_id, $media_file, true);
-        //IPS_SetMediaContent($media_id, base64_encode(file_get_contents($_FILES['image']['tmp_name'])));
-        $this->log('UpdateImage - Semaphore leaved' );
+    
+
         // Mäher ist in Ladestation
         $Status = $this->GetValue ("mowerStatus");
         if (($Status == 0) || ($Status == 1) || ($Status == 4) || ($Status == 16) || ($Status == 17)) {
             $this->SetTimerInterval("ROBONECT_UpdateImageTimer", 0);
         }
+        $this->log('UpdateImage - Semaphore leaved' );
         IPS_SemaphoreLeave( $semaphore );
     }
 
